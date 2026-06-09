@@ -6,9 +6,9 @@ import { BouncyButton } from './BouncyButton';
 import { Colors } from '../theme/colors';
 
 interface Props {
-  visible: boolean;
-  onDismiss: () => void;
-  mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt';
+  readonly visible: boolean;
+  readonly onDismiss: () => void;
+  readonly mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt';
 }
 
 export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
