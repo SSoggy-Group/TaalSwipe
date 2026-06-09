@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface AppStats {
   totalSwipes: number;
+  totalCorrect: number;
+  totalWrong: number;
+  sessionsPlayed: number;
   highestCombo: number;
   xp: number;
   currentStreak: number;
@@ -33,6 +36,9 @@ export interface AppStats {
 
 const DEFAULT_STATS: AppStats = {
   totalSwipes: 0,
+  totalCorrect: 0,
+  totalWrong: 0,
+  sessionsPlayed: 0,
   highestCombo: 0,
   xp: 0,
   currentStreak: 0,
