@@ -8,7 +8,7 @@ import { Colors } from '../theme/colors';
 interface Props {
   visible: boolean;
   onDismiss: () => void;
-  mode: 'straattaal' | 'dunglish' | 'spelling';
+  mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt';
 }
 
 export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
@@ -33,6 +33,11 @@ export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
       emoji = '⚡';
       title = 'Snelheid is alles!';
       description = 'Kies razendsnel of het woord goed of fout gespeld is.\n\nJe hebt maar 1,5 seconde per woord. Eén fout = game over!';
+      break;
+    case 'dt':
+      emoji = '🧠';
+      title = 'D/T Grammatica';
+      description = 'Kies of de zin met de juiste werkwoordsvorm is gespeld (d, t, of dt).\n\nSwipe rechts voor goed, links voor fout!';
       break;
   }
 
