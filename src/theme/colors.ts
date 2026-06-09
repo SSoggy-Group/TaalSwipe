@@ -1,7 +1,7 @@
 import { useColorScheme } from 'react-native';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const getColors = (isDark: boolean, bgId?: string, cardId?: string) => {
+export const getColors = (isDark: boolean, bgId?: string, cardId?: string, gameMode?: string) => {
   // 1. Default fallback styles
   let layer1Colors = isDark ? ['#0F172A', '#1E293B'] : ['#1CB0F6', '#0B99DF'];
   let layer2Colors = isDark ? ['#1E293B', '#0F172A'] : ['#38BDF8', '#1CB0F6'];
@@ -11,9 +11,10 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string) => {
   let textSecondary = 'rgba(255, 255, 255, 0.7)';
   let textMuted = 'rgba(255, 255, 255, 0.45)';
 
-  // 2. Adjust based on equippedBackground
-  if (bgId === 'bg_neon') {
-    layer1Colors = ['#090514', '#1E1B4B']; // Dark violet-blue
+  // 2. Adjust based on equippedBackground or gameMode
+  if (bgId && bgId !== 'bg_default') {
+    if (bgId === 'bg_neon') {
+      layer1Colors = ['#090514', '#1E1B4B']; // Dark violet-blue
     layer2Colors = ['#1E1B4B', '#090514'];
     accent = '#F472B6'; // Neon pink accent
     accentLight = '#FBCFE8';
@@ -58,6 +59,27 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string) => {
   } else if (bgId === 'bg_nebula') {
     layer1Colors = ['#1E3A8A', '#701A75']; // Cosmic blue to magenta
     layer2Colors = ['#701A75', '#1D4ED8'];
+    }
+  } else if (gameMode) {
+    if (gameMode === 'straattaal') {
+      layer1Colors = isDark ? ['#2E1065', '#1E1B4B'] : ['#8B5CF6', '#7C3AED']; 
+      layer2Colors = isDark ? ['#1E1B4B', '#2E1065'] : ['#A78BFA', '#8B5CF6'];
+    } else if (gameMode === 'dunglish') {
+      layer1Colors = isDark ? ['#831843', '#4C0519'] : ['#EC4899', '#DB2777'];
+      layer2Colors = isDark ? ['#4C0519', '#831843'] : ['#F472B6', '#EC4899'];
+    } else if (gameMode === 'spelling') {
+      layer1Colors = isDark ? ['#0C4A6E', '#082F49'] : ['#0EA5E9', '#0284C7'];
+      layer2Colors = isDark ? ['#082F49', '#0C4A6E'] : ['#38BDF8', '#0EA5E9'];
+    } else if (gameMode === 'dt') {
+      layer1Colors = isDark ? ['#78350F', '#451A03'] : ['#F59E0B', '#D97706'];
+      layer2Colors = isDark ? ['#451A03', '#78350F'] : ['#FBBF24', '#F59E0B'];
+    } else if (gameMode === 'vandale') {
+      layer1Colors = isDark ? ['#064E3B', '#022C22'] : ['#10B981', '#059669'];
+      layer2Colors = isDark ? ['#022C22', '#064E3B'] : ['#34D399', '#10B981'];
+    } else if (gameMode === 'brand') {
+      layer1Colors = isDark ? ['#7F1D1D', '#450A0A'] : ['#EF4444', '#DC2626'];
+      layer2Colors = isDark ? ['#450A0A', '#7F1D1D'] : ['#F87171', '#EF4444'];
+    }
   }
 
   // 3. Card colors depend on cardId and background's dark/light nature
@@ -153,7 +175,7 @@ export const Colors = getColors(false);
 
 import { useSettingsStore } from '../store/settingsStore';
 
-export function useAppTheme() {
+export function useAppTheme(gameMode?: string) {
   const systemTheme = useColorScheme();
   const themePreference = useSettingsStore((state) => state.themePreference);
   const equippedBackground = useSettingsStore((state) => state.equippedBackground);
@@ -166,5 +188,5 @@ export function useAppTheme() {
     isDarkMode = false;
   }
   
-  return getColors(isDarkMode, equippedBackground, equippedCard);
+  return getColors(isDarkMode, equippedBackground, equippedCard, gameMode);
 }
