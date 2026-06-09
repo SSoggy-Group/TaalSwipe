@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch, Alert } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from 'expo-haptics';
+import { statsStore } from '../store/statsStore';
 
 interface Props {
   readonly visible: boolean;
@@ -30,6 +31,21 @@ export function SettingsModal({ visible, onClose }: Props) {
   const handleSelectTheme = (pref: 'system' | 'light' | 'dark') => {
     setThemePreference(pref);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleResetTutorials = async () => {
+    const currentStats = await statsStore.getStats();
+    currentStats.tutorialSeen = {
+      straattaal: false,
+      dunglish: false,
+      spelling: false,
+      dt: false,
+      vandale: false,
+      brand: false,
+    };
+    await statsStore.saveStats(currentStats);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Alert.alert('Tutorials Gereset! 🦉', 'Je zult bij elke gamemode de tutorial weer één keer zien.');
   };
 
   return (
@@ -191,6 +207,19 @@ export function SettingsModal({ visible, onClose }: Props) {
                 thumbColor={'#FFFFFF'}
               />
             </View>
+
+          </View>
+
+            {/* Reset Tutorials Button */}
+            <TouchableOpacity 
+              onPress={handleResetTutorials}
+              style={[
+                styles.settingCard3D, 
+                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border, justifyContent: 'center', marginTop: 8 }
+              ]}
+            >
+              <Text style={[styles.settingTitle, { color: theme.cardTextPrimary, textAlign: 'center' }]}>🔄 Herstel Tutorials</Text>
+            </TouchableOpacity>
 
           </View>
         </View>
