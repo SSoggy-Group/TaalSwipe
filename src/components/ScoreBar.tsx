@@ -10,14 +10,14 @@ import Animated, {
   interpolateColor,
   FadeIn,
 } from 'react-native-reanimated';
-import { Colors, useAppTheme } from '../theme/colors';
+import { useAppTheme } from '../theme/colors';
 
 interface ScoreBarProps {
-  score: number;
-  currentIndex: number;
-  maxTotal: number;
-  combo?: number;
-  mode: string;
+  readonly score: number;
+  readonly currentIndex: number;
+  readonly maxTotal: number;
+  readonly combo?: number;
+  readonly mode: string;
 }
 
 export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBarProps) {
