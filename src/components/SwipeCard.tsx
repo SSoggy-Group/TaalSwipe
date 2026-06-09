@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
   interpolate,
   Extrapolation,
+  runOnJS,
 } from 'react-native-reanimated';
 import { Colors, useAppTheme } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
@@ -29,6 +30,8 @@ interface SwipeCardProps {
   readonly onSwipeLeft: () => void;
   readonly onSwipeRight: () => void;
   readonly active: boolean;
+  readonly leftLabel?: string;
+  readonly rightLabel?: string;
 }
 
 export function CardSkinWrapper({ children, equippedCard, theme, style }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any }) {
@@ -139,13 +142,19 @@ export function CardSkinWrapper({ children, equippedCard, theme, style }: { chil
   );
 }
 
-export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active }: SwipeCardProps) {
+export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓" }: SwipeCardProps) {
   const theme = useAppTheme();
   const equippedCard = useSettingsStore((state) => state.equippedCard);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  const playSwooshSound = () => soundManager.playSwoosh();
+  const playSwooshSound = () => {
+    soundManager.playSwoosh();
+  };
+
+  const triggerHaptic = (style: Haptics.ImpactFeedbackStyle) => {
+    Haptics.impactAsync(style);
+  };
 
   const gesture = Gesture.Pan()
     .enabled(active)
@@ -156,25 +165,29 @@ export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active }: Swipe
     .onEnd((event) => {
       if (event.translationX > SWIPE_THRESHOLD) {
         // Swipe right
-        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          onSwipeRight();
+        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+          if (finished) {
+            runOnJS(onSwipeRight)();
+          }
         });
         translateY.value = withTiming(event.translationY * 0.8, { duration: 300 });
-        playSwooshSound();
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        runOnJS(playSwooshSound)();
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       } else if (event.translationX < -SWIPE_THRESHOLD) {
         // Swipe left
-        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          onSwipeLeft();
+        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+          if (finished) {
+            runOnJS(onSwipeLeft)();
+          }
         });
         translateY.value = withTiming(event.translationY * 0.8, { duration: 300 });
-        playSwooshSound();
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        runOnJS(playSwooshSound)();
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       } else {
         // Snap back
         translateX.value = withSpring(0, SPRING_CONFIG);
         translateY.value = withSpring(0, SPRING_CONFIG);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       }
     });
 
@@ -219,11 +232,11 @@ export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active }: Swipe
         <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
           {/* Goed overlay */}
           <Animated.View style={[styles.overlay, styles.goedOverlay, goedOpacity]}>
-            <Text style={styles.goedText}>GOED ✓</Text>
+            <Text style={styles.goedText} numberOfLines={1} adjustsFontSizeToFit>{rightLabel}</Text>
           </Animated.View>
           {/* Fout overlay */}
           <Animated.View style={[styles.overlay, styles.foutOverlay, foutOpacity]}>
-            <Text style={styles.foutText}>FOUT ✗</Text>
+            <Text style={styles.foutText} numberOfLines={1} adjustsFontSizeToFit>{leftLabel}</Text>
           </Animated.View>
           {/* Content */}
           <View style={styles.content}>
