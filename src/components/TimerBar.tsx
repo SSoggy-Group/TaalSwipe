@@ -5,17 +5,16 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   Easing,
-  runOnJS,
   useAnimatedReaction,
 } from 'react-native-reanimated';
 import { Colors } from '../theme/colors';
 
 interface TimerBarProps {
-  duration: number; // ms
-  running: boolean;
-  onTimeUp: () => void;
-  onPanicChange?: (isPanicking: boolean) => void;
-  resetKey: number; // change to reset timer
+  readonly duration: number; // ms
+  readonly running: boolean;
+  readonly onTimeUp: () => void;
+  readonly onPanicChange?: (isPanicking: boolean) => void;
+  readonly resetKey: number; // change to reset timer
 }
 
 export function TimerBar({ duration, running, onTimeUp, onPanicChange, resetKey }: TimerBarProps) {
@@ -42,11 +41,11 @@ export function TimerBar({ duration, running, onTimeUp, onPanicChange, resetKey 
     () => progress.value,
     (value) => {
       if (value <= 0 && running) {
-        runOnJS(onTimeUp)();
+        onTimeUp();
       } else if (value <= 0.25 && value > 0 && running && !hasPanicked.value) {
         hasPanicked.value = true;
         if (onPanicChange) {
-          runOnJS(onPanicChange)(true);
+          onPanicChange(true);
         }
       }
     },
@@ -55,12 +54,14 @@ export function TimerBar({ duration, running, onTimeUp, onPanicChange, resetKey 
 
   const barStyle = useAnimatedStyle(() => {
     const width = `${progress.value * 100}%` as any;
-    const color =
-      progress.value > 0.5
-        ? Colors.timerActive
-        : progress.value > 0.25
-        ? Colors.timerWarning
-        : Colors.timerDanger;
+    let color: string;
+    if (progress.value > 0.5) {
+      color = Colors.timerActive;
+    } else if (progress.value > 0.25) {
+      color = Colors.timerWarning;
+    } else {
+      color = Colors.timerDanger;
+    }
 
     return {
       width,
