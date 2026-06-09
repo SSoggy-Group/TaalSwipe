@@ -32,16 +32,17 @@ interface SwipeCardProps {
   readonly active: boolean;
   readonly leftLabel?: string;
   readonly rightLabel?: string;
+  readonly compact?: boolean;
 }
 
-export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, equippedCard, theme, style }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any }) {
+export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, equippedCard, theme, style, compact }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any, compact?: boolean }) {
   if (equippedCard === 'card_rainbow') {
     return (
       <LinearGradient
         colors={['#FF0055', '#7A00FF', '#00E5FF', '#FF0055']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[{ borderRadius: 24, borderWidth: 0, padding: 3, paddingBottom: 9, minHeight: 300, width: '100%' }, style]}
+        style={[{ borderRadius: 24, borderWidth: 0, padding: 3, paddingBottom: 9, minHeight: compact ? 180 : 300, width: '100%' }, style]}
       >
         <View style={{ flex: 1, backgroundColor: theme.glass.background, borderRadius: 21, overflow: 'hidden' }}>
           {children}
@@ -136,13 +137,13 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
   };
 
   return (
-    <View style={[getCardStyle(), { minHeight: 300, width: '100%' }, style]}>
+    <View style={[getCardStyle(), { minHeight: compact ? 180 : 300, width: '100%' }, style]}>
       {children}
     </View>
   );
 });
 
-export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓" }: SwipeCardProps) {
+export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓", compact }: SwipeCardProps) {
   const theme = useAppTheme();
   const equippedCard = useSettingsStore((state) => state.equippedCard);
   const translateX = useSharedValue(0);
@@ -229,7 +230,7 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.cardContainer, cardStyle]} accessible={true} accessibilityRole="adjustable" accessibilityHint="Swipe links of rechts">
-        <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
+        <CardSkinWrapper equippedCard={equippedCard} theme={theme} compact={compact}>
           {/* Goed overlay */}
           <Animated.View style={[styles.overlay, styles.goedOverlay, goedOpacity]}>
             <Text style={styles.goedText} numberOfLines={1} adjustsFontSizeToFit>{rightLabel}</Text>
@@ -239,7 +240,7 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
             <Text style={styles.foutText} numberOfLines={1} adjustsFontSizeToFit>{leftLabel}</Text>
           </Animated.View>
           {/* Content */}
-          <View style={styles.content}>
+          <View style={[styles.content, compact && { minHeight: 160, padding: 16 }]}>
             {children}
           </View>
         </CardSkinWrapper>
