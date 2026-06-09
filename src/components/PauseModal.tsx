@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Modal } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors, useAppTheme } from '../theme/colors';
 import { BouncyButton } from './BouncyButton';
 
 interface Props {
-  visible: boolean;
-  onResume: () => void;
-  onQuit: () => void;
-  score: number;
+  readonly visible: boolean;
+  readonly onResume: () => void;
+  readonly onQuit: () => void;
+  readonly score: number;
 }
 
 export function PauseModal({ visible, onResume, onQuit, score }: Props) {
