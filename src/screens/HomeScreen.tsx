@@ -103,12 +103,10 @@ export function HomeScreen({ navigation }: Props) {
           bounces={true}
         >
           {/* Title */}
-          <Animated.View
-            entering={FadeInDown.delay(100).duration(600).springify()}
-            style={[styles.titleContainer, floatingStyle]}
-          >
-            <Text style={styles.titleEmoji}>🇳🇱</Text>
-            <Text style={styles.title}>TaalSwipe</Text>
+          <Animated.View entering={FadeInDown.delay(100).duration(600).springify()} style={styles.titleContainer}>
+            <Animated.View style={[styles.titleInner, floatingStyle]}>
+              <Text style={styles.titleEmoji}>🇳🇱</Text>
+              <Text style={styles.title}>TaalSwipe</Text>
             {stats && (
               <View style={styles.badgeRow}>
                 <View style={styles.badge}>
@@ -121,7 +119,8 @@ export function HomeScreen({ navigation }: Props) {
                 )}
               </View>
             )}
-            <Text style={styles.subtitle}>Swipe je weg door de Nederlandse taal</Text>
+              <Text style={styles.subtitle}>Swipe je weg door de Nederlandse taal</Text>
+            </Animated.View>
           </Animated.View>
 
           {/* Mode Buttons */}
@@ -247,6 +246,9 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
     marginBottom: 48,
+  },
+  titleInner: {
+    alignItems: 'center',
   },
   titleEmoji: {
     fontSize: 48,
