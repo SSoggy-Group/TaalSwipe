@@ -206,9 +206,7 @@ export function SettingsModal({ visible, onClose }: Props) {
                 trackColor={{ false: '#475569', true: '#38BDF8' }}
                 thumbColor={'#FFFFFF'}
               />
-            </View>
-
-          </View>
+              </View>
 
             {/* Reset Tutorials Button */}
             <TouchableOpacity 
