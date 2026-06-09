@@ -17,6 +17,7 @@ type RootStackParamList = {
   Home: undefined;
   Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
   Result: { score: number; total: number; mode: string };
+  Multiplayer: undefined;
 };
 
 type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Home'>>;
@@ -123,14 +124,23 @@ export function HomeScreen({ navigation }: Props) {
             </Animated.View>
           </Animated.View>
 
-          {/* Mode Buttons */}
+          {/* Game Modes List */}
           <View style={styles.buttonsContainer}>
+            <ModeCard
+              emoji="⚔️"
+              title="Lokale Multiplayer"
+              description="Speel samen op één scherm! Wie is het snelst?"
+              color="#A855F7"
+              delay={200}
+              onPress={() => navigation.navigate('Multiplayer')}
+            />
+
             <ModeCard
               emoji="🗣️"
               title="Straattaal of AI?"
               description="Herken jij de echte straattaalwoorden tussen de AI-verzinsels?"
               color="#A78BFA"
-              delay={200}
+              delay={350}
               onPress={() => navigation.navigate('Game', { mode: 'straattaal' })}
             />
 
