@@ -15,7 +15,6 @@ interface Props {
   bottomBorderColor?: string;
   disabled?: boolean;
 }
-
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function BouncyButton({
