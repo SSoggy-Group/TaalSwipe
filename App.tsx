@@ -18,7 +18,7 @@ Sentry.init({
   debug: false,
 });
 
-export default function App() {
+function App() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
