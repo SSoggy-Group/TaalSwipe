@@ -210,4 +210,305 @@ export const brandData: BrandItem[] = [
   { word: "Onderbroek", isBrand: false, explanation: "Onderbroek is een soortnaam." },
   { word: "Bugaboo", isBrand: true, explanation: "Bugaboo is een merk kinderwagens." },
   { word: "Kinderwagen", isBrand: false, explanation: "Kinderwagen is een soortnaam." }
+,
+  {
+    "id": "1e2fe226-2ac1-45d1-a5ca-dad0a54a4854",
+    "word": "Lidl",
+    "isBrand": true,
+    "explanation": "Lidl is een internationale supermarktketen."
+  },
+  {
+    "id": "4bab5de8-7d7d-4b8e-a9e5-36164400c108",
+    "word": "Appel",
+    "isBrand": false,
+    "explanation": "Dit is gewoon fruit, het merk heet Apple."
+  },
+  {
+    "id": "6040ee5e-44fc-4493-8c48-78202ff4ad08",
+    "word": "Gilette",
+    "isBrand": false,
+    "explanation": "Fout gespeld! Het echte merk is Gillette (met dubbel l)."
+  },
+  {
+    "id": "4cebe1f5-64cb-466c-8b12-0d520029ecb1",
+    "word": "Nutella",
+    "isBrand": true,
+    "explanation": "Nutella is de bekende hazelnootpasta van Ferrero."
+  },
+  {
+    "id": "72c873ba-9ee4-4254-9ca8-98892b5d7a2b",
+    "word": "Kleenex",
+    "isBrand": true,
+    "explanation": "Kleenex is een merk, ook al wordt het vaak gebruikt voor elk papieren zakdoekje."
+  },
+  {
+    "id": "152035c5-c223-4543-8c81-5f6b37f0c772",
+    "word": "Hagelslag",
+    "isBrand": false,
+    "explanation": "Hagelslag is de soortnaam, geen merknaam (zoals Venz of De Ruijter)."
+  },
+  {
+    "id": "619cde11-1154-402c-bc35-8da9001b7b76",
+    "word": "Bic",
+    "isBrand": true,
+    "explanation": "Bic is een bekend merk voor pennen en aanstekers."
+  },
+  {
+    "id": "f146f566-7644-4850-9704-2f96818209c7",
+    "word": "Pindakaas",
+    "isBrand": false,
+    "explanation": "Dit is de soortnaam, het merk is bijvoorbeeld Calvé."
+  },
+  {
+    "id": "313483cb-23a2-41ad-97b7-c882610b70e7",
+    "word": "Maggi",
+    "isBrand": true,
+    "explanation": "Maggi is een merk van soepen en smaakmakers."
+  },
+  {
+    "id": "5f679b9b-b2a9-4d26-b8b3-2988f4e28f87",
+    "word": "Vlugzout",
+    "isBrand": false,
+    "explanation": "Dit is een algemene term voor een sterk ruikend zout."
+  },
+  {
+    "id": "a0662348-eaed-4457-bfdd-e4fda667bf33",
+    "word": "TomTom",
+    "isBrand": true,
+    "explanation": "TomTom is een Nederlands merk van navigatiesystemen."
+  },
+  {
+    "id": "5bb6353a-a65c-469c-b26f-8ab949288607",
+    "word": "Spa",
+    "isBrand": true,
+    "explanation": "Spa is een merk mineraalwater, ook al noemt men vaak al het water zo."
+  },
+  {
+    "id": "0f96675b-c3c4-400f-afc2-9cc318189bbc",
+    "word": "Roomboter",
+    "isBrand": false,
+    "explanation": "Dit is de algemene term voor boter gemaakt van room."
+  },
+  {
+    "id": "a1833367-de4d-4201-897f-9448e0dcdada",
+    "word": "Chocomel",
+    "isBrand": true,
+    "explanation": "Chocomel is een merknaam. Chocolademelk is de soortnaam."
+  },
+  {
+    "id": "fd4e3829-ee3a-455b-8f19-d9f06217762f",
+    "word": "Fristi",
+    "isBrand": true,
+    "explanation": "Fristi is een merknaam voor een fruit-melkdrank."
+  },
+  {
+    "id": "c92369a5-0b42-4bcb-a1db-79bb9690d2d4",
+    "word": "Karnemelk",
+    "isBrand": false,
+    "explanation": "Dit is een soort zuivel, geen merk."
+  },
+  {
+    "id": "5c92ca54-e795-45b5-99cc-271246d00614",
+    "word": "Teflon",
+    "isBrand": true,
+    "explanation": "Teflon is eigenlijk een merknaam van Chemours."
+  },
+  {
+    "id": "1e7a8503-5f1a-4d33-b5e6-9096bce6e5ef",
+    "word": "Vaseline",
+    "isBrand": true,
+    "explanation": "Vaseline is een merknaam van Unilever, de stof heet petroleumgel."
+  },
+  {
+    "id": "cfd45607-2d5e-4fe5-8089-e1ced366644a",
+    "word": "Aspirine",
+    "isBrand": true,
+    "explanation": "Aspirine is oorspronkelijk een merknaam van Bayer."
+  },
+  {
+    "id": "33a13d15-5bd8-4429-a4e1-4fb30839d907",
+    "word": "Paracetamol",
+    "isBrand": false,
+    "explanation": "Dit is de generieke naam van de werkzame stof, geen merk."
+  },
+  {
+    "id": "325ab76c-2bce-47db-9317-6c3d806e4cf7",
+    "word": "Pampers",
+    "isBrand": true,
+    "explanation": "Pampers is een merk van Procter & Gamble."
+  },
+  {
+    "id": "82a37c22-7049-44da-9341-e96c3005d324",
+    "word": "Luier",
+    "isBrand": false,
+    "explanation": "Een luier is de algemene term voor dit product."
+  },
+  {
+    "id": "e79c6086-43bc-46f3-898d-8aba779c0744",
+    "word": "Maxi-Cosi",
+    "isBrand": true,
+    "explanation": "Maxi-Cosi is een merk, ook al wordt elk autostoeltje zo genoemd."
+  },
+  {
+    "id": "c6365eb2-a9f0-4e2c-9f8f-826747d13c9e",
+    "word": "Post-it",
+    "isBrand": true,
+    "explanation": "Post-it is een merk van 3M voor klevende notitieblaadjes."
+  },
+  {
+    "id": "0e422bbd-bfaa-4cce-b64f-8fae29dd7d48",
+    "word": "Plakband",
+    "isBrand": false,
+    "explanation": "Dit is de soortnaam, Scotch of Sellotape zijn merken."
+  },
+  {
+    "id": "4ec7de6c-d3df-4d48-b259-94d445a4b7b2",
+    "word": "Sellotape",
+    "isBrand": true,
+    "explanation": "Sellotape is van origine een merknaam."
+  },
+  {
+    "id": "6e5c15b9-4dff-47f0-9bb2-bbb0f0fc0ee1",
+    "word": "Roltrappen",
+    "isBrand": false,
+    "explanation": "Dit is de algemene term. (Ooit was Escalator wél een merk!)"
+  },
+  {
+    "id": "398048cb-e7f9-49aa-905f-d8a10d2cde13",
+    "word": "Escalator",
+    "isBrand": false,
+    "explanation": "Ooit een merk van Otis, maar nu zijn merkrechten verlopen en is het generiek (in het Engels)."
+  },
+  {
+    "id": "bd1a6510-4611-4686-8184-580162bcd722",
+    "word": "Kruidvat",
+    "isBrand": true,
+    "explanation": "Kruidvat is een bekende drogisterijketen."
+  },
+  {
+    "id": "3f252b4b-96e0-4e91-a0ca-161df6ac4871",
+    "word": "Drogist",
+    "isBrand": false,
+    "explanation": "Dit is de winkelsoort, geen specifiek merk."
+  },
+  {
+    "id": "eaafc424-2516-4abe-9472-ccf751ea0010",
+    "word": "Hema",
+    "isBrand": true,
+    "explanation": "De Hollandsche Eenheidsprijzen Maatschappij Amsterdam is zeker een merk!"
+  },
+  {
+    "id": "0a3112f6-0f8a-4367-b91b-48ac082ec4ce",
+    "word": "Rookworst",
+    "isBrand": false,
+    "explanation": "Dit is de soortnaam, ook al staat de Hema erom bekend."
+  },
+  {
+    "id": "22058e7d-5f8f-4e99-9918-77c8f5430446",
+    "word": "Unox",
+    "isBrand": true,
+    "explanation": "Unox is een bekend merk voor soep en worsten."
+  },
+  {
+    "id": "f1eb211b-18c1-42a3-8509-d211ab9afc62",
+    "word": "Bifi",
+    "isBrand": true,
+    "explanation": "BiFi is een bekend merk van vleessnacks."
+  },
+  {
+    "id": "02ba3894-2f7f-4454-a21e-50119cedd8b2",
+    "word": "Salami",
+    "isBrand": false,
+    "explanation": "Dit is een soort worst, geen merk."
+  },
+  {
+    "id": "a122daa3-49d6-4fe7-8619-1d584fed2000",
+    "word": "Dreft",
+    "isBrand": true,
+    "explanation": "Dreft is een populair merk afwasmiddel."
+  },
+  {
+    "id": "4f83f239-dced-4fef-84fa-d4555f176b76",
+    "word": "Afwasmiddel",
+    "isBrand": false,
+    "explanation": "Dit is de algemene term."
+  },
+  {
+    "id": "25a639ca-4f97-4ccd-9bb9-95cbe1b22f67",
+    "word": "Coca-Cola",
+    "isBrand": true,
+    "explanation": "Misschien wel het bekendste merk ter wereld."
+  },
+  {
+    "id": "66687ab6-c9c2-48a4-a496-ceedf7a0695a",
+    "word": "Cola",
+    "isBrand": false,
+    "explanation": "Cola is de dranksoort, geen merk."
+  },
+  {
+    "id": "92959148-cda0-4b55-aa0c-7a7bcefab540",
+    "word": "Fanta",
+    "isBrand": true,
+    "explanation": "Fanta is een merk van The Coca-Cola Company."
+  },
+  {
+    "id": "705a6bc2-0c29-451b-a0e9-8e6035d1966a",
+    "word": "Sinas",
+    "isBrand": false,
+    "explanation": "Sinas is de algemene benaming voor een sinaasappeldrank."
+  },
+  {
+    "id": "0d53311b-ae75-4a49-88b4-5a2b408357d2",
+    "word": "7UP",
+    "isBrand": true,
+    "explanation": "7UP is een merk van frisdrank."
+  },
+  {
+    "id": "2263e3d4-2de9-4062-b1e1-1d5f4f4143ae",
+    "word": "Sprite",
+    "isBrand": true,
+    "explanation": "Sprite is een frisdrankmerk van Coca-Cola."
+  },
+  {
+    "id": "f4f3e917-ba64-43f9-91dd-68d9ba8f5335",
+    "word": "Spa Rood",
+    "isBrand": true,
+    "explanation": "Spa is het merk. Bruiswater is de algemene term."
+  },
+  {
+    "id": "1c614572-e10f-4d31-b7fb-037f1d443e27",
+    "word": "Bruiswater",
+    "isBrand": false,
+    "explanation": "Dit is de algemene naam voor water met koolzuur."
+  },
+  {
+    "id": "13f92c5a-d0e5-42b1-a315-5bb7ce95258e",
+    "word": "Senseo",
+    "isBrand": true,
+    "explanation": "Senseo is een koffiezetapparaatmerk van Philips en Douwe Egberts."
+  },
+  {
+    "id": "5fe7a7ef-e807-4253-9b7b-615d9c60558d",
+    "word": "Koffiepad",
+    "isBrand": false,
+    "explanation": "Dit is de algemene term voor het koffiefiltertje."
+  },
+  {
+    "id": "b2821ccd-cc08-4ccd-95ae-1d991b18fb8d",
+    "word": "Nespresso",
+    "isBrand": true,
+    "explanation": "Nespresso is een merk van Nestlé."
+  },
+  {
+    "id": "6729ea3f-cf04-494c-a633-b1d913f50833",
+    "word": "Douwe Egberts",
+    "isBrand": true,
+    "explanation": "Een iconisch Nederlands koffiemerk."
+  },
+  {
+    "id": "d1c7b533-bc91-46c0-a989-8fae14a386b3",
+    "word": "Espresso",
+    "isBrand": false,
+    "explanation": "Dit is een koffiebereiding, geen merk."
+  }
 ];
