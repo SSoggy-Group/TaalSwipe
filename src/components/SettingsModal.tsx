@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function SettingsModal({ visible, onClose }: Props) {
-  const { isSoundEnabled, toggleSound, hardcoreMode, toggleHardcoreMode, themePreference, setThemePreference } = useSettingsStore();
+  const { isSoundEnabled, toggleSound, hardcoreMode, toggleHardcoreMode, themePreference, setThemePreference, survivalMode, toggleSurvivalMode, speedrunMode, toggleSpeedrunMode } = useSettingsStore();
   const theme = useAppTheme();
 
   if (!visible) return null;
@@ -157,12 +157,37 @@ export function SettingsModal({ visible, onClose }: Props) {
                 </View>
               </View>
               <Switch
-                value={useSettingsStore((s) => s.survivalMode)}
+                value={survivalMode}
                 onValueChange={() => {
-                  useSettingsStore.getState().toggleSurvivalMode();
+                  toggleSurvivalMode();
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }}
                 trackColor={{ false: '#475569', true: '#F59E0B' }}
+                thumbColor={'#FFFFFF'}
+              />
+            </View>
+
+            {/* Setting: Speedrun Mode */}
+            <View 
+              style={[
+                styles.settingCard3D, 
+                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }
+              ]}
+            >
+              <View style={styles.settingInfo}>
+                <Ionicons name="flash" size={24} color="#38BDF8" />
+                <View>
+                  <Text style={[styles.settingTitle, { color: theme.cardTextPrimary }]}>Speedrun</Text>
+                  <Text style={[styles.settingDescription, { color: theme.cardTextSecondary }]}>50 Woorden, Tijd Telt Op</Text>
+                </View>
+              </View>
+              <Switch
+                value={speedrunMode}
+                onValueChange={() => {
+                  toggleSpeedrunMode();
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+                trackColor={{ false: '#475569', true: '#38BDF8' }}
                 thumbColor={'#FFFFFF'}
               />
             </View>
