@@ -5,15 +5,15 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import * as Haptics from 'expo-haptics';
 
 interface Props {
-  onPress: () => void;
-  title?: string;
-  children?: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-  color?: string;
-  borderColor?: string;
-  bottomBorderColor?: string;
-  disabled?: boolean;
+  readonly onPress: () => void;
+  readonly title?: string;
+  readonly children?: React.ReactNode;
+  readonly style?: StyleProp<ViewStyle>;
+  readonly textStyle?: StyleProp<TextStyle>;
+  readonly color?: string;
+  readonly borderColor?: string;
+  readonly bottomBorderColor?: string;
+  readonly disabled?: boolean;
 }
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -56,7 +56,7 @@ export function BouncyButton({
 
   return (
     <AnimatedPressable
-      onPress={!disabled ? onPress : undefined}
+      onPress={disabled ? undefined : onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={[styles.button, dynamicStyles, style, animatedStyle]}

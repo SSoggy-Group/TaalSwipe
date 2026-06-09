@@ -5,10 +5,10 @@ import * as Haptics from 'expo-haptics';
 import { Colors } from '../theme/colors';
 
 interface GlassButtonProps {
-  title: string;
-  emoji?: string;
-  onPress: () => void;
-  style?: ViewStyle;
+  readonly title: string;
+  readonly emoji?: string;
+  readonly onPress: () => void;
+  readonly style?: ViewStyle;
 }
 
 export function GlassButton({ title, emoji, onPress, style }: GlassButtonProps) {
