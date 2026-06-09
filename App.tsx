@@ -10,6 +10,7 @@ import {
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
 import { AppNavigator } from './src/navigation/AppNavigator';
+import { soundManager } from './src/audio/SoundManager';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -19,6 +20,13 @@ export default function App() {
     Inter_700Bold,
     Inter_800ExtraBold,
   });
+
+  React.useEffect(() => {
+    soundManager.init();
+    return () => {
+      soundManager.unload();
+    };
+  }, []);
 
   if (!fontsLoaded) {
     return null;
