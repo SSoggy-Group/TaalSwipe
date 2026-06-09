@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import { useSettingsStore } from '../store/settingsStore';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import * as Haptics from 'expo-haptics';
 import { BouncyButton } from './BouncyButton';
+import { CustomAlertModal } from './CustomAlertModal';
 
 interface Props {
   readonly visible: boolean;
@@ -53,6 +54,8 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
   const theme = useAppTheme();
   const [activeTab, setActiveTab] = React.useState<'themes' | 'powerups' | 'upgrades'>('themes');
   const [shootConfetti, setShootConfetti] = React.useState(false);
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertConfig, setAlertConfig] = React.useState({ title: '', message: '' });
   
   const { 
     equippedBackground, 
@@ -82,7 +85,8 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       
       // Buy theme
       if (stats.xp < item.price) {
-        Alert.alert('Te weinig XP', `Je komt nog ${item.price - stats.xp} XP tekort!`);
+        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertVisible(true);
         return;
       }
       
@@ -102,6 +106,7 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       }
       
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      soundManager.playPurchase();
       setShootConfetti(true);
       setTimeout(() => setShootConfetti(false), 3000);
       return;
@@ -109,7 +114,8 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
     
     if (item.type === 'powerup') {
       if (stats.xp < item.price) {
-        Alert.alert('Te weinig XP', `Je komt nog ${item.price - stats.xp} XP tekort!`);
+        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertVisible(true);
         return;
       }
       
@@ -135,12 +141,14 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       const targetMultiplier = item.multiplier || 1;
       
       if (stats.xpMultiplier >= targetMultiplier) {
-        Alert.alert('Al in bezit', `Je hebt al een ${stats.xpMultiplier}x of hogere XP upgrade active!`);
+        setAlertConfig({ title: 'Al in bezit', message: `Je hebt al een ${stats.xpMultiplier}x of hogere XP upgrade actief!` });
+        setAlertVisible(true);
         return;
       }
       
       if (stats.xp < item.price) {
-        Alert.alert('Te weinig XP', `Je komt nog ${item.price - stats.xp} XP tekort!`);
+        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertVisible(true);
         return;
       }
       
@@ -180,152 +188,162 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       onRequestClose={onClose}
     >
       <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
-        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
-          
-          {/* Header */}
-          <View style={styles.header}>
-            <View>
-              <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
-              <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats.xp} XP</Text></Text>
-            </View>
-            <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="close" size={24} color={theme.cardTextPrimary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Tab Bar */}
-          <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('themes')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'themes' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'themes' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>🎨 Thema's</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => setActiveTab('powerups')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'powerups' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'powerups' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>🛡️ Power-ups</Text>
-            </TouchableOpacity>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
             
-            <TouchableOpacity 
-              onPress={() => setActiveTab('upgrades')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'upgrades' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'upgrades' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>⚡ Upgrades</Text>
-            </TouchableOpacity>
-          </View>
+            {/* Header */}
+            <View style={styles.header}>
+              <View>
+                <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
+                <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats.xp} XP</Text></Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: theme.glass.highlight }]}>
+                <Ionicons name="close" size={24} color={theme.cardTextPrimary} />
+              </TouchableOpacity>
+            </View>
 
-          {/* Shop List */}
-          <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-            {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
-            {filteredItems.map((item) => {
-              const isTheme = item.type === 'background' || item.type === 'card';
-              const isPowerup = item.type === 'powerup';
-              const isUpgrade = item.type === 'upgrade';
+            {/* Tab Bar */}
+            <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+              <TouchableOpacity 
+                onPress={() => setActiveTab('themes')} 
+                style={[
+                  styles.tabButton, 
+                  activeTab === 'themes' && { backgroundColor: theme.glass.background }
+                ]}
+              >
+                <Text style={[
+                  styles.tabText, 
+                  { color: activeTab === 'themes' ? theme.cardTextPrimary : theme.cardTextSecondary }
+                ]}>🎨 Thema's</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                onPress={() => setActiveTab('powerups')} 
+                style={[
+                  styles.tabButton, 
+                  activeTab === 'powerups' && { backgroundColor: theme.glass.background }
+                ]}
+              >
+                <Text style={[
+                  styles.tabText, 
+                  { color: activeTab === 'powerups' ? theme.cardTextPrimary : theme.cardTextSecondary }
+                ]}>🛡️ Power-ups</Text>
+              </TouchableOpacity>
               
-              let buttonTitle = `Koop voor ${item.price} XP`;
-              let buttonColor = theme.accent;
-              let itemBadgeText = '';
+              <TouchableOpacity 
+                onPress={() => setActiveTab('upgrades')} 
+                style={[
+                  styles.tabButton, 
+                  activeTab === 'upgrades' && { backgroundColor: theme.glass.background }
+                ]}
+              >
+                <Text style={[
+                  styles.tabText, 
+                  { color: activeTab === 'upgrades' ? theme.cardTextPrimary : theme.cardTextSecondary }
+                ]}>⚡ Upgrades</Text>
+              </TouchableOpacity>
+            </View>
 
-              if (isTheme) {
-                const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
-                const isEquipped = item.type === 'background' 
-                  ? equippedBackground === item.id 
-                  : equippedCard === item.id;
+            {/* Shop List */}
+            <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+              {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
+              {filteredItems.map((item) => {
+                const isTheme = item.type === 'background' || item.type === 'card';
+                const isPowerup = item.type === 'powerup';
+                const isUpgrade = item.type === 'upgrade';
+                
+                let buttonTitle = `Koop voor ${item.price} XP`;
+                let buttonColor = theme.accent;
+                let itemBadgeText = '';
 
-                itemBadgeText = item.type === 'background' ? 'Achtergrond' : 'Kaartstijl';
+                if (isTheme) {
+                  const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
+                  const isEquipped = item.type === 'background' 
+                    ? equippedBackground === item.id 
+                    : equippedCard === item.id;
 
-                if (isUnlocked) {
-                  if (isEquipped) {
-                    buttonTitle = 'Uitgerust ✓';
+                  itemBadgeText = item.type === 'background' ? 'Achtergrond' : 'Kaartstijl';
+
+                  if (isUnlocked) {
+                    if (isEquipped) {
+                      buttonTitle = 'Uitgerust ✓';
+                      buttonColor = theme.glass.border;
+                    } else {
+                      buttonTitle = 'Uitrusten';
+                      buttonColor = '#58CC02';
+                    }
+                  }
+                } else if (isPowerup) {
+                  const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
+                  const count = stats[statsKey] || 0;
+                  itemBadgeText = `In bezit: ${count}`;
+                  buttonColor = '#58CC02';
+                } else if (isUpgrade) {
+                  const targetMultiplier = item.multiplier || 1;
+                  const isOwned = stats.xpMultiplier >= targetMultiplier;
+                  itemBadgeText = 'Permanente boost';
+                  
+                  if (isOwned) {
+                    buttonTitle = 'Gekocht ✓';
                     buttonColor = theme.glass.border;
                   } else {
-                    buttonTitle = 'Uitrusten';
-                    buttonColor = '#58CC02';
+                    buttonColor = '#F59E0B'; // Orange for upgrade
                   }
                 }
-              } else if (isPowerup) {
-                const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
-                const count = stats[statsKey] || 0;
-                itemBadgeText = `In bezit: ${count}`;
-                buttonColor = '#58CC02';
-              } else if (isUpgrade) {
-                const targetMultiplier = item.multiplier || 1;
-                const isOwned = stats.xpMultiplier >= targetMultiplier;
-                itemBadgeText = 'Permanente boost';
-                
-                if (isOwned) {
-                  buttonTitle = 'Gekocht ✓';
-                  buttonColor = theme.glass.border;
-                } else {
-                  buttonColor = '#F59E0B'; // Orange for upgrade
-                }
-              }
 
-              return (
-                <View 
-                  key={item.id} 
-                  style={[
-                    styles.shopItem, 
-                    { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                    (isTheme && (equippedBackground === item.id || equippedCard === item.id)) && { borderColor: theme.accent, borderBottomColor: theme.accent }
-                  ]}
-                >
-                  <View style={styles.itemInfo}>
-                    <View style={[styles.iconWrapper, { backgroundColor: theme.glass.background }]}>
-                      <Text style={styles.itemIcon}>{item.icon}</Text>
-                    </View>
-                    <View style={styles.textWrapper}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={[styles.itemName, { color: theme.cardTextPrimary }]}>{item.name}</Text>
-                        {itemBadgeText ? (
-                          <Text style={[styles.badgeText, { color: theme.accent, backgroundColor: theme.glass.background }]}>
-                            {itemBadgeText}
-                          </Text>
-                        ) : null}
+                return (
+                  <View 
+                    key={item.id} 
+                    style={[
+                      styles.shopItem, 
+                      { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                      (isTheme && (equippedBackground === item.id || equippedCard === item.id)) && { borderColor: theme.accent, borderBottomColor: theme.accent }
+                    ]}
+                  >
+                    <View style={styles.itemInfo}>
+                      <View style={[styles.iconWrapper, { backgroundColor: theme.glass.background }]}>
+                        <Text style={styles.itemIcon}>{item.icon}</Text>
                       </View>
-                      <Text style={[styles.itemDescription, { color: theme.cardTextSecondary }]}>
-                        {item.description}
-                      </Text>
+                      <View style={styles.textWrapper}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text style={[styles.itemName, { color: theme.cardTextPrimary }]}>{item.name}</Text>
+                          {itemBadgeText ? (
+                            <Text style={[styles.badgeText, { color: theme.accent, backgroundColor: theme.glass.background }]}>
+                              {itemBadgeText}
+                            </Text>
+                          ) : null}
+                        </View>
+                        <Text style={[styles.itemDescription, { color: theme.cardTextSecondary }]}>
+                          {item.description}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
 
-                  <BouncyButton 
-                    title={buttonTitle}
-                    color={buttonColor}
-                    borderColor={buttonColor === '#58CC02' ? '#46A302' : buttonColor}
-                    bottomBorderColor={buttonColor === '#58CC02' ? '#2D6A01' : buttonColor}
-                    disabled={buttonTitle.includes('✓')}
-                    textStyle={{ fontSize: 15, color: buttonTitle.includes('✓') ? theme.cardTextSecondary : '#FFF' }}
-                    style={{ paddingVertical: 12, borderRadius: 16, width: '100%' }}
-                    onPress={() => handleAction(item)}
-                  />
-                </View>
-              );
-            })}
-          </ScrollView>
-        </View>
+                    <BouncyButton 
+                      title={buttonTitle}
+                      color={buttonColor}
+                      borderColor={buttonColor === '#58CC02' ? '#46A302' : buttonColor}
+                      bottomBorderColor={buttonColor === '#58CC02' ? '#2D6A01' : buttonColor}
+                      disabled={buttonTitle.includes('✓')}
+                      textStyle={{ fontSize: 15, color: buttonTitle.includes('✓') ? theme.cardTextSecondary : '#FFF' }}
+                      style={{ paddingVertical: 12, borderRadius: 16, width: '100%' }}
+                      onPress={() => handleAction(item)}
+                    />
+                  </View>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </SafeAreaView>
       </BlurView>
+
+      <CustomAlertModal
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={() => setAlertVisible(false)}
+      />
+
       {shootConfetti && (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           <ConfettiCannon 
