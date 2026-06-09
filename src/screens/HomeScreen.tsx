@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 type RootStackParamList = {
   Home: undefined;
-  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' };
+  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
   Result: { score: number; total: number; mode: string };
 };
 
@@ -160,6 +160,24 @@ export function HomeScreen({ navigation }: Props) {
               color="#F59E0B"
               delay={650}
               onPress={() => navigation.navigate('Game', { mode: 'dt' })}
+            />
+
+            <ModeCard
+              emoji="📖"
+              title="Dikke Van Dale"
+              description="Staat dit woord officieel in het woordenboek of maken we het je maar wat wijs?"
+              color="#10B981"
+              delay={800}
+              onPress={() => navigation.navigate('Game', { mode: 'vandale' })}
+            />
+
+            <ModeCard
+              emoji="🏷️"
+              title="Merknaam of Soortnaam"
+              description="Is dit een beschermd merk of inmiddels een algemeen woord geworden?"
+              color="#EF4444"
+              delay={950}
+              onPress={() => navigation.navigate('Game', { mode: 'brand' })}
             />
           </View>
 
