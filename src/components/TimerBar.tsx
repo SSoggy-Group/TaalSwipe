@@ -14,21 +14,27 @@ interface TimerBarProps {
   duration: number; // ms
   running: boolean;
   onTimeUp: () => void;
+  onPanicChange?: (isPanicking: boolean) => void;
   resetKey: number; // change to reset timer
 }
 
-export function TimerBar({ duration, running, onTimeUp, resetKey }: TimerBarProps) {
+export function TimerBar({ duration, running, onTimeUp, onPanicChange, resetKey }: TimerBarProps) {
   const progress = useSharedValue(1);
+  const hasPanicked = useSharedValue(false);
 
   React.useEffect(() => {
     if (running) {
       progress.value = 1;
+      hasPanicked.value = false;
+      if (onPanicChange) onPanicChange(false);
       progress.value = withTiming(0, {
         duration,
         easing: Easing.linear,
       });
     } else {
       progress.value = 1;
+      hasPanicked.value = false;
+      if (onPanicChange) onPanicChange(false);
     }
   }, [resetKey, running]);
 
@@ -37,9 +43,14 @@ export function TimerBar({ duration, running, onTimeUp, resetKey }: TimerBarProp
     (value) => {
       if (value <= 0 && running) {
         runOnJS(onTimeUp)();
+      } else if (value <= 0.25 && value > 0 && running && !hasPanicked.value) {
+        hasPanicked.value = true;
+        if (onPanicChange) {
+          runOnJS(onPanicChange)(true);
+        }
       }
     },
-    [running],
+    [running, onPanicChange],
   );
 
   const barStyle = useAnimatedStyle(() => {
