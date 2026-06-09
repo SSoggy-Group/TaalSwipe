@@ -28,6 +28,7 @@ export interface AppStats {
   timeSlows: number;
   hints: number;
   xpMultiplier: number;
+  seenHistory: Record<string, string[]>;
 }
 
 const DEFAULT_STATS: AppStats = {
@@ -58,6 +59,7 @@ const DEFAULT_STATS: AppStats = {
   timeSlows: 0,
   hints: 0,
   xpMultiplier: 1,
+  seenHistory: {},
 };
 
 const STATS_KEY = '@taalswipe_stats';
@@ -133,5 +135,27 @@ export const statsStore = {
     stats.lastPlayedDate = today;
     await this.saveStats(stats);
     return stats;
+  },
+
+  async markAsSeen(mode: string, wordId: string): Promise<void> {
+    const stats = await this.getStats();
+    if (!stats.seenHistory) {
+      stats.seenHistory = {};
+    }
+    if (!stats.seenHistory[mode]) {
+      stats.seenHistory[mode] = [];
+    }
+    
+    // Add to history and keep only the last 150 items
+    // (We expanded databases to 256, so keeping 150 prevents repeats for a long time
+    // while still leaving ~100 completely fresh cards in the pool)
+    stats.seenHistory[mode] = stats.seenHistory[mode].filter(id => id !== wordId);
+    stats.seenHistory[mode].push(wordId);
+    
+    if (stats.seenHistory[mode].length > 150) {
+      stats.seenHistory[mode] = stats.seenHistory[mode].slice(-150);
+    }
+
+    await this.saveStats(stats);
   }
 };
