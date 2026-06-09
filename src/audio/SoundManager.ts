@@ -1,53 +1,71 @@
-import { createAudioPlayer, AudioPlayer } from 'expo-audio';
+import { Audio } from 'expo-av';
+import { useSettingsStore } from '../store/settingsStore';
+
+type SoundKey = 'swoosh' | 'correct' | 'incorrect' | 'gameover' | 'win' | 'purchase';
+
+const SOUND_FILES: Record<SoundKey, any> = {
+  swoosh: require('../../assets/sounds/swoosh.wav'),
+  correct: require('../../assets/sounds/correct.wav'),
+  incorrect: require('../../assets/sounds/incorrect.wav'),
+  gameover: require('../../assets/sounds/gameover.wav'),
+  win: require('../../assets/sounds/win.wav'),
+  purchase: require('../../assets/sounds/purchase.wav'),
+};
 
 class SoundManager {
-  private swooshPlayer: AudioPlayer | null = null;
-  private correctPlayer: AudioPlayer | null = null;
-  private incorrectPlayer: AudioPlayer | null = null;
+  private sounds: Partial<Record<SoundKey, Audio.Sound>> = {};
+  private initialized = false;
 
   async init() {
-    // Sound Manager ported to Expo SDK 56 + expo-audio.
-    // Uncomment these and point to valid assets to enable audio:
+    if (this.initialized) return;
     try {
-      /*
-      this.swooshPlayer = createAudioPlayer(require('../../assets/sounds/swoosh.mp3'));
-      this.correctPlayer = createAudioPlayer(require('../../assets/sounds/correct.mp3'));
-      this.incorrectPlayer = createAudioPlayer(require('../../assets/sounds/incorrect.mp3'));
-      */
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        shouldDuckAndroid: true,
+      });
+
+      for (const key of Object.keys(SOUND_FILES) as SoundKey[]) {
+        const { sound } = await Audio.Sound.createAsync(SOUND_FILES[key]);
+        this.sounds[key] = sound;
+      }
+      this.initialized = true;
     } catch (e) {
-      console.warn('Failed to load sounds', e);
+      console.warn('[SoundManager] Failed to init sounds:', e);
     }
   }
 
-  playSwoosh() {
-    if (this.swooshPlayer) {
-      this.swooshPlayer.seekTo(0);
-      this.swooshPlayer.play();
+  private async play(key: SoundKey, rate: number = 1.0) {
+    if (!useSettingsStore.getState().isSoundEnabled) return;
+    const sound = this.sounds[key];
+    if (!sound) {
+      console.warn(`[SoundManager] Sound "${key}" not loaded`);
+      return;
+    }
+    try {
+      await sound.setRateAsync(rate, true);
+      await sound.setPositionAsync(0);
+      await sound.playAsync();
+    } catch (e) {
+      console.warn(`[SoundManager] Error playing "${key}":`, e);
     }
   }
 
+  playSwoosh() { this.play('swoosh'); }
   playCorrect(combo: number = 0) {
-    if (this.correctPlayer) {
-      const rate = Math.min(1.0 + (combo * 0.05), 1.6);
-      this.correctPlayer.playbackRate = rate;
-      this.correctPlayer.seekTo(0);
-      this.correctPlayer.play();
-    }
+    const rate = Math.min(1.0 + (combo * 0.05), 1.6);
+    this.play('correct', rate);
   }
+  playIncorrect() { this.play('incorrect'); }
+  playGameOver() { this.play('gameover'); }
+  playWin() { this.play('win'); }
+  playPurchase() { this.play('purchase'); }
 
-  playIncorrect() {
-    if (this.incorrectPlayer) {
-      this.incorrectPlayer.seekTo(0);
-      this.incorrectPlayer.play();
+  async unload() {
+    for (const sound of Object.values(this.sounds)) {
+      try { await sound.unloadAsync(); } catch (_) {}
     }
-  }
-
-  unload() {
-    // expo-audio handles garbage collection automatically.
-    // Setting references to null is sufficient.
-    this.swooshPlayer = null;
-    this.correctPlayer = null;
-    this.incorrectPlayer = null;
+    this.sounds = {};
+    this.initialized = false;
   }
 }
 
