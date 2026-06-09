@@ -14,7 +14,7 @@ export const Stopwatch = React.memo(React.forwardRef<StopwatchRef, Props>(
     const [elapsedMs, setElapsedMs] = useState(0);
 
     useEffect(() => {
-      let interval: NodeJS.Timeout;
+      let interval: ReturnType<typeof setInterval>;
       if (running) {
         interval = setInterval(() => {
           setElapsedMs((prev) => prev + 100); // Update every 100ms
