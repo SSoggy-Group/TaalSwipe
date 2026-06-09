@@ -33,9 +33,10 @@ interface SwipeCardProps {
   readonly leftLabel?: string;
   readonly rightLabel?: string;
   readonly compact?: boolean;
+  readonly combo?: number;
 }
 
-export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, equippedCard, theme, style, compact }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any, compact?: boolean }) {
+export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, equippedCard, theme, style, compact, combo }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any, compact?: boolean, combo?: number }) {
   if (equippedCard === 'card_rainbow') {
     return (
       <LinearGradient
@@ -127,11 +128,16 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
       default:
         return {
           backgroundColor: theme.glass.background,
-          borderColor: theme.glass.border,
-          borderBottomColor: theme.glass.highlight,
+          borderColor: (combo && combo >= 3) ? '#FF9600' : theme.glass.border,
+          borderBottomColor: (combo && combo >= 3) ? '#CC7800' : theme.glass.highlight,
           borderRadius: 24,
-          borderWidth: 2,
+          borderWidth: (combo && combo >= 3) ? 4 : 2,
           borderBottomWidth: 8,
+          shadowColor: (combo && combo >= 3) ? '#FF9600' : undefined,
+          shadowOffset: (combo && combo >= 3) ? { width: 0, height: 0 } : undefined,
+          shadowOpacity: (combo && combo >= 3) ? 0.8 : undefined,
+          shadowRadius: (combo && combo >= 3) ? 16 : undefined,
+          elevation: (combo && combo >= 3) ? 12 : undefined,
         };
     }
   };
@@ -143,7 +149,7 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
   );
 });
 
-export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓", compact }: SwipeCardProps) {
+export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓", compact, combo }: SwipeCardProps) {
   const theme = useAppTheme();
   const equippedCard = useSettingsStore((state) => state.equippedCard);
   const translateX = useSharedValue(0);
@@ -230,7 +236,7 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
   return (
     <GestureDetector gesture={gesture}>
       <Animated.View style={[styles.cardContainer, cardStyle]} accessible={true} accessibilityRole="adjustable" accessibilityHint="Swipe links of rechts">
-        <CardSkinWrapper equippedCard={equippedCard} theme={theme} compact={compact}>
+        <CardSkinWrapper equippedCard={equippedCard} theme={theme} compact={compact} combo={combo}>
           {/* Goed overlay */}
           <Animated.View style={[styles.overlay, styles.goedOverlay, goedOpacity]}>
             <Text style={styles.goedText} numberOfLines={1} adjustsFontSizeToFit>{rightLabel}</Text>
