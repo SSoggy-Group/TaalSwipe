@@ -142,6 +142,31 @@ export function SettingsModal({ visible, onClose }: Props) {
               />
             </View>
 
+            {/* Setting: Survival Mode */}
+            <View 
+              style={[
+                styles.settingCard3D, 
+                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }
+              ]}
+            >
+              <View style={styles.settingInfo}>
+                <Ionicons name="timer" size={24} color="#F59E0B" />
+                <View>
+                  <Text style={[styles.settingTitle, { color: theme.cardTextPrimary }]}>Survival</Text>
+                  <Text style={[styles.settingDescription, { color: theme.cardTextSecondary }]}>Race tegen de klok</Text>
+                </View>
+              </View>
+              <Switch
+                value={useSettingsStore((s) => s.survivalMode)}
+                onValueChange={() => {
+                  useSettingsStore.getState().toggleSurvivalMode();
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+                trackColor={{ false: '#475569', true: '#F59E0B' }}
+                thumbColor={'#FFFFFF'}
+              />
+            </View>
+
           </View>
         </View>
       </BlurView>
