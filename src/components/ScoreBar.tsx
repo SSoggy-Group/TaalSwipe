@@ -4,104 +4,197 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withRepeat,
+  withSequence,
+  withTiming,
+  interpolateColor,
+  FadeIn,
 } from 'react-native-reanimated';
-import { Colors } from '../theme/colors';
+import { Colors, useAppTheme } from '../theme/colors';
 
 interface ScoreBarProps {
   score: number;
-  total: number;
+  currentIndex: number;
+  maxTotal: number;
   combo?: number;
   mode: string;
 }
 
-export function ScoreBar({ score, total, combo, mode }: ScoreBarProps) {
-  const scale = useSharedValue(1);
+export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBarProps) {
+  const theme = useAppTheme();
+  
+  // Progress bar fills up based on how many questions answered
+  const progressPercent = maxTotal > 0 ? currentIndex / maxTotal : 0;
+
+  const progressWidth = useSharedValue(0);
+  const comboScale = useSharedValue(1);
 
   React.useEffect(() => {
-    scale.value = 1.3;
-    scale.value = withSpring(1, { damping: 12, stiffness: 200 });
-  }, [score]);
+    progressWidth.value = withSpring(progressPercent * 100, { damping: 15, stiffness: 100 });
+  }, [progressPercent]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  React.useEffect(() => {
+    if (combo && combo > 1) {
+      comboScale.value = withRepeat(
+        withSequence(
+          withTiming(1.1, { duration: 400 }),
+          withTiming(1, { duration: 400 })
+        ),
+        -1, // infinite
+        true
+      );
+    } else {
+      comboScale.value = 1;
+    }
+  }, [combo]);
+
+  const isFire = combo !== undefined && combo >= 3;
+  const fireColorValue = useSharedValue(0);
+
+  React.useEffect(() => {
+    fireColorValue.value = withTiming(isFire ? 1 : 0, { duration: 300 });
+  }, [isFire]);
+
+  const animatedProgressStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      fireColorValue.value,
+      [0, 1],
+      ['#58CC02', '#F59E0B'] // Duolingo green to Fire Orange
+    );
+    const borderColor = interpolateColor(
+      fireColorValue.value,
+      [0, 1],
+      ['#46A302', '#D97706']
+    );
+
+    return {
+      width: `${progressWidth.value}%`,
+      backgroundColor,
+      borderColor,
+    };
+  });
+
+  const comboStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: comboScale.value }],
   }));
 
   return (
     <View style={styles.container}>
-      <View style={styles.left}>
-        <Text style={styles.modeLabel}>{mode}</Text>
+      <View style={styles.topRow}>
+        <Text style={[styles.modeLabel, { color: theme.textSecondary }]} numberOfLines={1} adjustsFontSizeToFit>
+          {mode}
+        </Text>
+        <Text style={[styles.scoreLabel, { color: theme.textPrimary }]}>SCORE: {score}</Text>
       </View>
-      <View style={styles.center}>
-        {combo !== undefined && combo > 1 && (
-          <View style={styles.comboBadge}>
-            <Text style={styles.comboText}>🔥 {combo}x</Text>
-          </View>
+      
+      <View style={styles.progressContainer}>
+        {/* Background track */}
+        <View style={styles.progressTrack} />
+        {/* Fill */}
+        <Animated.View style={[styles.progressFill, animatedProgressStyle]} />
+        {/* Shine overlay for that 3D glossy Duolingo look */}
+        <View style={styles.progressShine} />
+        {isFire && (
+          <Animated.View style={styles.fireIconContainer} entering={FadeIn}>
+            <Text style={styles.fireIcon}>🔥</Text>
+          </Animated.View>
         )}
       </View>
-      <Animated.View style={[styles.right, animatedStyle]}>
-        <Text style={styles.score}>{score}</Text>
-        <Text style={styles.divider}>/</Text>
-        <Text style={styles.total}>{total}</Text>
-      </Animated.View>
+
+      <View style={styles.comboContainer}>
+        {combo !== undefined && combo > 1 && (
+          <Animated.View style={[styles.comboBadge, comboStyle]}>
+            <Text style={styles.comboText}>🔥 {combo}x COMBO</Text>
+          </Animated.View>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 8,
   },
-  left: {
-    flex: 1,
-  },
-  center: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  right: {
-    flex: 1,
+  topRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   modeLabel: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 13,
-    color: Colors.textMuted,
+    fontFamily: 'Inter_900Black',
+    fontSize: 14,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
+    flex: 1,
   },
-  score: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 28,
-    color: Colors.textPrimary,
+  scoreLabel: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 16,
+    letterSpacing: 1,
   },
-  divider: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 20,
-    color: Colors.textMuted,
-    marginHorizontal: 2,
+  progressContainer: {
+    height: 24,
+    width: '100%',
+    borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    overflow: 'hidden',
+    position: 'relative',
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
-  total: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 20,
-    color: Colors.textSecondary,
+  progressTrack: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#334155',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 10,
+    borderRightWidth: 2,
+  },
+  progressShine: {
+    position: 'absolute',
+    top: 3,
+    left: 8,
+    right: 8,
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    borderRadius: 3,
+  },
+  comboContainer: {
+    alignItems: 'center',
+    marginTop: 12,
+    minHeight: 28,
   },
   comboBadge: {
-    backgroundColor: 'rgba(251, 191, 36, 0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(251, 191, 36, 0.4)',
+    backgroundColor: '#FF9600', // Duolingo orange
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderBottomWidth: 4,
+    borderColor: '#CC7800',
+    shadowColor: '#FF9600',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
   },
   comboText: {
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter_900Black',
+    fontSize: 14,
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  fireIconContainer: {
+    position: 'absolute',
+    right: 8,
+    top: 2,
+    bottom: 0,
+    justifyContent: 'center',
+  },
+  fireIcon: {
     fontSize: 16,
-    color: '#FBBF24',
   },
 });
