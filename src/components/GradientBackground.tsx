@@ -12,9 +12,9 @@ import { useAppTheme } from '../theme/colors';
 import { useSettingsStore } from '../store/settingsStore';
 
 interface Props {
-  children: React.ReactNode;
-  combo?: number;
-  isPanicking?: boolean;
+  readonly children: React.ReactNode;
+  readonly combo?: number;
+  readonly isPanicking?: boolean;
 }
 
 export function GradientBackground({ children, combo = 0, isPanicking = false }: Props) {
@@ -107,6 +107,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
         <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }]} pointerEvents="none">
           {/* Subtle matrix-like grid scanlines */}
           {Array.from({ length: 40 }).map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <View key={i} style={{ height: 1, backgroundColor: '#22C55E', width: '100%', position: 'absolute', top: `${(i / 40) * 100}%` }} />
           ))}
         </View>
@@ -116,9 +117,11 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
         <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }]} pointerEvents="none">
           {/* Cyberpunk grid */}
           {Array.from({ length: 20 }).map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <View key={`h-${i}`} style={{ height: 1, backgroundColor: '#F472B6', width: '100%', position: 'absolute', top: `${(i / 20) * 100}%` }} />
           ))}
           {Array.from({ length: 12 }).map((_, i) => (
+            // eslint-disable-next-line react/no-array-index-key
             <View key={`v-${i}`} style={{ width: 1, backgroundColor: '#F472B6', height: '100%', position: 'absolute', left: `${(i / 12) * 100}%` }} />
           ))}
         </View>
@@ -132,6 +135,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
             const seedY = Math.cos(i * 21.7) * 0.5 + 0.5;
             return (
               <View
+                // eslint-disable-next-line react/no-array-index-key
                 key={i}
                 style={{
                   position: 'absolute',
