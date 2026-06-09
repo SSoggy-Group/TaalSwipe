@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard, CardSkinWrapper } from '../components/SwipeCard';
 import { ScoreBar } from '../components/ScoreBar';
@@ -18,7 +18,7 @@ import { dunglishData, DunglishItem } from '../data/dunglishData';
 import { spellingData, SpellingItem } from '../data/spellingData';
 import { dtData, DtItem } from '../data/dtData';
 import { Colors, useAppTheme } from '../theme/colors';
-import { statsStore } from '../store/statsStore';
+import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { soundManager } from '../audio/SoundManager';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -68,6 +68,10 @@ export function GameScreen({ navigation, route }: Props) {
 
   const { hardcoreMode, equippedCard } = useSettingsStore();
   const [lives, setLives] = useState(hardcoreMode ? 3 : 0);
+  const [stats, setStats] = useState<AppStats | null>(null);
+  const [showShieldAlert, setShowShieldAlert] = useState(false);
+  const [showTimeSlowAlert, setShowTimeSlowAlert] = useState(false);
+  const [activeHint, setActiveHint] = useState<'left' | 'right' | null>(null);
 
   const isSpelling = mode === 'spelling';
   const modeLabels = {
@@ -80,8 +84,9 @@ export function GameScreen({ navigation, route }: Props) {
   React.useEffect(() => {
     async function initGame() {
       await statsStore.updateStreak(); // Track daily streak
-      const stats = await statsStore.getStats();
-      if (!stats.tutorialSeen[mode]) {
+      const currentStats = await statsStore.getStats();
+      setStats(currentStats);
+      if (!currentStats.tutorialSeen[mode]) {
         setShowTutorial(true);
       }
     }
@@ -100,19 +105,25 @@ export function GameScreen({ navigation, route }: Props) {
   };
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0) => {
-    const stats = await statsStore.getStats();
-    stats.totalSwipes += 1;
-    stats.xp += hardcoreMode ? earnedXp * 2 : earnedXp; // Double XP for hardcore
-    if (currentCombo > stats.highestCombo) {
-      stats.highestCombo = currentCombo;
+    const currentStats = await statsStore.getStats();
+    currentStats.totalSwipes += 1;
+    
+    const multiplier = currentStats.xpMultiplier || 1.0;
+    const finalXp = Math.round(earnedXp * multiplier);
+    
+    currentStats.xp += hardcoreMode ? finalXp * 2 : finalXp; // Double XP for hardcore
+    if (currentCombo > currentStats.highestCombo) {
+      currentStats.highestCombo = currentCombo;
     }
-    await statsStore.saveStats(stats);
+    await statsStore.saveStats(currentStats);
+    setStats(currentStats);
   };
 
   const [feedbackInfo, setFeedbackInfo] = useState<{ title: string; subtitle: string } | null>(null);
 
   const advanceGame = useCallback((wasCorrect: boolean) => {
     if (gameOver) return;
+    setActiveHint(null);
 
     if (!wasCorrect && isSpelling) {
       setGameOver(true);
@@ -184,6 +195,24 @@ export function GameScreen({ navigation, route }: Props) {
       });
       advanceGame(true);
     } else {
+      if (stats && stats.shields > 0) {
+        const newStats = {
+          ...stats,
+          shields: stats.shields - 1,
+        };
+        statsStore.saveStats(newStats);
+        setStats(newStats);
+
+        setShowShieldAlert(true);
+        setTimeout(() => setShowShieldAlert(false), 2000);
+
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        soundManager.playCorrect(0); // safe chime
+        
+        advanceGame(true); // skip penalty, proceed
+        return;
+      }
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       soundManager.playIncorrect();
       setCombo(0);
@@ -226,10 +255,62 @@ export function GameScreen({ navigation, route }: Props) {
         });
       }
     }
-  }, [currentIndex, data, gameOver, isSpelling, mode, advanceGame, showFeedback, hardcoreMode, score, navigation, modeLabels]);
+  }, [currentIndex, data, gameOver, isSpelling, mode, advanceGame, showFeedback, hardcoreMode, score, navigation, modeLabels, stats]);
 
   const handleSwipeRight = useCallback(() => handleAnswer(true), [handleAnswer]);
   const handleSwipeLeft = useCallback(() => handleAnswer(false), [handleAnswer]);
+
+  const handleUseTimeSlow = async () => {
+    if (!stats || stats.timeSlows <= 0 || gameOver || isPaused) return;
+
+    const newStats = {
+      ...stats,
+      timeSlows: stats.timeSlows - 1,
+    };
+    await statsStore.saveStats(newStats);
+    setStats(newStats);
+
+    if (isSpelling) {
+      setTimerKey((k) => k + 1);
+    }
+    
+    setShowTimeSlowAlert(true);
+    setTimeout(() => setShowTimeSlowAlert(false), 1500);
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const handleUseHint = async () => {
+    if (!stats || stats.hints <= 0 || gameOver || isPaused || activeHint) return;
+
+    const item = data[currentIndex];
+    let correctDirection: 'left' | 'right' = 'right';
+
+    switch (mode) {
+      case 'straattaal':
+        correctDirection = (item as StraattaalItem).isReal ? 'right' : 'left';
+        break;
+      case 'dunglish':
+        correctDirection = (item as DunglishItem).isRealProverb ? 'right' : 'left';
+        break;
+      case 'spelling':
+        correctDirection = (item as SpellingItem).isCorrect ? 'right' : 'left';
+        break;
+      case 'dt':
+        correctDirection = (item as any).isCorrect ? 'right' : 'left';
+        break;
+    }
+
+    const newStats = {
+      ...stats,
+      hints: stats.hints - 1,
+    };
+    await statsStore.saveStats(newStats);
+    setStats(newStats);
+
+    setActiveHint(correctDirection);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
 
   const handleTimeUp = useCallback(() => {
     if (gameOver || isPaused) return;
@@ -416,6 +497,51 @@ export function GameScreen({ navigation, route }: Props) {
           )}
         </View>
 
+        {/* Power-up HUD */}
+        {!gameOver && currentItem && !showTutorial && !feedbackInfo && stats && (
+          <View style={styles.powerupRow}>
+            {/* Shield Indicator */}
+            <View style={[styles.powerupBadge, { opacity: stats.shields > 0 ? 1 : 0.5 }]}>
+              <Text style={styles.powerupIcon}>🛡️</Text>
+              <Text style={styles.powerupCount}>{stats.shields}</Text>
+            </View>
+
+            {/* Time Slow Button */}
+            {isSpelling && (
+              <TouchableOpacity 
+                onPress={handleUseTimeSlow}
+                disabled={stats.timeSlows <= 0}
+                style={[
+                  styles.powerupButton, 
+                  { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                  stats.timeSlows <= 0 && { opacity: 0.4 }
+                ]}
+              >
+                <Text style={styles.powerupIcon}>⏱️</Text>
+                <View style={styles.countBadge}>
+                  <Text style={styles.countText}>{stats.timeSlows}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+
+            {/* Hint Button */}
+            <TouchableOpacity 
+              onPress={handleUseHint}
+              disabled={stats.hints <= 0 || activeHint !== null}
+              style={[
+                styles.powerupButton, 
+                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                (stats.hints <= 0 || activeHint !== null) && { opacity: 0.4 }
+              ]}
+            >
+              <Text style={styles.powerupIcon}>🔍</Text>
+              <View style={styles.countBadge}>
+                <Text style={styles.countText}>{stats.hints}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Bubbly Action Buttons */}
         {!gameOver && currentItem && !showTutorial && !feedbackInfo && (
           <Animated.View 
@@ -423,23 +549,31 @@ export function GameScreen({ navigation, route }: Props) {
             style={styles.actionRow}
           >
             <BouncyButton
-              style={styles.actionButton}
+              style={[
+                styles.actionButton,
+                activeHint === 'left' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
+              ]}
               color="#FF4B4B"
               borderColor="#D33333"
               bottomBorderColor="#9A1D1D"
               onPress={handleSwipeLeft}
             >
               <Ionicons name="close" size={48} color="#FFFFFF" />
+              {activeHint === 'left' && <View style={styles.hintDot} />}
             </BouncyButton>
             
             <BouncyButton
-              style={styles.actionButton}
+              style={[
+                styles.actionButton,
+                activeHint === 'right' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
+              ]}
               color="#58CC02"
               borderColor="#46A302"
               bottomBorderColor="#2D6A01"
               onPress={handleSwipeRight}
             >
               <Ionicons name="checkmark" size={48} color="#FFFFFF" />
+              {activeHint === 'right' && <View style={styles.hintDot} />}
             </BouncyButton>
           </Animated.View>
         )}
@@ -497,6 +631,30 @@ export function GameScreen({ navigation, route }: Props) {
             fadeOut={true} 
           />
         </View>
+      )}
+
+      {showShieldAlert && (
+        <Animated.View 
+          entering={FadeInDown.duration(300)} 
+          exiting={FadeOut.duration(300)} 
+          style={styles.toastContainer}
+        >
+          <View style={[styles.toast, { backgroundColor: '#3B82F6' }]}>
+            <Text style={styles.toastText}>🛡️ Schild gebruikt! Fout voorkomen.</Text>
+          </View>
+        </Animated.View>
+      )}
+
+      {showTimeSlowAlert && (
+        <Animated.View 
+          entering={FadeInDown.duration(300)} 
+          exiting={FadeOut.duration(300)} 
+          style={styles.toastContainer}
+        >
+          <View style={[styles.toast, { backgroundColor: '#10B981' }]}>
+            <Text style={styles.toastText}>⏱️ Tijd gereset! (+1.5s)</Text>
+          </View>
+        </Animated.View>
       )}
     </GradientBackground>
   );
@@ -684,5 +842,91 @@ const styles = StyleSheet.create({
     color: '#FF4B4B',
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  powerupRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  powerupBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
+  },
+  powerupCount: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 14,
+    color: '#FFFFFF',
+  },
+  powerupButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderBottomWidth: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  powerupIcon: {
+    fontSize: 20,
+  },
+  countBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    backgroundColor: '#EC4899',
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+  countText: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 10,
+    color: '#FFFFFF',
+  },
+  toastContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 20,
+    right: 20,
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  toast: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  toastText: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
+  hintDot: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#34D399',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
 });
