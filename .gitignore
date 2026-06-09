@@ -1,46 +1,126 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
+# ----------------------------------------------------------------------
 # dependencies
+# ----------------------------------------------------------------------
 node_modules/
+.pnp
+.pnp.js
 
-# Expo
+# ----------------------------------------------------------------------
+# Expo and Metro bundling
+# ----------------------------------------------------------------------
 .expo/
 dist/
 web-build/
 expo-env.d.ts
+.metro-health-check*
+.metro/
 
-# Native
-.kotlin/
+# ----------------------------------------------------------------------
+# Native builds (iOS and Android generated folders)
+# ----------------------------------------------------------------------
+/ios/
+/android/
 *.orig.*
+
+# ----------------------------------------------------------------------
+# Android keystores and build artifacts
+# ----------------------------------------------------------------------
+*.apk
+*.aab
+*.apks
 *.jks
+*.keystore
+.kotlin/
+.gradle/
+build/
+
+# ----------------------------------------------------------------------
+# iOS certificates, profiles, and builds
+# ----------------------------------------------------------------------
 *.p8
 *.p12
 *.key
 *.mobileprovision
+*.cer
+*.cert
+*.der
+*.pfx
+*.ipa
+.piv/
+DerivedData/
+build/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
 
-# Metro
-.metro-health-check*
+# ----------------------------------------------------------------------
+# Fastlane and EAS credentials / local config
+# ----------------------------------------------------------------------
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+.eas/
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
+# ----------------------------------------------------------------------
+# environment variables and secrets
+# ----------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env*.local
+*.env
+secrets.json
 
-# typescript
-*.tsbuildinfo
+# ----------------------------------------------------------------------
+# IDE, Editors, and Tooling
+# ----------------------------------------------------------------------
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
-# generated native folders
-/ios
-/android
+# JetBrains (WebStorm, IntelliJ, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
 
-# IDE and tooling
+# Xcode
+xcuserdata/
+
+# Other tooling
 .codex/
 .claude/
+.gemini/
+.antigravity/
+yarn-error.log
+yarn-debug.log*
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
 
+# ----------------------------------------------------------------------
+# testing and coverage
+# ----------------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# ----------------------------------------------------------------------
+# OS-specific files
+# ----------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.pem
+*.tsbuildinfo
