@@ -33,15 +33,15 @@ export const BouncyButton = React.memo(function BouncyButton({
 
   const handlePressIn = () => {
     if (disabled) return;
-    scale.value = withSpring(0.96, { damping: 12, stiffness: 300 });
-    translateY.value = withSpring(4, { damping: 12, stiffness: 300 }); // squash down effect
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    scale.value = withSpring(0.88, { damping: 10, stiffness: 400 });
+    translateY.value = withSpring(8, { damping: 10, stiffness: 400 }); // More squash down effect
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); // Stronger haptic
   };
 
   const handlePressOut = () => {
     if (disabled) return;
-    scale.value = withSpring(1, { damping: 12, stiffness: 300 });
-    translateY.value = withSpring(0, { damping: 12, stiffness: 300 });
+    scale.value = withSpring(1, { damping: 10, stiffness: 400 }); // Faster, more bouncy return
+    translateY.value = withSpring(0, { damping: 10, stiffness: 400 });
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
