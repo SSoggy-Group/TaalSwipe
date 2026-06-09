@@ -8,7 +8,7 @@ import { Colors } from '../theme/colors';
 interface Props {
   readonly visible: boolean;
   readonly onDismiss: () => void;
-  readonly mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt';
+  readonly mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand';
 }
 
 export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
@@ -38,6 +38,16 @@ export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
       emoji = '🧠';
       title = 'D/T Grammatica';
       description = 'Kies of de zin met de juiste werkwoordsvorm is gespeld (d, t, of dt).\n\nSwipe rechts voor goed, links voor fout!';
+      break;
+    case 'vandale':
+      emoji = '📖';
+      title = 'Dikke Van Dale';
+      description = 'Staat dit woord officieel in de Van Dale?\n\nSwipe rechts voor ECHT in het woordenboek, links voor NEP.';
+      break;
+    case 'brand':
+      emoji = '🏷️';
+      title = 'Merknaam of Soortnaam';
+      description = 'Is dit woord een beschermd merk of een algemeen woord geworden?\n\nSwipe rechts voor MERKNAAM, links voor SOORTNAAM.';
       break;
   }
 
