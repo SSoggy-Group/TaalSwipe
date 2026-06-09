@@ -6,7 +6,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { ModeCard } from '../components/ModeCard';
 import { StatsModal } from '../components/StatsModal';
-import { LeaderboardModal } from '../components/LeaderboardModal';
 import { SettingsModal } from '../components/SettingsModal';
 import { ShopModal } from '../components/ShopModal';
 import { BouncyButton } from '../components/BouncyButton';
@@ -25,7 +24,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 export function HomeScreen({ navigation }: Props) {
   const [statsVisible, setStatsVisible] = React.useState(false);
-  const [leaderboardVisible, setLeaderboardVisible] = React.useState(false);
+  const [statsInitialTab, setStatsInitialTab] = React.useState<'stats' | 'achievements' | 'leaderboard'>('stats');
   const [settingsVisible, setSettingsVisible] = React.useState(false);
   const [shopVisible, setShopVisible] = React.useState(false);
   const [stats, setStats] = React.useState<AppStats | null>(null);
@@ -65,14 +64,20 @@ export function HomeScreen({ navigation }: Props) {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <BouncyButton 
-            onPress={() => setStatsVisible(true)} 
+            onPress={() => {
+              setStatsInitialTab('stats');
+              setStatsVisible(true);
+            }} 
             style={styles.iconButton}
             color="#38BDF8" borderColor="#0284C7" bottomBorderColor="#0369A1"
           >
             <Text style={styles.iconText}>📊</Text>
           </BouncyButton>
           <BouncyButton 
-            onPress={() => setLeaderboardVisible(true)} 
+            onPress={() => {
+              setStatsInitialTab('leaderboard');
+              setStatsVisible(true);
+            }} 
             style={styles.iconButton}
             color="#F59E0B" borderColor="#D97706" bottomBorderColor="#B45309"
           >
@@ -174,11 +179,7 @@ export function HomeScreen({ navigation }: Props) {
         onClose={() => setStatsVisible(false)}
         onReset={handleReset}
         stats={stats}
-      />
-      <LeaderboardModal
-        visible={leaderboardVisible}
-        onClose={() => setLeaderboardVisible(false)}
-        stats={stats}
+        initialTab={statsInitialTab}
       />
       <SettingsModal
         visible={settingsVisible}
