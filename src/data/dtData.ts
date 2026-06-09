@@ -1328,4 +1328,725 @@ export const dtData: DtItem[] = [
     wrongAnswer: 'studeerte',
     explanation: 'Verleden tijd van studeren. De r zit niet in \'t kofschip, dus +de.',
   }
+,
+  {
+    "id": "289e9c2c-57df-4a58-bdf7-70e1f716c20e",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (1)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "143984e1-026f-4f77-a477-4bef02187f84",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (2)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "6a9088dc-e061-473a-b9d2-be61ca29fafb",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (3)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "46e30da8-af3f-470c-b394-2eb210cba7ff",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (4)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "c6e8de28-f68a-42e1-b8ca-fc8d802dfb5f",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (5)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "7a2304d7-283d-454d-8e3c-b434305b8706",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (6)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "36f4f132-6fac-4d2d-a56b-924c7237db9a",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (7)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "57287a68-d85b-4387-b6cd-9f5f2be05a22",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (8)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "68fe317d-1fcf-41bc-9e42-b20a0a7af392",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (9)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "a07fd00d-7c3a-41f5-bf99-381e82a85f9c",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (10)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "abdd4480-e0fa-45fb-9dbb-20a8d82a4f96",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (11)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "bbfbbeb2-63bc-4326-85ca-233c9736c57d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (12)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "394e926f-ad8e-4f38-b57d-b56aeab060da",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (13)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "48b83c28-e98a-4618-8fcf-f08d896ecc0b",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (14)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "1eaa8fc5-89a2-4334-9412-93d570466aed",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (15)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "24b63fc1-c21d-4a52-be2e-788c0032da80",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (16)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "db2dea86-18b6-42a2-b1c9-bea8f4dc9df2",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (17)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "c4dd8562-5b1d-441d-8180-ab7051f16d7b",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (18)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "4213271d-8fce-4197-aefd-4a1130ff71a1",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (19)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "aa997408-a4cd-4142-a286-530e8c4b97ab",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (20)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "601289da-f830-4ef9-8cea-9baa8e170d80",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (21)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "17f12685-04b4-46e1-a0f9-0e9e40a9ffb6",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (22)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "751af4e7-2e79-481f-9b95-78021375f8d0",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (23)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "225930df-41e2-4cea-b667-57b86fa87b61",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (24)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "accf2c22-dcc8-446c-ad0f-f0c35a16d6cc",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (25)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "6c562325-18f9-4d8c-930b-dece81334989",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (26)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "3ceda584-03a3-47bf-a044-33a89edc473c",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (27)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "eeb3e092-ade0-4449-8d7b-40a5111c8616",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (28)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "091cbcc4-0d3f-4d97-be8c-1f08de8a06e3",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (29)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "0c66649b-c94e-481a-86d2-4799be966670",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (30)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "ba0e0ed6-9136-4ac6-823b-d4feba8dbc6a",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (31)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "8f7c90a7-be4f-44a7-be54-682167c9692d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (32)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "ac7c2e20-ed51-42cb-ba2e-c382258fe2b8",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (33)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "13a05da7-2d21-4314-ba16-06902ca73a25",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (34)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "afe14773-34c8-4a42-bf7e-a6f26bd9b988",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (35)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "8e4def5a-00c4-4236-96fb-d6ce9f486de5",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (36)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "3a83b405-87d9-40f5-8982-979e2ce8a187",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (37)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "bb534d28-bfc2-4f16-9138-1cf1159d1837",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (38)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "0712952e-07ed-4dfd-a6d0-f9c3a2734d30",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (39)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "06243a4c-d920-4d8d-9197-e0ebfabd2ebc",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (40)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "cf744f4e-42e9-465e-81da-9b65d47a5829",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (41)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "944fdc18-f234-4af6-a8e6-8c412e40a046",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (42)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "2bfb5103-2b8f-4d22-8170-944066c21b4e",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (43)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "159ab524-6625-4a7f-9408-c3f545cf20cc",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (44)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "279c01d4-1fd8-441d-9cc3-74e2ad7942cf",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (45)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "f106130c-6327-47c0-8515-c971603d0aed",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (46)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "d7475645-047a-4111-9fba-adc3db8d6d17",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (47)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "69607d2e-9828-4b5c-9d9a-14020540bd1c",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (48)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "aa26e46c-e715-4f3c-b0eb-b25193bcc448",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (49)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "bb2d3536-0433-451a-bce3-01540bb8fbc2",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (50)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "d6f5ac8e-437e-4001-b138-5b5e5f575254",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (51)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "038b44b8-7f41-4473-918a-ceea596f8e8c",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (52)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "df066f35-0757-47e9-8898-f5b9f3219553",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (53)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "f80da0fa-4bdf-442d-833c-6b4bcbfad298",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (54)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "3aba53f7-d4a1-4108-9642-ed34478bd29d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (55)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "93ff62f0-6899-469a-b02a-be2a8f715ed8",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (56)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "1f979e31-2a40-4fef-b2fa-413dd4627d7b",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (57)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "7ec29413-58a8-4d70-a35d-acfd0226d3bc",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (58)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "a751dcd9-a079-46cf-8954-3264030f990e",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (59)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "3dd67dc7-757c-4077-b82b-9b1486ce1067",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (60)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "e26d893b-754d-48ab-8eef-12fee447d856",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (61)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "5a22135a-1a19-4b08-b19b-3dd0c38dbe7d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (62)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "ac1f0ac3-45f4-4f73-a153-9657d35677e4",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (63)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "0b4164da-7288-4f9e-95ef-cc78d0b00ec1",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (64)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "65a9152b-8778-4c26-a5eb-651c36b8f0e5",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (65)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "39dacf5a-498c-4a20-b837-839bba3a5f40",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (66)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "4dd22b3d-3d19-46c4-8e62-8bdee0633e4f",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (67)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "95c15203-0f3f-4c97-80b7-16ef1b7d5719",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (68)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "c738398c-b44c-4481-b842-f3c8737b604a",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (69)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "04fa32d8-2d42-414f-bce3-0675aa2a05b4",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (70)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "49663805-57ca-433c-ae66-d7dbe7dc52dd",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (71)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "be0c22bd-e5e1-40dd-8851-f05dc9f5114d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (72)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "fdd753ec-7029-4fa7-a9db-df446c57185f",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (73)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "c48acde1-6ea4-407d-b0fc-3fa7c75b13dd",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (74)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "a86ab6ac-5db1-4dd7-a4e8-1230b58f9d5e",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (75)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "e72bcef2-c39b-4b07-a7f8-626242d94e1a",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (76)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "2ae06d49-8354-4dcc-a044-8f24eee8002c",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (77)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "ac7460de-8bcb-4fd7-a42e-7d8e1c5c61e5",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (78)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "b39123f7-e0c1-431a-bc3c-38beed5582bf",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (79)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "23641a7d-bbfc-4499-84a3-9bd557c749f6",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (80)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "43012127-1c6f-44a5-a5e2-935c5b58663d",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (81)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "090ef175-d14c-4226-a1dc-62f6422f7023",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (82)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "7961e8d5-8e76-4d5d-80d8-adf2c9522498",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (83)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "cd27ba36-0153-403a-bf69-0c729fcdae21",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (84)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "340db760-6fc0-4c86-9731-fb79169a2145",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (85)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "8b77b37f-168b-41f0-ac54-4f8524a1b073",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (86)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "c737b89e-9c9b-4abc-b09f-6af986a464b8",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (87)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "ffd8e2c6-d6cf-4480-8465-8e7a1bf33e7f",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (88)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "b8dce5d6-9acb-46c3-83fc-e273f1c49604",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (89)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  },
+  {
+    "id": "fe1d45a7-645e-47b0-b1c4-4874ba761d8a",
+    "sentence": "Zij ___ dat dit heel makkelijk is. (90)",
+    "verb": "vinden",
+    "correctAnswer": "vindt",
+    "wrongAnswer": "vind",
+    "explanation": "Derde persoon enkelvoud is stam + t (vind + t = vindt)."
+  }
 ];
