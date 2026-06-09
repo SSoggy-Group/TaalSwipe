@@ -3,11 +3,15 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from 'expo-haptics';
-import Animated, { FadeIn, FadeOut, SlideInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { ZoomIn, useAnimatedStyle, withTiming, withSequence } from 'react-native-reanimated';
 import { Colors } from '../theme/colors';
-import { straattaalData } from '../data/straattaalData';
+import { spellingData } from '../data/spellingData';
 import { soundManager } from '../audio/SoundManager';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { GradientBackground } from '../components/GradientBackground';
+import { SwipeCard } from '../components/SwipeCard';
+import { BouncyButton } from '../components/BouncyButton';
+import { useAppTheme } from '../theme/colors';
 
 type RootStackParamList = {
   Home: undefined;
@@ -25,185 +29,227 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+const TARGET_SCORE = 15;
+const PENALTY_MS = 1500;
+
 export function MultiplayerScreen({ navigation }: Props) {
-  const [data, setData] = useState(() => shuffleArray(straattaalData));
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const theme = useAppTheme();
+  // Use same randomized data for both players so it's fair
+  const [gameData] = useState(() => shuffleArray(spellingData));
   
-  const [player1Score, setPlayer1Score] = useState(0); // Bottom player
-  const [player2Score, setPlayer2Score] = useState(0); // Top player (rotated)
+  const [p1Index, setP1Index] = useState(0);
+  const [p2Index, setP2Index] = useState(0);
+  
+  const [p1Score, setP1Score] = useState(0);
+  const [p2Score, setP2Score] = useState(0);
+  
+  const [p1Penalty, setP1Penalty] = useState(false);
+  const [p2Penalty, setP2Penalty] = useState(false);
   
   const [winner, setWinner] = useState<number | null>(null);
 
-  const currentItem = data[currentIndex];
-  
-  // End game if someone reaches 5 points
   useEffect(() => {
-    if (player1Score >= 5) setWinner(1);
-    if (player2Score >= 5) setWinner(2);
-  }, [player1Score, player2Score]);
+    if (p1Score >= TARGET_SCORE && winner === null) setWinner(1);
+    if (p2Score >= TARGET_SCORE && winner === null) setWinner(2);
+  }, [p1Score, p2Score, winner]);
 
-  const handleAnswer = useCallback((player: 1 | 2, answerIsRight: boolean) => {
+  const handleSwipe = useCallback((player: 1 | 2, answerIsRight: boolean) => {
     if (winner !== null) return;
     
-    const isCorrect = currentItem.isReal === answerIsRight;
+    const currentIndex = player === 1 ? p1Index : p2Index;
+    const item = gameData[currentIndex % gameData.length];
     
-    Haptics.impactAsync(isCorrect ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Heavy);
+    // Spelling mode has an 'isCorrect' property (boolean) meaning "is this spelled correctly?"
+    // User swipes right (true) if they think it's spelled correctly.
+    const isCorrect = item.isCorrect === answerIsRight;
+    
     if (isCorrect) {
       soundManager.playCorrect();
-      if (player === 1) setPlayer1Score(s => s + 1);
-      if (player === 2) setPlayer2Score(s => s + 1);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      if (player === 1) {
+        setP1Score(s => s + 1);
+        setP1Index(i => i + 1);
+      } else {
+        setP2Score(s => s + 1);
+        setP2Index(i => i + 1);
+      }
     } else {
       soundManager.playIncorrect();
-      if (player === 1) setPlayer1Score(s => Math.max(0, s - 1));
-      if (player === 2) setPlayer2Score(s => Math.max(0, s - 1));
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      
+      // Penalty
+      if (player === 1) {
+        setP1Penalty(true);
+        setTimeout(() => {
+          setP1Penalty(false);
+          setP1Index(i => i + 1);
+        }, PENALTY_MS);
+      } else {
+        setP2Penalty(true);
+        setTimeout(() => {
+          setP2Penalty(false);
+          setP2Index(i => i + 1);
+        }, PENALTY_MS);
+      }
     }
-    
-    setCurrentIndex(i => (i + 1) % data.length);
-  }, [currentItem, winner, data.length]);
+  }, [gameData, p1Index, p2Index, winner]);
 
   const renderPlayerArea = (player: 1 | 2) => {
     const isP2 = player === 2;
+    const score = player === 1 ? p1Score : p2Score;
+    const currentIndex = player === 1 ? p1Index : p2Index;
+    const isPenalty = player === 1 ? p1Penalty : p2Penalty;
+    const currentItem = gameData[currentIndex % gameData.length];
+
     return (
       <View style={[styles.playerArea, isP2 && styles.rotated]}>
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreLabel}>Speler {player}</Text>
-          <Text style={styles.scoreValue}>{player === 1 ? player1Score : player2Score}</Text>
+        <View style={styles.scoreHeader}>
+          <Text style={styles.scoreText}>P{player}: {score}/{TARGET_SCORE}</Text>
         </View>
         
-        {winner === null ? (
-          <Animated.View key={currentIndex} entering={ZoomIn.duration(300).springify()} style={styles.card}>
-            <Text style={styles.word}>{currentItem.word}</Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity 
-                style={[styles.button, { backgroundColor: Colors.incorrect, borderBottomColor: '#B91C1C' }]}
-                onPress={() => handleAnswer(player, false)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.buttonText}>NEP</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={[styles.button, { backgroundColor: Colors.correct, borderBottomColor: '#047857' }]}
-                onPress={() => handleAnswer(player, true)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.buttonText}>ECHT</Text>
-              </TouchableOpacity>
+        <View style={styles.cardContainer}>
+          {winner !== null ? (
+            <Animated.View entering={ZoomIn} style={styles.winnerCard}>
+              <Text style={styles.winnerText}>
+                {winner === player ? '🏆 JIJ WINT!' : '💀 VERLOREN...'}
+              </Text>
+            </Animated.View>
+          ) : isPenalty ? (
+            <View style={styles.penaltyCard}>
+              <Text style={styles.penaltyText}>FOUT! ⏳</Text>
             </View>
-          </Animated.View>
-        ) : (
-          <View style={styles.card}>
-            <Text style={styles.word}>
-              {winner === player ? '🏆 JIJ WINT!' : '💀 VERLOREN...'}
-            </Text>
-          </View>
-        )}
+          ) : (
+            <SwipeCard
+              key={currentIndex}
+              active={true}
+              compact={true}
+              onSwipeLeft={() => handleSwipe(player, false)}
+              onSwipeRight={() => handleSwipe(player, true)}
+              leftLabel="FOUT ✗"
+              rightLabel="GOED ✓"
+            >
+              <Text style={[styles.word, { color: theme.cardTextPrimary }]} adjustsFontSizeToFit numberOfLines={2}>{currentItem.text}</Text>
+            </SwipeCard>
+          )}
+        </View>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {winner !== null && <ConfettiCannon count={100} origin={{x: -10, y: 0}} />}
-      
-      {/* Player 2 Area (Top) */}
-      {renderPlayerArea(2)}
-      
-      <View style={styles.divider}>
-        <TouchableOpacity style={styles.quitBtn} onPress={() => navigation.goBack()}>
-          <Text style={styles.quitText}>STOP</Text>
-        </TouchableOpacity>
-      </View>
+    <GradientBackground>
+      {winner !== null && <ConfettiCannon count={150} origin={{x: -10, y: 0}} />}
+      <SafeAreaView style={styles.container}>
+        {/* Player 2 Area (Top) */}
+        {renderPlayerArea(2)}
+        
+        <View style={styles.divider}>
+          {winner !== null ? (
+            <BouncyButton 
+              title="Terug 🏠" 
+              color="#38BDF8" 
+              borderColor="#0284C7" 
+              bottomBorderColor="#0369A1" 
+              onPress={() => navigation.goBack()} 
+            />
+          ) : (
+            <TouchableOpacity style={styles.quitBtn} onPress={() => navigation.goBack()}>
+              <Text style={styles.quitText}>STOP</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-      {/* Player 1 Area (Bottom) */}
-      {renderPlayerArea(1)}
-    </SafeAreaView>
+        {/* Player 1 Area (Bottom) */}
+        {renderPlayerArea(1)}
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F172A',
   },
   playerArea: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   rotated: {
     transform: [{ rotate: '180deg' }],
   },
+  scoreHeader: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  scoreText: {
+    color: '#FFF',
+    fontFamily: 'Inter_900Black',
+    fontSize: 24,
+    opacity: 0.8,
+  },
+  cardContainer: {
+    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  word: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 32,
+    textAlign: 'center',
+  },
+  penaltyCard: {
+    width: '100%',
+    minHeight: 180,
+    backgroundColor: '#EF4444',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#B91C1C',
+    borderBottomWidth: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  penaltyText: {
+    color: '#FFF',
+    fontFamily: 'Inter_900Black',
+    fontSize: 36,
+  },
+  winnerCard: {
+    width: '100%',
+    minHeight: 180,
+    backgroundColor: '#10B981',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: '#059669',
+    borderBottomWidth: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  winnerText: {
+    color: '#FFF',
+    fontFamily: 'Inter_900Black',
+    fontSize: 32,
+  },
   divider: {
-    height: 60,
-    backgroundColor: '#1E293B',
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: '#334155',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   quitBtn: {
     backgroundColor: '#EF4444',
-    paddingHorizontal: 20,
-    paddingVertical: 6,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
     borderRadius: 20,
   },
   quitText: {
     color: '#FFF',
     fontFamily: 'Inter_900Black',
     fontSize: 16,
-  },
-  scoreContainer: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-  },
-  scoreLabel: {
-    color: '#94A3B8',
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 14,
-  },
-  scoreValue: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 48,
-  },
-  card: {
-    backgroundColor: '#1E293B',
-    borderRadius: 24,
-    padding: 32,
-    width: '100%',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#334155',
-    borderBottomWidth: 8,
-  },
-  word: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 36,
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 16,
-    width: '100%',
-  },
-  button: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    borderBottomWidth: 6,
-  },
-  buttonText: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
   },
 });
