@@ -28,7 +28,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 type RootStackParamList = {
   Home: undefined;
   Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
-  Result: { score: number; total: number; mode: string; history?: { word: string; correct: boolean; explanation: string }[] };
+  Result: { score: number; total: number; mode: string; rawMode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand'; history?: { word: string; correct: boolean; explanation: string }[] };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -159,6 +159,7 @@ export function GameScreen({ navigation, route }: Props) {
         score: wasCorrect ? score + 1 : score,
         total: data.length,
         mode: modeLabels[mode],
+        rawMode: mode,
         history,
       });
     } else {
