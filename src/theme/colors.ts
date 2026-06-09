@@ -1,5 +1,6 @@
 import { useColorScheme } from 'react-native';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getColors = (isDark: boolean, bgId?: string, cardId?: string) => {
   // 1. Default fallback styles
   let layer1Colors = isDark ? ['#0F172A', '#1E293B'] : ['#1CB0F6', '#0B99DF'];
@@ -57,8 +58,6 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string) => {
   } else if (bgId === 'bg_nebula') {
     layer1Colors = ['#1E3A8A', '#701A75']; // Cosmic blue to magenta
     layer2Colors = ['#701A75', '#1D4ED8'];
-    accent = '#A78BFA'; // Violet/indigo accent
-    accentLight = '#C4B5FD';
   }
 
   // 3. Card colors depend on cardId and background's dark/light nature
