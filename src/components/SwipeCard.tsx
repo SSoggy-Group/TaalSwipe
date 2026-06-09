@@ -34,7 +34,7 @@ interface SwipeCardProps {
   readonly rightLabel?: string;
 }
 
-export function CardSkinWrapper({ children, equippedCard, theme, style }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any }) {
+export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, equippedCard, theme, style }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any }) {
   if (equippedCard === 'card_rainbow') {
     return (
       <LinearGradient
@@ -140,9 +140,9 @@ export function CardSkinWrapper({ children, equippedCard, theme, style }: { chil
       {children}
     </View>
   );
-}
+});
 
-export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓" }: SwipeCardProps) {
+export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLabel = "FOUT ✗", rightLabel = "GOED ✓" }: SwipeCardProps) {
   const theme = useAppTheme();
   const equippedCard = useSettingsStore((state) => state.equippedCard);
   const translateX = useSharedValue(0);
@@ -228,7 +228,7 @@ export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLab
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.cardContainer, cardStyle]}>
+      <Animated.View style={[styles.cardContainer, cardStyle]} accessible={true} accessibilityRole="adjustable" accessibilityHint="Swipe links of rechts">
         <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
           {/* Goed overlay */}
           <Animated.View style={[styles.overlay, styles.goedOverlay, goedOpacity]}>
@@ -246,7 +246,7 @@ export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active, leftLab
       </Animated.View>
     </GestureDetector>
   );
-}
+});
 
 const styles = StyleSheet.create({
   cardContainer: {

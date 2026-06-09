@@ -17,7 +17,7 @@ interface Props {
 }
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function BouncyButton({
+export const BouncyButton = React.memo(function BouncyButton({
   onPress,
   title,
   children,
@@ -60,6 +60,10 @@ export function BouncyButton({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       style={[styles.button, dynamicStyles, style, animatedStyle]}
+      android_ripple={{ color: 'rgba(255,255,255,0.2)' }}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityLabel={title || 'Knop'}
     >
       {/* Shine overlay for bubbly look */}
       <View style={styles.shine} />
@@ -77,7 +81,7 @@ export function BouncyButton({
       )}
     </AnimatedPressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   button: {
