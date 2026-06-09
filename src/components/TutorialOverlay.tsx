@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import Animated, { FadeIn, FadeOut, ZoomIn, SlideInDown } from 'react-native-reanimated';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,41 +20,41 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
     case 'straattaal':
       leftText = 'NEP';
       rightText = 'ECHT';
-      explanation = 'Sommige woorden zijn verzonnen door AI.\nSwipe NEP (links) of ECHT (rechts)!';
+      explanation = 'Is dit woord échte straattaal, of heeft een AI dit verzonnen om je voor de gek te houden?';
       break;
     case 'dunglish':
       leftText = 'NEP';
       rightText = 'ECHT';
-      explanation = 'Bestaat dit spreekwoord echt of is het Dunglish?';
+      explanation = 'Is dit een echt Engels spreekwoord, of is het letterlijk vertaald "Steenkolenengels" (Dunglish)?';
       break;
     case 'spelling':
       leftText = 'FOUT';
       rightText = 'GOED';
-      explanation = 'Let goed op de spelling!\nIs het goed geschreven?';
+      explanation = 'Beoordeel zo snel mogelijk of het woord of de zin 100% correct gespeld is.';
       break;
     case 'dt':
       leftText = 'FOUT';
       rightText = 'GOED';
-      explanation = 'Werkwoordspelling: met een d, t, of dt?';
+      explanation = 'Klopt de werkwoordspelling? Let vooral goed op de d, t, en dt!';
       break;
     case 'vandale':
       leftText = 'ONZIN';
       rightText = 'VAN DALE';
-      explanation = 'Staat dit echt in het woordenboek,\nof is het grote onzin?';
+      explanation = 'Staat dit bizarre woord écht in de Dikke Van Dale, of is het complete onzin?';
       break;
     case 'brand':
       leftText = 'SOORT';
       rightText = 'MERK';
-      explanation = 'Is het een beschermd merk,\nof een algemene soortnaam?';
+      explanation = 'Is dit woord officieel een beschermd merk, of een algemene soortnaam?';
       break;
   }
 
   return (
-    <TouchableWithoutFeedback onPress={onDismiss}>
+    <Pressable style={styles.container} onPress={onDismiss}>
       <Animated.View 
         entering={FadeIn.duration(400)} 
         exiting={FadeOut.duration(300)} 
-        style={styles.container}
+        style={styles.innerContainer}
       >
         <View style={styles.overlayBackground} />
         
@@ -85,7 +85,7 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
         </Animated.View>
 
       </Animated.View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 }
 
@@ -97,6 +97,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 999,
+  },
+  innerContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -160,8 +163,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   dismissText: {
-    fontFamily: 'Inter_700Bold',
-    color: '#FFF',
+    color: '#FFFFFF',
+    fontFamily: 'Inter_800ExtraBold',
     fontSize: 16,
   },
 });
