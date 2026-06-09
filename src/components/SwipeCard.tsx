@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Dimensions } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -8,7 +7,6 @@ import Animated, {
   withSpring,
   withTiming,
   interpolate,
-  runOnJS,
   Extrapolation,
 } from 'react-native-reanimated';
 import { Colors, useAppTheme } from '../theme/colors';
@@ -27,10 +25,10 @@ const SPRING_CONFIG = {
 };
 
 interface SwipeCardProps {
-  children: React.ReactNode;
-  onSwipeLeft: () => void;
-  onSwipeRight: () => void;
-  active: boolean;
+  readonly children: React.ReactNode;
+  readonly onSwipeLeft: () => void;
+  readonly onSwipeRight: () => void;
+  readonly active: boolean;
 }
 
 export function CardSkinWrapper({ children, equippedCard, theme, style }: { children: React.ReactNode, equippedCard: string, theme: any, style?: any }) {
@@ -159,24 +157,24 @@ export function SwipeCard({ children, onSwipeLeft, onSwipeRight, active }: Swipe
       if (event.translationX > SWIPE_THRESHOLD) {
         // Swipe right
         translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          runOnJS(onSwipeRight)();
+          onSwipeRight();
         });
         translateY.value = withTiming(event.translationY * 0.8, { duration: 300 });
-        runOnJS(playSwooshSound)();
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+        playSwooshSound();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       } else if (event.translationX < -SWIPE_THRESHOLD) {
         // Swipe left
         translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, () => {
-          runOnJS(onSwipeLeft)();
+          onSwipeLeft();
         });
         translateY.value = withTiming(event.translationY * 0.8, { duration: 300 });
-        runOnJS(playSwooshSound)();
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+        playSwooshSound();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       } else {
         // Snap back
         translateX.value = withSpring(0, SPRING_CONFIG);
         translateY.value = withSpring(0, SPRING_CONFIG);
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }
     });
 
