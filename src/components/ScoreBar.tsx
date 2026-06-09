@@ -30,15 +30,15 @@ export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBa
   const comboScale = useSharedValue(1);
 
   React.useEffect(() => {
-    progressWidth.value = withSpring(progressPercent * 100, { damping: 15, stiffness: 100 });
+    progressWidth.value = withSpring(progressPercent * 100, { damping: 12, stiffness: 150, mass: 0.8 }); // Bouncier fill
   }, [progressPercent]);
 
   React.useEffect(() => {
     if (combo && combo > 1) {
       comboScale.value = withRepeat(
         withSequence(
-          withTiming(1.1, { duration: 400 }),
-          withTiming(1, { duration: 400 })
+          withTiming(1.15, { duration: 250 }),
+          withTiming(1, { duration: 250 })
         ),
         -1, // infinite
         true
@@ -59,12 +59,12 @@ export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBa
     const backgroundColor = interpolateColor(
       fireColorValue.value,
       [0, 1],
-      ['#58CC02', '#F59E0B'] // Duolingo green to Fire Orange
+      ['#58CC02', '#FF9600'] // Duolingo green to Bright Duolingo Orange
     );
     const borderColor = interpolateColor(
       fireColorValue.value,
       [0, 1],
-      ['#46A302', '#D97706']
+      ['#46A302', '#CC7800']
     );
 
     return {
@@ -159,9 +159,9 @@ const styles = StyleSheet.create({
     top: 3,
     left: 8,
     right: 8,
-    height: 6,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    borderRadius: 3,
+    height: 8, // Thicker shine
+    backgroundColor: 'rgba(255,255,255,0.4)', // Brighter shine
+    borderRadius: 4,
   },
   comboContainer: {
     alignItems: 'center',
