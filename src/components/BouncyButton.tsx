@@ -65,7 +65,13 @@ export function BouncyButton({
       <View style={styles.shine} />
       
       {title ? (
-        <Text style={[styles.text, textStyle, disabled && { color: '#64748B' }]}>{title}</Text>
+        <Text 
+          style={[styles.text, textStyle, disabled && { color: '#64748B' }]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {title}
+        </Text>
       ) : (
         children
       )}
