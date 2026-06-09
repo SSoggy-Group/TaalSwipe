@@ -9,6 +9,7 @@ import { Confetti } from '../components/Confetti';
 import { Colors, useAppTheme } from '../theme/colors';
 import { statsStore } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
+import { soundManager } from '../audio/SoundManager';
 
 type RootStackParamList = {
   Home: undefined;
@@ -45,7 +46,15 @@ export function ResultScreen({ route, navigation }: Props) {
       }
     }
     checkHighScore();
-  }, [score, rawMode]);
+    
+    // Play end sound
+    const pct = total > 0 ? (score / total) * 100 : 0;
+    if (pct >= 80) {
+      soundManager.playWin();
+    } else {
+      soundManager.playGameOver();
+    }
+  }, [score, total, rawMode]);
 
   const percentage = total > 0 ? (score / total) * 100 : 0;
   let emoji = '😐';
