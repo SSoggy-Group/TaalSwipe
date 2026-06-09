@@ -16,7 +16,7 @@ interface Props {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function ModeCard({ emoji, title, description, onPress, style, delay = 0, color = Colors.accent }: Props) {
+export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, delay = 0, color = Colors.accent }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
 
@@ -45,6 +45,10 @@ export function ModeCard({ emoji, title, description, onPress, style, delay = 0,
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onPress={onPress}
+        android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={`${title}. ${description}`}
       >
         <View style={[styles.iconContainer, { backgroundColor: color, borderBottomColor: 'rgba(0,0,0,0.2)' }]}>
           <Text style={styles.emoji}>{emoji}</Text>
@@ -56,7 +60,7 @@ export function ModeCard({ emoji, title, description, onPress, style, delay = 0,
       </AnimatedPressable>
     </Animated.View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {

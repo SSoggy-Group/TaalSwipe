@@ -24,7 +24,7 @@ interface TimerBarProps {
   readonly resetKey?: number; // change to reset timer completely
 }
 
-export const TimerBar = React.forwardRef<TimerBarRef, TimerBarProps>(
+export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
   ({ duration, running, onTimeUp, onPanicChange, resetKey }, ref) => {
     const progress = useSharedValue(1);
     const hasPanicked = useSharedValue(false);
@@ -104,7 +104,7 @@ export const TimerBar = React.forwardRef<TimerBarRef, TimerBarProps>(
       </View>
     );
   }
-);
+));
 
 const styles = StyleSheet.create({
   track: {
