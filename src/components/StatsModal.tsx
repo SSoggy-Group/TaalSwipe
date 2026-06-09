@@ -26,102 +26,38 @@ interface Achievement {
 }
 
 const ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 'first_swipe',
-    name: 'Eerste Swipe',
-    description: 'Doe je allereerste swipe',
-    emoji: '👉',
-    target: 1,
-    currentValue: (s) => s.totalSwipes,
-  },
-  {
-    id: 'swipe_king',
-    name: 'Swipe Koning',
-    description: 'Behaal 100 totale swipes',
-    emoji: '👑',
-    target: 100,
-    currentValue: (s) => s.totalSwipes,
-  },
-  {
-    id: 'super_swiper',
-    name: 'Super Swiper',
-    description: 'Behaal 500 totale swipes',
-    emoji: '⚡',
-    target: 500,
-    currentValue: (s) => s.totalSwipes,
-  },
-  {
-    id: 'combo_krijger',
-    name: 'Combo Krijger',
-    description: 'Behaal een combo van 5x',
-    emoji: '🔥',
-    target: 5,
-    currentValue: (s) => s.highestCombo,
-  },
-  {
-    id: 'combo_meester',
-    name: 'Combo Meester',
-    description: 'Behaal een combo van 12x',
-    emoji: '💥',
-    target: 12,
-    currentValue: (s) => s.highestCombo,
-  },
-  {
-    id: 'combo_god',
-    name: 'Combo God',
-    description: 'Behaal een combo van 20x',
-    emoji: '☄️',
-    target: 20,
-    currentValue: (s) => s.highestCombo,
-  },
-  {
-    id: 'level_3',
-    name: 'Taalleerder',
-    description: 'Bereik Level 3 (200 XP)',
-    emoji: '📚',
-    target: 200,
-    currentValue: (s) => s.xp,
-  },
-  {
-    id: 'level_6',
-    name: 'Taalexpert',
-    description: 'Bereik Level 6 (500 XP)',
-    emoji: '🎓',
-    target: 500,
-    currentValue: (s) => s.xp,
-  },
-  {
-    id: 'level_10',
-    name: 'Taal-Koning',
-    description: 'Bereik Level 10 (900 XP)',
-    emoji: '🏆',
-    target: 900,
-    currentValue: (s) => s.xp,
-  },
-  {
-    id: 'streak_3',
-    name: 'Streak Starter',
-    description: 'Behaal een streak van 3 dagen',
-    emoji: '📅',
-    target: 3,
-    currentValue: (s) => s.bestStreak,
-  },
-  {
-    id: 'streak_7',
-    name: 'Streak Legende',
-    description: 'Behaal een streak van 7 dagen',
-    emoji: '🔥',
-    target: 7,
-    currentValue: (s) => s.bestStreak,
-  },
-  {
-    id: 'collector',
-    name: 'Shop Verzamelaar',
-    description: 'Ontgrendel 3 items in de Shop',
-    emoji: '🛍️',
-    target: 3,
-    currentValue: (s) => s.unlockedItems ? s.unlockedItems.length : 0,
-  },
+  // Swipes
+  { id: 'first_swipe',   name: 'Eerste Swipe',       description: 'Doe je allereerste swipe',          emoji: '👉', target: 1,    currentValue: (s) => s.totalSwipes },
+  { id: 'swipe_50',      name: 'Swipe Starter',       description: 'Behaal 50 totale swipes',           emoji: '✌️', target: 50,   currentValue: (s) => s.totalSwipes },
+  { id: 'swipe_king',    name: 'Swipe Koning',         description: 'Behaal 100 totale swipes',          emoji: '👑', target: 100,  currentValue: (s) => s.totalSwipes },
+  { id: 'super_swiper',  name: 'Super Swiper',         description: 'Behaal 500 totale swipes',          emoji: '⚡', target: 500,  currentValue: (s) => s.totalSwipes },
+  { id: 'swipe_1k',      name: 'Swipe Machine',        description: 'Behaal 1000 totale swipes',         emoji: '🤖', target: 1000, currentValue: (s) => s.totalSwipes },
+  { id: 'swipe_5k',      name: 'Swipe Legende',        description: 'Behaal 5000 totale swipes',         emoji: '🌟', target: 5000, currentValue: (s) => s.totalSwipes },
+  // Combos
+  { id: 'combo_3',       name: 'Op Dreef',             description: 'Behaal een combo van 3x',          emoji: '🔥', target: 3,    currentValue: (s) => s.highestCombo },
+  { id: 'combo_krijger', name: 'Combo Krijger',         description: 'Behaal een combo van 5x',          emoji: '💥', target: 5,    currentValue: (s) => s.highestCombo },
+  { id: 'combo_meester', name: 'Combo Meester',         description: 'Behaal een combo van 12x',         emoji: '☄️', target: 12,   currentValue: (s) => s.highestCombo },
+  { id: 'combo_god',     name: 'Combo God',             description: 'Behaal een combo van 20x',         emoji: '🌊', target: 20,   currentValue: (s) => s.highestCombo },
+  { id: 'combo_30',      name: 'Combo Overlord',        description: 'Behaal een combo van 30x',         emoji: '👾', target: 30,   currentValue: (s) => s.highestCombo },
+  // XP & Levels
+  { id: 'level_3',       name: 'Taalleerder',           description: 'Bereik Level 3 (200 XP)',          emoji: '📚', target: 200,  currentValue: (s) => s.xp },
+  { id: 'level_6',       name: 'Taalexpert',            description: 'Bereik Level 6 (500 XP)',          emoji: '🎓', target: 500,  currentValue: (s) => s.xp },
+  { id: 'level_10',      name: 'Taal-Baas',             description: 'Bereik Level 10 (900 XP)',         emoji: '🏆', target: 900,  currentValue: (s) => s.xp },
+  { id: 'level_15',      name: 'Taal-Kampioen',         description: 'Bereik Level 15 (1400 XP)',        emoji: '🥇', target: 1400, currentValue: (s) => s.xp },
+  { id: 'level_25',      name: 'Taal-Legende',          description: 'Bereik Level 25 (2400 XP)',        emoji: '💎', target: 2400, currentValue: (s) => s.xp },
+  { id: 'level_50',      name: 'Taal-Koning',           description: 'Bereik Level 50 (4900 XP)',        emoji: '👑', target: 4900, currentValue: (s) => s.xp },
+  // Streaks
+  { id: 'streak_3',      name: 'Streak Starter',        description: 'Behaal een streak van 3 dagen',   emoji: '📅', target: 3,    currentValue: (s) => s.bestStreak },
+  { id: 'streak_7',      name: 'Weekstrijder',          description: 'Behaal een streak van 7 dagen',   emoji: '🔥', target: 7,    currentValue: (s) => s.bestStreak },
+  { id: 'streak_14',     name: 'Taal-Sporter',          description: 'Behaal een streak van 14 dagen',  emoji: '💪', target: 14,   currentValue: (s) => s.bestStreak },
+  { id: 'streak_30',     name: 'Streak Legende',        description: 'Behaal een streak van 30 dagen',  emoji: '🌙', target: 30,   currentValue: (s) => s.bestStreak },
+  // Shop & Sessies
+  { id: 'collector',     name: 'Shop Verzamelaar',      description: 'Ontgrendel 3 items in de Shop',   emoji: '🛍️', target: 3,   currentValue: (s) => s.unlockedItems?.length ?? 0 },
+  { id: 'big_spender',   name: 'Grote Spender',         description: 'Ontgrendel 8 items in de Shop',   emoji: '💸', target: 8,   currentValue: (s) => s.unlockedItems?.length ?? 0 },
+  { id: 'sessions_10',   name: 'Vaste Speler',          description: 'Speel 10 sessies',                emoji: '🎮', target: 10,  currentValue: (s) => s.sessionsPlayed ?? 0 },
+  { id: 'sessions_50',   name: 'Verslaafde Speler',     description: 'Speel 50 sessies',                emoji: '🕹️', target: 50, currentValue: (s) => s.sessionsPlayed ?? 0 },
+  { id: 'correct_100',   name: 'Nauwkeurige Kenner',    description: 'Geef 100 keer een juist antwoord', emoji: '✅', target: 100,  currentValue: (s) => s.totalCorrect ?? 0 },
+  { id: 'correct_500',   name: 'Taal-Perfectionist',    description: 'Geef 500 keer een juist antwoord', emoji: '🎯', target: 500,  currentValue: (s) => s.totalCorrect ?? 0 },
 ];
 
 export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'stats' }: Props) {
@@ -215,6 +151,36 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
             <Text style={styles.statEmoji}>⚡</Text>
             <Text style={[styles.statValue, { color: theme.accent }]}>{stats.bestStreak}</Text>
             <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Beste Streak</Text>
+          </View>
+        </View>
+
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard3D, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+            <Text style={styles.statEmoji}>✅</Text>
+            <Text style={[styles.statValue, { color: '#58CC02' }]}>{stats.totalCorrect ?? 0}</Text>
+            <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Totaal Goed</Text>
+          </View>
+
+          <View style={[styles.statCard3D, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+            <Text style={styles.statEmoji}>❌</Text>
+            <Text style={[styles.statValue, { color: Colors.incorrect }]}>{stats.totalWrong ?? 0}</Text>
+            <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Totaal Fout</Text>
+          </View>
+        </View>
+
+        <View style={styles.statsGrid}>
+          <View style={[styles.statCard3D, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+            <Text style={styles.statEmoji}>🎯</Text>
+            <Text style={[styles.statValue, { color: '#38BDF8' }]}>
+              {stats.totalSwipes > 0 ? `${Math.round(((stats.totalCorrect ?? 0) / stats.totalSwipes) * 100)}%` : '-'}
+            </Text>
+            <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Nauwkeurigheid</Text>
+          </View>
+
+          <View style={[styles.statCard3D, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+            <Text style={styles.statEmoji}>🎮</Text>
+            <Text style={[styles.statValue, { color: theme.cardTextPrimary }]}>{stats.sessionsPlayed ?? 0}</Text>
+            <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Sessies</Text>
           </View>
         </View>
 
@@ -323,10 +289,12 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
 
   const renderLeaderboardTab = () => {
     const modes = [
-      { id: 'straattaal', emoji: '🗣️', title: 'Straattaal of AI?', score: stats.highScores.straattaal, color: '#A78BFA' },
-      { id: 'dunglish', emoji: '🇬🇧', title: 'Steenkolenengels', score: stats.highScores.dunglish, color: '#F472B6' },
-      { id: 'spelling', emoji: '⚡', title: 'Speed-Spelling', score: stats.highScores.spelling, color: '#38BDF8' },
-      { id: 'dt', emoji: '🧠', title: 'D/T Grammatica', score: stats.highScores.dt, color: '#F59E0B' },
+      { id: 'straattaal', emoji: '🗣️', title: 'Straattaal of AI?',    score: stats.highScores.straattaal, color: '#A78BFA' },
+      { id: 'dunglish',   emoji: '🇬🇧', title: 'Steenkolenengels',      score: stats.highScores.dunglish,   color: '#F472B6' },
+      { id: 'spelling',   emoji: '⚡',  title: 'Speed-Spelling',         score: stats.highScores.spelling,   color: '#38BDF8' },
+      { id: 'dt',         emoji: '🧠',  title: 'D/T Grammatica',         score: stats.highScores.dt,         color: '#F59E0B' },
+      { id: 'vandale',    emoji: '📖',  title: 'Van Dale Meester',       score: stats.highScores.vandale,    color: '#34D399' },
+      { id: 'brand',      emoji: '🏷️', title: 'Merk of Soortnaam?',    score: stats.highScores.brand,      color: '#FB923C' },
     ];
 
     return (
