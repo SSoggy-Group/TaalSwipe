@@ -1,134 +1,159 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { BouncyButton } from './BouncyButton';
-import { Colors } from '../theme/colors';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import Animated, { FadeIn, FadeOut, ZoomIn, SlideInDown } from 'react-native-reanimated';
+import { useAppTheme } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
-  readonly visible: boolean;
+  readonly mode: string;
   readonly onDismiss: () => void;
-  readonly mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand';
 }
 
-export function TutorialOverlay({ visible, onDismiss, mode }: Props) {
-  if (!visible) return null;
+export function TutorialOverlay({ mode, onDismiss }: Props) {
+  const theme = useAppTheme();
 
-  let title = '';
-  let description = '';
-  let emoji = '';
+  let leftText = 'FOUT';
+  let rightText = 'GOED';
+  let explanation = 'Swipe rechts als het klopt,\nswipe links als het fout is!';
 
   switch (mode) {
     case 'straattaal':
-      emoji = '🗣️';
-      title = 'Hoe werkt het?';
-      description = 'Swipe rechts als je denkt dat het écht straattaal is.\n\nSwipe links als je denkt dat AI het heeft verzonnen.';
+      leftText = 'NEP';
+      rightText = 'ECHT';
+      explanation = 'Sommige woorden zijn verzonnen door AI.\nSwipe NEP (links) of ECHT (rechts)!';
       break;
     case 'dunglish':
-      emoji = '🇬🇧';
-      title = 'Hoe werkt het?';
-      description = 'Swipe rechts als het een échte letterlijke vertaling van een Nederlands spreekwoord is.\n\nSwipe links als het nep is.';
+      leftText = 'NEP';
+      rightText = 'ECHT';
+      explanation = 'Bestaat dit spreekwoord echt of is het Dunglish?';
       break;
     case 'spelling':
-      emoji = '⚡';
-      title = 'Snelheid is alles!';
-      description = 'Kies razendsnel of het woord goed of fout gespeld is.\n\nJe hebt maar 1,5 seconde per woord. Eén fout = game over!';
+      leftText = 'FOUT';
+      rightText = 'GOED';
+      explanation = 'Let goed op de spelling!\nIs het goed geschreven?';
       break;
     case 'dt':
-      emoji = '🧠';
-      title = 'D/T Grammatica';
-      description = 'Kies of de zin met de juiste werkwoordsvorm is gespeld (d, t, of dt).\n\nSwipe rechts voor goed, links voor fout!';
+      leftText = 'FOUT';
+      rightText = 'GOED';
+      explanation = 'Werkwoordspelling: met een d, t, of dt?';
       break;
     case 'vandale':
-      emoji = '📖';
-      title = 'Dikke Van Dale';
-      description = 'Staat dit woord officieel in de Van Dale?\n\nSwipe rechts voor ECHT in het woordenboek, links voor NEP.';
+      leftText = 'ONZIN';
+      rightText = 'VAN DALE';
+      explanation = 'Staat dit echt in het woordenboek,\nof is het grote onzin?';
       break;
     case 'brand':
-      emoji = '🏷️';
-      title = 'Merknaam of Soortnaam';
-      description = 'Is dit woord een beschermd merk of een algemeen woord geworden?\n\nSwipe rechts voor MERKNAAM, links voor SOORTNAAM.';
+      leftText = 'SOORT';
+      rightText = 'MERK';
+      explanation = 'Is het een beschermd merk,\nof een algemene soortnaam?';
       break;
   }
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(400)}
-      exiting={FadeOut.duration(300)}
-      style={StyleSheet.absoluteFill}
-    >
-      <BlurView intensity={90} tint="dark" style={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.emoji}>{emoji}</Text>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.description}>{description}</Text>
-          
-          <View style={styles.hintBox}>
-            <Text style={styles.hintText}>👈 Links = Fout/Nep</Text>
-            <Text style={styles.hintText}>Rechts = Goed/Echt 👉</Text>
+    <TouchableWithoutFeedback onPress={onDismiss}>
+      <Animated.View 
+        entering={FadeIn.duration(400)} 
+        exiting={FadeOut.duration(300)} 
+        style={styles.container}
+      >
+        <View style={styles.overlayBackground} />
+        
+        {/* Helper Arrows and Labels */}
+        <Animated.View entering={SlideInDown.delay(300)} style={styles.helperRow}>
+          <View style={styles.helperColumn}>
+            <Ionicons name="arrow-back-circle" size={48} color="#FF4B4B" />
+            <Text style={styles.helperLabelRed}>{leftText}</Text>
           </View>
-          <BouncyButton 
-            title="Let's Go! 🚀" 
-            onPress={onDismiss} 
-            color={Colors.accent}
-            borderColor="#8B5CF6"
-            bottomBorderColor="#7C3AED"
-            style={{ width: '100%' }}
-          />
-        </View>
-      </BlurView>
-    </Animated.View>
+          <View style={styles.helperColumn}>
+            <Ionicons name="arrow-forward-circle" size={48} color="#34D399" />
+            <Text style={styles.helperLabelGreen}>{rightText}</Text>
+          </View>
+        </Animated.View>
+
+        {/* Mascot / Explanation Card */}
+        <Animated.View 
+          entering={ZoomIn.delay(600).springify()} 
+          style={[styles.explanationCard, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}
+        >
+          <Text style={styles.mascotEmoji}>🦉</Text>
+          <Text style={[styles.title, { color: theme.cardTextPrimary }]}>Hoe het werkt</Text>
+          <Text style={[styles.explanation, { color: theme.cardTextSecondary }]}>{explanation}</Text>
+          
+          <View style={styles.dismissButton}>
+            <Text style={styles.dismissText}>Tik om te beginnen</Text>
+          </View>
+        </Animated.View>
+
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
-    zIndex: 100, // Make sure it sits on top of everything
   },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 32,
-    padding: 32,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+  overlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  },
+  helperRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     width: '100%',
+    paddingHorizontal: 40,
+    marginBottom: 60,
   },
-  emoji: {
+  helperColumn: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  helperLabelRed: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 24,
+    color: '#FF4B4B',
+  },
+  helperLabelGreen: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 24,
+    color: '#34D399',
+  },
+  explanationCard: {
+    padding: 32,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    width: '85%',
+  },
+  mascotEmoji: {
     fontSize: 64,
     marginBottom: 16,
+    marginTop: -64, // Pop out of the card
   },
   title: {
     fontFamily: 'Inter_800ExtraBold',
-    fontSize: 28,
-    color: Colors.textPrimary,
-    marginBottom: 16,
-    textAlign: 'center',
+    fontSize: 24,
+    marginBottom: 12,
   },
-  description: {
+  explanation: {
     fontFamily: 'Inter_500Medium',
     fontSize: 16,
-    color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
-    marginBottom: 32,
+    marginBottom: 24,
   },
-  hintBox: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 16,
-    padding: 16,
-    width: '100%',
-    marginBottom: 32,
-    gap: 8,
+  dismissButton: {
+    backgroundColor: '#38BDF8',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 100,
   },
-  hintText: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 14,
-    color: Colors.textPrimary,
-    textAlign: 'center',
+  dismissText: {
+    fontFamily: 'Inter_700Bold',
+    color: '#FFF',
+    fontSize: 16,
   },
 });
