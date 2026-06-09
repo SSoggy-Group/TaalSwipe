@@ -12,12 +12,16 @@ export interface AppStats {
     dunglish: number;
     spelling: number;
     dt: number;
+    vandale: number;
+    brand: number;
   };
   tutorialSeen: {
     straattaal: boolean;
     dunglish: boolean;
     spelling: boolean;
     dt: boolean;
+    vandale: boolean;
+    brand: boolean;
   };
   unlockedItems: string[];
   shields: number;
@@ -38,12 +42,16 @@ const DEFAULT_STATS: AppStats = {
     dunglish: 0,
     spelling: 0,
     dt: 0,
+    vandale: 0,
+    brand: 0,
   },
   tutorialSeen: {
     straattaal: false,
     dunglish: false,
     spelling: false,
     dt: false,
+    vandale: false,
+    brand: false,
   },
   unlockedItems: [],
   shields: 0,
