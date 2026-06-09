@@ -5,11 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard, CardSkinWrapper } from '../components/SwipeCard';
 import { ScoreBar } from '../components/ScoreBar';
-import { TimerBar } from '../components/TimerBar';
+import { TimerBar, TimerBarRef } from '../components/TimerBar';
 import { TutorialOverlay } from '../components/TutorialOverlay';
 import { PauseModal } from '../components/PauseModal';
 import { BouncyButton } from '../components/BouncyButton';
@@ -17,6 +17,8 @@ import { straattaalData, StraattaalItem } from '../data/straattaalData';
 import { dunglishData, DunglishItem } from '../data/dunglishData';
 import { spellingData, SpellingItem } from '../data/spellingData';
 import { dtData, DtItem } from '../data/dtData';
+import { vanDaleData, VanDaleItem } from '../data/vanDaleData';
+import { brandData, BrandItem } from '../data/brandData';
 import { Colors, useAppTheme } from '../theme/colors';
 import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
@@ -25,8 +27,8 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 
 type RootStackParamList = {
   Home: undefined;
-  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' };
-  Result: { score: number; total: number; mode: string };
+  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
+  Result: { score: number; total: number; mode: string; history?: { word: string; correct: boolean; explanation: string }[] };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -53,6 +55,8 @@ export function GameScreen({ navigation, route }: Props) {
         ...item,
         isCorrect: Math.random() > 0.5,
       }));
+      case 'vandale': return shuffleArray(vanDaleData);
+      case 'brand': return shuffleArray(brandData);
     }
   }, [mode]);
 
@@ -65,9 +69,11 @@ export function GameScreen({ navigation, route }: Props) {
   const [isPanicking, setIsPanicking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [shootConfetti, setShootConfetti] = useState(false);
+  const [history, setHistory] = useState<{ word: string; correct: boolean; explanation: string }[]>([]);
 
-  const { hardcoreMode, equippedCard } = useSettingsStore();
+  const { hardcoreMode, equippedCard, survivalMode } = useSettingsStore();
   const [lives, setLives] = useState(hardcoreMode ? 3 : 0);
+  const timerRef = React.useRef<TimerBarRef>(null);
   const [stats, setStats] = useState<AppStats | null>(null);
   const [showShieldAlert, setShowShieldAlert] = useState(false);
   const [showTimeSlowAlert, setShowTimeSlowAlert] = useState(false);
@@ -79,6 +85,8 @@ export function GameScreen({ navigation, route }: Props) {
     dunglish: 'Steenkolenengels',
     spelling: 'Speed-Spelling',
     dt: 'D/T Grammatica',
+    vandale: 'Dikke Van Dale',
+    brand: 'Merknaam of Soortnaam',
   };
 
   React.useEffect(() => {
@@ -99,7 +107,7 @@ export function GameScreen({ navigation, route }: Props) {
     stats.tutorialSeen[mode] = true;
     await statsStore.saveStats(stats);
     // Restart timer when tutorial dismissed
-    if (isSpelling) {
+    if (isSpelling && !survivalMode) {
       setTimerKey((k) => k + 1);
     }
   };
@@ -122,15 +130,25 @@ export function GameScreen({ navigation, route }: Props) {
   const [feedbackInfo, setFeedbackInfo] = useState<{ title: string; subtitle: string } | null>(null);
 
   const advanceGame = useCallback((wasCorrect: boolean) => {
-    if (gameOver) return;
     setActiveHint(null);
 
-    if (!wasCorrect && isSpelling) {
+    if (gameOver) {
+      navigation.replace('Result', {
+        score,
+        total: currentIndex,
+        mode: modeLabels[mode],
+        history,
+      });
+      return;
+    }
+
+    if (!wasCorrect && isSpelling && !survivalMode) {
       setGameOver(true);
       navigation.replace('Result', {
         score,
         total: currentIndex,
         mode: modeLabels[mode],
+        history,
       });
       return;
     }
@@ -141,10 +159,13 @@ export function GameScreen({ navigation, route }: Props) {
         score: wasCorrect ? score + 1 : score,
         total: data.length,
         mode: modeLabels[mode],
+        history,
       });
     } else {
       setCurrentIndex(nextIndex);
-      if (isSpelling) {
+      if (survivalMode) {
+        if (wasCorrect) timerRef.current?.addTime(2000);
+      } else if (isSpelling) {
         setTimerKey((k) => k + 1);
       }
     }
@@ -174,7 +195,38 @@ export function GameScreen({ navigation, route }: Props) {
         // We will add `isCorrect` dynamically in useMemo
         correct = swipedRight === (item as any).isCorrect;
         break;
+      case 'vandale':
+        correct = swipedRight === (item as VanDaleItem).inVanDale;
+        break;
+      case 'brand':
+        correct = swipedRight === (item as BrandItem).isBrand;
+        break;
     }
+
+    let wordText = '';
+    let explanationText = '';
+    if (mode === 'straattaal') {
+      wordText = (item as StraattaalItem).word;
+      explanationText = (item as StraattaalItem).definition;
+    } else if (mode === 'dunglish') {
+      wordText = (item as DunglishItem).text;
+      explanationText = (item as DunglishItem).explanation;
+    } else if (mode === 'spelling') {
+      wordText = (item as SpellingItem).text;
+      explanationText = (item as SpellingItem).correction || 'Goed gespeld!';
+    } else if (mode === 'dt') {
+      wordText = (item as any).sentence.replace('___', (item as any).correctAnswer);
+      explanationText = (item as any).explanation;
+    } else if (mode === 'vandale') {
+      wordText = (item as VanDaleItem).word;
+      explanationText = (item as VanDaleItem).definition;
+    } else if (mode === 'brand') {
+      wordText = (item as BrandItem).word;
+      explanationText = (item as BrandItem).explanation;
+    }
+    
+    // Add to history
+    setHistory(prev => [...prev, { word: wordText, correct, explanation: explanationText }]);
 
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -217,24 +269,48 @@ export function GameScreen({ navigation, route }: Props) {
       soundManager.playIncorrect();
       setCombo(0);
       updateStats(0, 0);
+
+      if (survivalMode) {
+        timerRef.current?.subtractTime(3000); // 3 seconds penalty!
+        advanceGame(false);
+        return;
+      }
       
       // Show seamless feedback
       if (mode === 'straattaal') {
         const s = item as StraattaalItem;
-        showFeedback('FOUT! ❌', `${s.word} is ${s.isReal ? 'echt' : 'nep'}! ${s.definition}`);
+        showFeedback(
+          s.isReal ? 'ECHT! ❌' : 'NEP! ❌',
+          `"${s.word}" is ${s.isReal ? 'echt bestaande straattaal' : 'AI-verzonnen nep-slang'}!\n\nBetekenis: ${s.definition}`
+        );
       } else if (mode === 'dunglish') {
         const d = item as DunglishItem;
-        showFeedback('FOUT! ❌', `"${d.text}" is ${d.isRealProverb ? 'echt' : 'nep'}!`);
+        showFeedback(
+          d.isRealProverb ? 'ECHT! ❌' : 'NEP! ❌',
+          `"${d.text}" is ${d.isRealProverb ? 'een echt spreekwoord' : 'een verzonnen spreekwoord'}!\n\nBetekenis: ${d.explanation}`
+        );
       } else if (mode === 'spelling') {
         const sp = item as SpellingItem;
-        if (sp.correction) {
-          showFeedback('FOUT! ❌', `De juiste spelling is: ${sp.correction}`);
+        if (sp.isCorrect) {
+          showFeedback('GOED GESPELD! ❌', `"${sp.text}" is juist gespeld!`);
         } else {
-          showFeedback('FOUT! ❌', 'Dat was helaas onjuist gespeld.');
+          showFeedback('FOUT GESPELD! ❌', `"${sp.text}" is onjuist gespeld!\n\nDe juiste spelling is: ${sp.correction}`);
         }
       } else if (mode === 'dt') {
         const dt = item as any;
-        showFeedback('FOUT! ❌', dt.explanation);
+        showFeedback('FOUT! ❌', `Dit is onjuist!\n\nUitleg: ${dt.explanation}`);
+      } else if (mode === 'vandale') {
+        const vd = item as VanDaleItem;
+        showFeedback(
+          vd.inVanDale ? 'ECHT VAN DALE! ❌' : 'VERZONNEN! ❌',
+          `"${vd.word}" staat ${vd.inVanDale ? 'wel degelijk' : 'niet'} in de Van Dale!\n\nBetekenis: ${vd.definition}`
+        );
+      } else if (mode === 'brand') {
+        const b = item as BrandItem;
+        showFeedback(
+          b.isBrand ? 'MERKNAAM! ❌' : 'SOORTNAAM! ❌',
+          `"${b.word}" is een ${b.isBrand ? 'beschermde merknaam' : 'soortnaam'}!\n\nUitleg: ${b.explanation}`
+        );
       }
 
       if (hardcoreMode) {
@@ -242,14 +318,6 @@ export function GameScreen({ navigation, route }: Props) {
           const newLives = l - 1;
           if (newLives <= 0) {
             setGameOver(true);
-            // End game after a short delay so they can read the feedback
-            setTimeout(() => {
-              navigation.replace('Result', {
-                score,
-                total: currentIndex,
-                mode: modeLabels[mode],
-              });
-            }, 2500);
           }
           return newLives;
         });
@@ -299,6 +367,12 @@ export function GameScreen({ navigation, route }: Props) {
       case 'dt':
         correctDirection = (item as any).isCorrect ? 'right' : 'left';
         break;
+      case 'vandale':
+        correctDirection = (item as VanDaleItem).inVanDale ? 'right' : 'left';
+        break;
+      case 'brand':
+        correctDirection = (item as BrandItem).isBrand ? 'right' : 'left';
+        break;
     }
 
     const newStats = {
@@ -320,8 +394,9 @@ export function GameScreen({ navigation, route }: Props) {
       score,
       total: currentIndex,
       mode: modeLabels[mode],
+      history,
     });
-  }, [currentIndex, gameOver, isPaused, mode, navigation, score]);
+  }, [currentIndex, gameOver, isPaused, mode, navigation, score, history]);
 
   const handleClose = useCallback(() => {
     if (gameOver) return;
@@ -335,8 +410,9 @@ export function GameScreen({ navigation, route }: Props) {
       score,
       total: currentIndex,
       mode: modeLabels[mode],
+      history,
     });
-  }, [currentIndex, mode, navigation, score]);
+  }, [currentIndex, mode, navigation, score, history]);
 
   const speakWord = useCallback((text: string, lang: string = 'nl-NL') => {
     Speech.stop();
@@ -345,6 +421,23 @@ export function GameScreen({ navigation, route }: Props) {
 
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
+
+  let leftLabel = 'FOUT ✗';
+  let rightLabel = 'GOED ✓';
+  
+  if (mode === 'brand') {
+    leftLabel = 'SOORT ✗';
+    rightLabel = 'MERK ✓';
+  } else if (mode === 'straattaal') {
+    leftLabel = 'VERZONNEN ✗';
+    rightLabel = 'ECHT ✓';
+  } else if (mode === 'vandale') {
+    leftLabel = 'ONZIN ✗';
+    rightLabel = 'VAN DALE ✓';
+  } else if (mode === 'dunglish') {
+    leftLabel = 'NEP ✗';
+    rightLabel = 'ECHT ✓';
+  }
 
   const renderCardContent = (item: typeof data[number]) => {
     switch (mode) {
@@ -360,10 +453,6 @@ export function GameScreen({ navigation, route }: Props) {
               </TouchableOpacity>
             </View>
             <Text style={[styles.definitionText, { color: theme.cardTextSecondary }]}>"{s.definition}"</Text>
-            <View style={styles.hintRow}>
-              <Text style={[styles.hintLeft, { color: theme.cardTextSecondary }]}>← Nep</Text>
-              <Text style={[styles.hintRight, { color: theme.cardTextSecondary }]}>Echt →</Text>
-            </View>
           </View>
         );
       }
@@ -378,10 +467,6 @@ export function GameScreen({ navigation, route }: Props) {
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
             </View>
-            <View style={styles.hintRow}>
-              <Text style={[styles.hintLeft, { color: theme.cardTextSecondary }]}>← Nep</Text>
-              <Text style={[styles.hintRight, { color: theme.cardTextSecondary }]}>Echt →</Text>
-            </View>
           </View>
         );
       }
@@ -395,10 +480,6 @@ export function GameScreen({ navigation, route }: Props) {
               <TouchableOpacity onPress={() => speakWord(sp.text)} style={styles.speakButton}>
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
-            </View>
-            <View style={styles.hintRow}>
-              <Text style={[styles.hintLeft, { color: theme.cardTextSecondary }]}>← Fout</Text>
-              <Text style={[styles.hintRight, { color: theme.cardTextSecondary }]}>Goed →</Text>
             </View>
           </View>
         );
@@ -421,9 +502,33 @@ export function GameScreen({ navigation, route }: Props) {
               </Text>
             </View>
             <Text style={[styles.definitionText, { marginTop: 12, color: theme.cardTextSecondary }]}>Werkwoord: {dt.verb}</Text>
-            <View style={styles.hintRow}>
-              <Text style={[styles.hintLeft, { color: theme.cardTextSecondary }]}>← Fout</Text>
-              <Text style={[styles.hintRight, { color: theme.cardTextSecondary }]}>Goed →</Text>
+          </View>
+        );
+      }
+      case 'vandale': {
+        const vd = item as VanDaleItem;
+        return (
+          <View style={styles.cardContent}>
+            <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Staat dit in de Van Dale?</Text>
+            <View style={styles.wordRow}>
+              <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{vd.word}</Text>
+              <TouchableOpacity onPress={() => speakWord(vd.word)} style={styles.speakButton}>
+                <Ionicons name="volume-high" size={24} color={Colors.accent} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      }
+      case 'brand': {
+        const b = item as BrandItem;
+        return (
+          <View style={styles.cardContent}>
+            <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merknaam of soortnaam?</Text>
+            <View style={styles.wordRow}>
+              <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{b.word}</Text>
+              <TouchableOpacity onPress={() => speakWord(b.word)} style={styles.speakButton}>
+                <Ionicons name="volume-high" size={24} color={Colors.accent} />
+              </TouchableOpacity>
             </View>
           </View>
         );
@@ -456,19 +561,20 @@ export function GameScreen({ navigation, route }: Props) {
               score={score}
               currentIndex={currentIndex}
               maxTotal={data.length}
-              combo={isSpelling ? combo : undefined}
+              combo={combo}
               mode={modeLabels[mode]}
             />
           </View>
         </View>
 
-        {isSpelling && (
+        {(isSpelling || survivalMode) && (
           <TimerBar
-            duration={1500}
+            ref={timerRef}
+            duration={survivalMode ? 15000 : 1500}
             running={!gameOver && !showTutorial}
             onTimeUp={handleTimeUp}
             onPanicChange={setIsPanicking}
-            resetKey={timerKey}
+            resetKey={survivalMode ? undefined : timerKey}
           />
         )}
 
@@ -491,6 +597,8 @@ export function GameScreen({ navigation, route }: Props) {
               onSwipeRight={handleSwipeRight}
               onSwipeLeft={handleSwipeLeft}
               active={!gameOver}
+              leftLabel={leftLabel}
+              rightLabel={rightLabel}
             >
               {renderCardContent(currentItem)}
             </SwipeCard>
@@ -548,33 +656,35 @@ export function GameScreen({ navigation, route }: Props) {
             entering={FadeInDown.delay(200).duration(400)}
             style={styles.actionRow}
           >
-            <BouncyButton
-              style={[
-                styles.actionButton,
-                activeHint === 'left' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
-              ]}
-              color="#FF4B4B"
-              borderColor="#D33333"
-              bottomBorderColor="#9A1D1D"
-              onPress={handleSwipeLeft}
-            >
-              <Ionicons name="close" size={48} color="#FFFFFF" />
-              {activeHint === 'left' && <View style={styles.hintDot} />}
-            </BouncyButton>
-            
-            <BouncyButton
-              style={[
-                styles.actionButton,
-                activeHint === 'right' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
-              ]}
-              color="#58CC02"
-              borderColor="#46A302"
-              bottomBorderColor="#2D6A01"
-              onPress={handleSwipeRight}
-            >
-              <Ionicons name="checkmark" size={48} color="#FFFFFF" />
-              {activeHint === 'right' && <View style={styles.hintDot} />}
-            </BouncyButton>
+            <>
+              <BouncyButton
+                style={[
+                  styles.actionButton,
+                  activeHint === 'left' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
+                ]}
+                color="#FF4B4B"
+                borderColor="#D33333"
+                bottomBorderColor="#9A1D1D"
+                onPress={handleSwipeLeft}
+              >
+                <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit>{leftLabel}</Text>
+                {activeHint === 'left' && <View style={styles.hintDot} />}
+              </BouncyButton>
+              
+              <BouncyButton
+                style={[
+                  styles.actionButton,
+                  activeHint === 'right' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
+                ]}
+                color="#58CC02"
+                borderColor="#46A302"
+                bottomBorderColor="#2D6A01"
+                onPress={handleSwipeRight}
+              >
+                <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit>{rightLabel}</Text>
+                {activeHint === 'right' && <View style={styles.hintDot} />}
+              </BouncyButton>
+            </>
           </Animated.View>
         )}
       </SafeAreaView>
@@ -587,7 +697,8 @@ export function GameScreen({ navigation, route }: Props) {
 
       {feedbackInfo && (
         <Animated.View 
-          entering={FadeInDown.duration(400).springify().damping(15)} 
+          entering={SlideInDown.duration(300)} 
+          exiting={SlideOutDown.duration(250)}
           style={styles.feedbackPanel}
         >
           <View style={styles.feedbackContent}>
@@ -595,7 +706,7 @@ export function GameScreen({ navigation, route }: Props) {
             <Text style={styles.feedbackSubtitle}>{feedbackInfo.subtitle}</Text>
           </View>
           <BouncyButton
-            title="Doorgaan"
+            title={gameOver || isSpelling ? "Bekijk Resultaten" : "Doorgaan"}
             color="#FFFFFF"
             borderColor="#E2E8F0"
             bottomBorderColor="#CBD5E1"
@@ -759,25 +870,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 42,
   },
-  hintRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 12,
-    paddingHorizontal: 8,
-  },
-  hintLeft: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    color: Colors.incorrect,
-    opacity: 0.7,
-  },
-  hintRight: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    color: Colors.correct,
-    opacity: 0.7,
-  },
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -801,6 +893,12 @@ const styles = StyleSheet.create({
     elevation: 8,
     paddingVertical: 0,
     paddingHorizontal: 0,
+  },
+  actionButtonText: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 20,
+    color: '#FFFFFF',
+    textTransform: 'uppercase',
   },
   feedbackPanel: {
     position: 'absolute',
