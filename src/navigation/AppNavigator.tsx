@@ -7,7 +7,7 @@ import { ResultScreen } from '../screens/ResultScreen';
 
 export type RootStackParamList = {
   Home: undefined;
-  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' };
+  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' };
   Result: { score: number; total: number; mode: string };
 };
 
@@ -23,9 +23,9 @@ export function AppNavigator() {
           contentStyle: { backgroundColor: 'transparent' },
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Game" component={GameScreen} />
-        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ animation: 'fade' }} />
+        <Stack.Screen name="Game" component={GameScreen} options={{ animation: 'fade' }} />
+        <Stack.Screen name="Result" component={ResultScreen} options={{ animation: 'slide_from_bottom' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
