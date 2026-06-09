@@ -747,10 +747,12 @@ export function GameScreen({ navigation, route }: Props) {
         )}
       </SafeAreaView>
 
-      <TutorialOverlay
-        onDismiss={handleDismissTutorial}
-        mode={mode}
-      />
+      {showTutorial && (
+        <TutorialOverlay
+          onDismiss={handleDismissTutorial}
+          mode={mode}
+        />
+      )}
 
       {feedbackInfo && (
         <Animated.View 
