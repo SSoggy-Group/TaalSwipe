@@ -10,6 +10,7 @@ import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard, CardSkinWrapper } from '../components/SwipeCard';
 import { ScoreBar } from '../components/ScoreBar';
 import { TimerBar, TimerBarRef } from '../components/TimerBar';
+import { Stopwatch, StopwatchRef } from '../components/Stopwatch';
 import { TutorialOverlay } from '../components/TutorialOverlay';
 import { PauseModal } from '../components/PauseModal';
 import { BouncyButton } from '../components/BouncyButton';
@@ -28,7 +29,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 type RootStackParamList = {
   Home: undefined;
   Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
-  Result: { score: number; total: number; mode: string; rawMode: string; history?: { word: string; correct: boolean; explanation: string }[] };
+  Result: { score: number; total: number; mode: string; rawMode: string; history?: { word: string; correct: boolean; explanation: string }[], timeMs?: number };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -42,23 +43,51 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+function progressiveShuffle<T>(array: T[]): T[] {
+  // Sort by length to put shorter (often easier) words/sentences first
+  const sorted = [...array].sort((a: any, b: any) => {
+    const getLen = (item: any) => item.word ? item.word.length : (item.sentence ? item.sentence.length : 0);
+    return getLen(a) - getLen(b);
+  });
+
+  // Chunk in groups of 10 and shuffle within each chunk to keep it unpredictable
+  const chunkSize = 10;
+  let result: T[] = [];
+  for (let i = 0; i < sorted.length; i += chunkSize) {
+    const chunk = sorted.slice(i, i + chunkSize);
+    result = result.concat(shuffleArray(chunk));
+  }
+  return result;
+}
+
 export function GameScreen({ navigation, route }: Props) {
   const { mode } = route.params;
-  const theme = useAppTheme();
+  const { hardcoreMode, equippedCard, survivalMode, speedrunMode } = useSettingsStore();
+
+  const theme = useAppTheme(mode);
+  
+  const timerRef = React.useRef<TimerBarRef>(null);
+  const stopwatchRef = React.useRef<StopwatchRef>(null);
 
   const data = useMemo(() => {
+    let rawData: any[] = [];
     switch (mode) {
-      case 'straattaal': return shuffleArray(straattaalData);
-      case 'dunglish': return shuffleArray(dunglishData);
-      case 'spelling': return shuffleArray(spellingData);
-      case 'dt': return shuffleArray(dtData).map(item => ({
+      case 'straattaal': rawData = progressiveShuffle(straattaalData); break;
+      case 'dunglish': rawData = progressiveShuffle(dunglishData); break;
+      case 'spelling': rawData = progressiveShuffle(spellingData); break;
+      case 'dt': rawData = progressiveShuffle(dtData).map(item => ({
         ...item,
         isCorrect: Math.random() > 0.5,
-      }));
-      case 'vandale': return shuffleArray(vanDaleData);
-      case 'brand': return shuffleArray(brandData);
+      })); break;
+      case 'vandale': rawData = progressiveShuffle(vanDaleData); break;
+      case 'brand': rawData = progressiveShuffle(brandData); break;
     }
-  }, [mode]);
+    
+    if (speedrunMode) {
+      return rawData.slice(0, 50); // limit to 50 items for speedrun
+    }
+    return rawData;
+  }, [mode, speedrunMode]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -71,9 +100,7 @@ export function GameScreen({ navigation, route }: Props) {
   const [shootConfetti, setShootConfetti] = useState(false);
   const [history, setHistory] = useState<{ word: string; correct: boolean; explanation: string }[]>([]);
 
-  const { hardcoreMode, equippedCard, survivalMode } = useSettingsStore();
   const [lives, setLives] = useState(hardcoreMode ? 3 : 0);
-  const timerRef = React.useRef<TimerBarRef>(null);
   const [stats, setStats] = useState<AppStats | null>(null);
   const [showShieldAlert, setShowShieldAlert] = useState(false);
   const [showTimeSlowAlert, setShowTimeSlowAlert] = useState(false);
@@ -93,24 +120,17 @@ export function GameScreen({ navigation, route }: Props) {
     async function initGame() {
       await statsStore.updateStreak(); // Track daily streak
       const currentStats = await statsStore.getStats();
-      setStats(currentStats);
-      if (!currentStats.tutorialSeen[mode]) {
-        setShowTutorial(true);
+      if (currentStats) {
+        setStats(currentStats);
+        // Ensure tutorial is shown first time
+        if (!(currentStats.tutorialSeen as any)[mode]) {
+          setShowTutorial(true);
+          setIsPaused(true);
+        }
       }
     }
     initGame();
   }, [mode]);
-
-  const handleDismissTutorial = async () => {
-    setShowTutorial(false);
-    const stats = await statsStore.getStats();
-    stats.tutorialSeen[mode] = true;
-    await statsStore.saveStats(stats);
-    // Restart timer when tutorial dismissed
-    if (isSpelling && !survivalMode) {
-      setTimerKey((k) => k + 1);
-    }
-  };
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0) => {
     const currentStats = await statsStore.getStats();
@@ -139,11 +159,12 @@ export function GameScreen({ navigation, route }: Props) {
         mode: modeLabels[mode],
         rawMode: mode,
         history,
+        timeMs: speedrunMode ? stopwatchRef.current?.getTime() : undefined,
       });
       return;
     }
 
-    if (!wasCorrect && isSpelling && !survivalMode) {
+    if (!wasCorrect && isSpelling && !survivalMode && !speedrunMode) {
       setGameOver(true);
       navigation.replace('Result', {
         score,
@@ -163,6 +184,7 @@ export function GameScreen({ navigation, route }: Props) {
         mode: modeLabels[mode],
         rawMode: mode,
         history,
+        timeMs: speedrunMode ? stopwatchRef.current?.getTime() : undefined,
       });
     } else {
       setCurrentIndex(nextIndex);
@@ -172,7 +194,7 @@ export function GameScreen({ navigation, route }: Props) {
         setTimerKey((k) => k + 1);
       }
     }
-  }, [currentIndex, data.length, gameOver, isSpelling, mode, navigation, score]);
+  }, [currentIndex, data.length, gameOver, isSpelling, mode, navigation, score, speedrunMode, survivalMode, history]);
 
   const showFeedback = useCallback((title: string, subtitle: string) => {
     setFeedbackInfo({ title, subtitle });
@@ -326,7 +348,7 @@ export function GameScreen({ navigation, route }: Props) {
         });
       }
     }
-  }, [currentIndex, data, gameOver, isSpelling, mode, advanceGame, showFeedback, hardcoreMode, score, navigation, modeLabels, stats]);
+  }, [currentIndex, data, gameOver, isSpelling, mode, advanceGame, showFeedback, hardcoreMode, combo, stats, survivalMode]);
 
   const handleSwipeRight = useCallback(() => handleAnswer(true), [handleAnswer]);
   const handleSwipeLeft = useCallback(() => handleAnswer(false), [handleAnswer]);
@@ -393,6 +415,12 @@ export function GameScreen({ navigation, route }: Props) {
     if (gameOver || isPaused) return;
     setGameOver(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    
+    if (history.length === 0) {
+      navigation.replace('Home');
+      return;
+    }
+
     navigation.replace('Result', {
       score,
       total: currentIndex,
@@ -400,7 +428,7 @@ export function GameScreen({ navigation, route }: Props) {
       rawMode: mode,
       history,
     });
-  }, [currentIndex, gameOver, isPaused, mode, navigation, score, history]);
+  }, [currentIndex, gameOver, isPaused, mode, navigation, score, history, modeLabels]);
 
   const handleClose = useCallback(() => {
     if (gameOver) return;
@@ -410,13 +438,36 @@ export function GameScreen({ navigation, route }: Props) {
   const handleQuit = useCallback(() => {
     setGameOver(true);
     setIsPaused(false);
+    
+    if (history.length === 0) {
+      navigation.replace('Home');
+      return;
+    }
+
     navigation.replace('Result', {
       score,
       total: currentIndex,
       mode: modeLabels[mode],
+      rawMode: mode,
       history,
     });
-  }, [currentIndex, mode, navigation, score, history]);
+  }, [currentIndex, mode, navigation, score, history, modeLabels]);
+
+  const handleDismissTutorial = async () => {
+    setShowTutorial(false);
+    setIsPaused(false);
+    if (stats) {
+      const newStats = {
+        ...stats,
+        tutorialSeen: {
+          ...stats.tutorialSeen,
+          [mode]: true,
+        }
+      };
+      await statsStore.saveStats(newStats);
+      setStats(newStats);
+    }
+  };
 
   const speakWord = useCallback((text: string, lang: string = 'nl-NL') => {
     Speech.stop();
@@ -541,7 +592,8 @@ export function GameScreen({ navigation, route }: Props) {
   };
 
   return (
-    <GradientBackground combo={combo} isPanicking={isPanicking}>
+    <GradientBackground>
+      {showTutorial && <TutorialOverlay mode={mode} onDismiss={handleDismissTutorial} />}
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         {hardcoreMode && (
           <Animated.View entering={FadeInDown} style={styles.heartsContainer}>
@@ -571,16 +623,18 @@ export function GameScreen({ navigation, route }: Props) {
           </View>
         </View>
 
-        {(isSpelling || survivalMode) && (
+        {speedrunMode ? (
+          <Stopwatch ref={stopwatchRef} running={!isPaused && !gameOver && !showTutorial} />
+        ) : (isSpelling || survivalMode) ? (
           <TimerBar
             ref={timerRef}
             duration={survivalMode ? 15000 : 1500}
-            running={!gameOver && !showTutorial}
+            running={!isPaused && !gameOver && !showTutorial}
             onTimeUp={handleTimeUp}
             onPanicChange={setIsPanicking}
             resetKey={survivalMode ? undefined : timerKey}
           />
-        )}
+        ) : null}
 
         <View style={styles.cardStack}>
           {/* Next card preview (behind) */}
