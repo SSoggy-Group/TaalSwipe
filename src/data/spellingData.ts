@@ -209,4 +209,335 @@ export const spellingData: SpellingItem[] = [
   { id: 239, text: 'Burocratie', isCorrect: false, correction: 'Bureaucratie (met eau)' },
   { id: 240, text: 'Onmiddellijk', isCorrect: true },
   { id: 241, text: 'Onmiddelijk', isCorrect: false, correction: 'Onmiddellijk (dubbel l)' }
+,
+  {
+    "id": "7dcb1021-c658-433b-8139-00adc93d19c7",
+    "text": "Apparaat",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "42344e9a-5c13-4af3-9b8d-a959bf41fd9e",
+    "text": "Aparaat",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Apparaat'."
+  },
+  {
+    "id": "d4759808-b719-4bae-b635-ccc489bcd288",
+    "text": "Abonnement",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "066dcf56-d47b-4b0c-b116-46f163da7787",
+    "text": "Abonement",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Abonnement'."
+  },
+  {
+    "id": "b2d143e2-d14c-41ff-827c-20cb7b8f97b6",
+    "text": "Onmiddellijk",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "87245ab8-055a-4f29-8d34-7e6a7fea4582",
+    "text": "Onmiddelijk",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Onmiddellijk'."
+  },
+  {
+    "id": "3cd8c4aa-24a9-4e8c-af9a-eacb151fc9e6",
+    "text": "Sowieso",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "d7f44c13-4a64-464a-be0b-6f38511adfe5",
+    "text": "Zowiezo",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Sowieso'."
+  },
+  {
+    "id": "a5a7e6b8-37fc-47a9-bf20-65d2b0489798",
+    "text": "Pannenkoek",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "9ab8a831-ec90-4f6d-8a7f-e3ec2b83b6f8",
+    "text": "Pannekoek",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Pannenkoek'."
+  },
+  {
+    "id": "6a3254e8-9cf4-4144-b90f-b0121da19fe3",
+    "text": "Gezamenlijk",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "045e6094-b769-4040-af68-aae4049cb2e7",
+    "text": "Gezamelijk",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Gezamenlijk'."
+  },
+  {
+    "id": "6666e392-61ee-4c4c-a959-ac38fb7cb6f1",
+    "text": "Burgemeester",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "8f157bbd-c0f5-4ce2-a0cd-93a2b5f3b5cc",
+    "text": "Burgermeester",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Burgemeester' zonder r."
+  },
+  {
+    "id": "4d406c87-b374-4501-8e10-9dc33b88a834",
+    "text": "Toentertijd",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "5cbd566a-fe99-4cc4-a8d9-73238e95bb60",
+    "text": "Toendertijd",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Toentertijd'."
+  },
+  {
+    "id": "213484b2-9766-4527-a047-65fea28e07ab",
+    "text": "Puzzel",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "8a1969b0-3133-45a4-a178-441717304a67",
+    "text": "Puzel",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Puzzel'."
+  },
+  {
+    "id": "d4441b1e-91c4-43cb-9148-3edc145d04f6",
+    "text": "Excuus",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "2745fe36-e08e-496f-a659-d006ba4a0234",
+    "text": "Exkuus",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Excuus'."
+  },
+  {
+    "id": "76569743-5bbd-4f6e-aebb-3be1b056e5dc",
+    "text": "Standaard",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "ed03e566-fecb-4cae-956d-1ec7d55baaf4",
+    "text": "Standart",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Standaard'."
+  },
+  {
+    "id": "0fa1a156-521e-4e3c-9d17-bc2dd576cfe3",
+    "text": "Elektrisch",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "e961dfaf-9cf2-4af2-a389-f7cbd40b9f6f",
+    "text": "Electrisch",
+    "isCorrect": false,
+    "correction": "Fout! Het is officieel 'Elektrisch'."
+  },
+  {
+    "id": "0ae985f0-b342-4108-84bd-6c15684ba4d3",
+    "text": "Cheque",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "950bbd57-f730-4b68-8f7c-f11b905c1a95",
+    "text": "Sjek",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Cheque' voor het betaalmiddel."
+  },
+  {
+    "id": "60a82d89-0d83-4336-a10a-48e700cf5fde",
+    "text": "Faillissement",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "5d3a07c9-0390-4102-a247-f5da2f2e6787",
+    "text": "Fallissement",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Faillissement'."
+  },
+  {
+    "id": "650388be-eb7f-4d2c-a25d-38bd714f31ce",
+    "text": "Labyrint",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "6000ef9f-401f-472b-b0ad-6e48144216ec",
+    "text": "Labyrinth",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Labyrint' in het Nederlands."
+  },
+  {
+    "id": "b753ee79-bb6a-45c3-88ef-9feeba1febf6",
+    "text": "Cadeau",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "159a40d0-9de0-431d-b57b-90c02b6f813d",
+    "text": "Kado",
+    "isCorrect": false,
+    "correction": "Fout! Het is officieel 'Cadeau'."
+  },
+  {
+    "id": "e5fd8320-983c-415c-bca0-2b2c474878d8",
+    "text": "Barbecue",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "a90352a8-79e5-4b09-9f30-1f3c926d8b8b",
+    "text": "Barbeque",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Barbecue' (met een c)."
+  },
+  {
+    "id": "a1c0382f-cef3-4514-bb2e-10e50bc522d0",
+    "text": "Guichelheil",
+    "isCorrect": true,
+    "correction": "Goed gespeld! (Een plantje)"
+  },
+  {
+    "id": "e344c9a8-f593-42d3-9fa6-7bd9b7754215",
+    "text": "Eczeem",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "bcb9a161-1350-4b88-bbac-9a49d8e0d4b0",
+    "text": "Exceem",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Eczeem'."
+  },
+  {
+    "id": "8354412b-1ac4-4eed-bdba-b0d518796097",
+    "text": "Truc",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "c5917ea4-5d61-4b5c-9a81-966fd50c871e",
+    "text": "Truuk",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Truc'."
+  },
+  {
+    "id": "5c7a0af9-0914-4819-97ff-1f18afd3a01b",
+    "text": "Okergeel",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "13dbe552-a86a-47f8-9531-0e2907ece792",
+    "text": "Okkergeel",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Okergeel'."
+  },
+  {
+    "id": "312b15b4-6b30-427b-9721-b46d2917036d",
+    "text": "Nochtans",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "4e62b94b-6526-401d-b5bb-e66e35d798d5",
+    "text": "Nogtans",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Nochtans'."
+  },
+  {
+    "id": "cfa038de-71e1-4909-b98e-9d85c2cd3f28",
+    "text": "Snoezig",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "a2e4bcda-9ceb-492f-98bd-e11dd7d60341",
+    "text": "Snoesig",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Snoezig'."
+  },
+  {
+    "id": "4ce0dc7f-7395-462f-844c-d0415ec43515",
+    "text": "Asymmetrisch",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "c3a251c8-5c8c-44d3-92de-82b4734b2a4c",
+    "text": "Assymetrisch",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Asymmetrisch' (1 s, 2 m's)."
+  },
+  {
+    "id": "2345441b-4570-4ada-862f-fb54ec506cac",
+    "text": "Basaal",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "622dfea7-d4e4-47aa-8286-6325896a04ea",
+    "text": "Bazaal",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Basaal'."
+  },
+  {
+    "id": "b4b95b88-f232-4e21-80ca-7eb1be6d4828",
+    "text": "Tatoeage",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "e1c336a1-02fd-49d8-8538-43c63938e647",
+    "text": "Tatouage",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Tatoeage'."
+  },
+  {
+    "id": "a55aa208-4916-4e16-9f1a-95a7be48ffb6",
+    "text": "Baby'tje",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "c214612a-7b1f-4da0-b498-b95c12fe20b4",
+    "text": "Babyetje",
+    "isCorrect": false,
+    "correction": "Fout! Het is 'Baby'tje'."
+  },
+  {
+    "id": "c98dbe50-6956-4f10-a0f5-5e5d8aff735d",
+    "text": "Kangoeroe",
+    "isCorrect": true,
+    "correction": "Goed gespeld!"
+  },
+  {
+    "id": "0a2858a1-ab66-4072-bb5b-f24cfc6619af",
+    "text": "Kangaroo",
+    "isCorrect": false,
+    "correction": "Fout! Dit is Engels. Het is 'Kangoeroe'."
+  }
 ];
