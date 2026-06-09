@@ -1,9 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors, useAppTheme } from '../theme/colors';
 import { AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
+import { CustomAlertModal } from './CustomAlertModal';
 
 interface Props {
   readonly visible: boolean;
@@ -126,6 +127,9 @@ const ACHIEVEMENTS: Achievement[] = [
 export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'stats' }: Props) {
   const theme = useAppTheme();
   const [activeTab, setActiveTab] = React.useState<TabType>(initialTab);
+  
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertConfig, setAlertConfig] = React.useState<{ title: string; message: string; buttons?: any[] }>({ title: '', message: '' });
 
   React.useEffect(() => {
     if (visible) {
@@ -141,11 +145,11 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
   const xpProgress = xpInCurrentLevel / nextLevelXp;
 
   const handleResetPress = () => {
-    Alert.alert(
-      'Reset Voortgang',
-      'Weet je zeker dat je al je stats, XP en aankopen wilt wissen? Dit kan niet ongedaan worden gemaakt.',
-      [
-        { text: 'Annuleren', style: 'cancel' },
+    setAlertConfig({
+      title: 'Reset Voortgang',
+      message: 'Weet je zeker dat je al je stats, XP en aankopen wilt wissen? Dit kan niet ongedaan worden gemaakt.',
+      buttons: [
+        { text: 'Annuleren', style: 'cancel', onPress: () => {} },
         { 
           text: 'Wissen', 
           style: 'destructive',
@@ -155,7 +159,8 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
           }
         }
       ]
-    );
+    });
+    setAlertVisible(true);
   };
 
   const renderStatsTab = () => {
@@ -447,6 +452,14 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
 
         </View>
       </BlurView>
+      
+      <CustomAlertModal
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        buttons={alertConfig.buttons}
+        onClose={() => setAlertVisible(false)}
+      />
     </Modal>
   );
 }
