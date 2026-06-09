@@ -4,14 +4,13 @@ import { BlurView } from 'expo-blur';
 import { Colors, useAppTheme } from '../theme/colors';
 import { AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
-import { BouncyButton } from './BouncyButton';
 
 interface Props {
-  visible: boolean;
-  onClose: () => void;
-  onReset: () => void;
-  stats: AppStats | null;
-  initialTab?: 'stats' | 'achievements' | 'leaderboard';
+  readonly visible: boolean;
+  readonly onClose: () => void;
+  readonly onReset: () => void;
+  readonly stats: AppStats | null;
+  readonly initialTab?: 'stats' | 'achievements' | 'leaderboard';
 }
 
 type TabType = 'stats' | 'achievements' | 'leaderboard';
