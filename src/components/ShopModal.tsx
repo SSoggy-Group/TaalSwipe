@@ -163,7 +163,13 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
     if (activeTab === 'themes') {
       return item.type === 'background' || item.type === 'card';
     }
-    return item.type === activeTab;
+    if (activeTab === 'powerups') {
+      return item.type === 'powerup';
+    }
+    if (activeTab === 'upgrades') {
+      return item.type === 'upgrade';
+    }
+    return false;
   });
 
   return (
