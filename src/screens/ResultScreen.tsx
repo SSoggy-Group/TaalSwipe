@@ -7,7 +7,6 @@ import { GradientBackground } from '../components/GradientBackground';
 import { BouncyButton } from '../components/BouncyButton';
 import { Confetti } from '../components/Confetti';
 import { Colors, useAppTheme } from '../theme/colors';
-import { statsStore } from '../store/statsStore';
 
 type RootStackParamList = {
   Home: undefined;
@@ -15,7 +14,7 @@ type RootStackParamList = {
   Result: { score: number; total: number; mode: string };
 };
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
+type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Result'>>;
 
 export function ResultScreen({ route, navigation }: Props) {
   const { score, total, mode } = route.params;

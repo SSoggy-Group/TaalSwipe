@@ -1,18 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { ModeCard } from '../components/ModeCard';
 import { StatsModal } from '../components/StatsModal';
 import { SettingsModal } from '../components/SettingsModal';
 import { ShopModal } from '../components/ShopModal';
 import { BouncyButton } from '../components/BouncyButton';
-import { Colors, useAppTheme } from '../theme/colors';
+import { Colors } from '../theme/colors';
 import { statsStore, AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
-import { useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming, withDelay } from 'react-native-reanimated';
 
 type RootStackParamList = {
   Home: undefined;
@@ -20,7 +19,7 @@ type RootStackParamList = {
   Result: { score: number; total: number; mode: string };
 };
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Home'>>;
 
 export function HomeScreen({ navigation }: Props) {
   const [statsVisible, setStatsVisible] = React.useState(false);
