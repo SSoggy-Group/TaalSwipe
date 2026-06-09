@@ -134,11 +134,18 @@ export function GameScreen({ navigation, route }: Props) {
       }
     }
     initGame();
+    // Track sessions played
+    statsStore.getStats().then(s => {
+      s.sessionsPlayed = (s.sessionsPlayed ?? 0) + 1;
+      statsStore.saveStats(s);
+    });
   }, [mode, speedrunMode, getItemId]);
 
-  const updateStats = async (currentCombo: number, earnedXp: number = 0) => {
+  const updateStats = async (currentCombo: number, earnedXp: number = 0, wasCorrect?: boolean) => {
     const currentStats = await statsStore.getStats();
     currentStats.totalSwipes += 1;
+    if (wasCorrect === true)  currentStats.totalCorrect = (currentStats.totalCorrect ?? 0) + 1;
+    if (wasCorrect === false) currentStats.totalWrong   = (currentStats.totalWrong   ?? 0) + 1;
     
     const multiplier = currentStats.xpMultiplier || 1.0;
     const finalXp = Math.round(earnedXp * multiplier);
@@ -266,7 +273,7 @@ export function GameScreen({ navigation, route }: Props) {
       setScore((s) => s + 1);
       setCombo((c) => {
         const newCombo = c + 1;
-        updateStats(newCombo, 10 + (newCombo * 2)); // Earn XP!
+        updateStats(newCombo, 10 + (newCombo * 2), true); // Earn XP!
         
         // Trigger confetti every 5 combo
         if (newCombo > 0 && newCombo % 5 === 0) {
@@ -300,7 +307,7 @@ export function GameScreen({ navigation, route }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       soundManager.playIncorrect();
       setCombo(0);
-      updateStats(0, 0);
+      updateStats(0, 0, false);
 
       if (survivalMode) {
         timerRef.current?.subtractTime(3000); // 3 seconds penalty!
