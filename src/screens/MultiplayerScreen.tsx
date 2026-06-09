@@ -45,7 +45,7 @@ export function MultiplayerScreen({ navigation }: Props) {
   const handleAnswer = useCallback((player: 1 | 2, answerIsRight: boolean) => {
     if (winner !== null) return;
     
-    const isCorrect = currentItem.correct === answerIsRight;
+    const isCorrect = currentItem.isReal === answerIsRight;
     
     Haptics.impactAsync(isCorrect ? Haptics.ImpactFeedbackStyle.Medium : Haptics.ImpactFeedbackStyle.Heavy);
     if (isCorrect) {
