@@ -190,4 +190,449 @@ export const straattaalData: StraattaalItem[] = [
   { id: 228, word: 'Mansen', definition: 'Verzonnen woord voor aankleden', isReal: false },
   { id: 229, word: 'Nepp', definition: 'Nep / niet echt', isReal: true },
   { id: 230, word: 'Plaskie', definition: 'Verzonnen woord voor een plastic tasje', isReal: false }
+,
+  {
+    "id": "1138aba0-3558-443e-86c0-de9ca9f521eb",
+    "word": "Fittie",
+    "isReal": true,
+    "definition": "Een ruzie of gevecht."
+  },
+  {
+    "id": "b3af7919-7715-431a-9b31-7fd2006d91c9",
+    "word": "Snats",
+    "isReal": true,
+    "definition": "Cocaïne of soms iets snels."
+  },
+  {
+    "id": "f0980163-de00-42d3-900f-4d86df8de5b4",
+    "word": "Ballas",
+    "isReal": true,
+    "definition": "Geld of grote bedragen."
+  },
+  {
+    "id": "496cdf81-e69b-4f29-b0c4-715bd61e2c5c",
+    "word": "Zjoez",
+    "isReal": false,
+    "definition": "AI-verzonnen: Klinkt als iets snels of een auto, maar betekent niks."
+  },
+  {
+    "id": "a7dbb16f-2525-4b0b-9990-895fa779112c",
+    "word": "Osso",
+    "isReal": true,
+    "definition": "Huis (Sranantongo)."
+  },
+  {
+    "id": "d0054e67-d62a-4434-980a-30c1928271a7",
+    "word": "Floes",
+    "isReal": true,
+    "definition": "Geld (Arabisch)."
+  },
+  {
+    "id": "18612b3b-ddfa-496c-a422-e2f5874f9160",
+    "word": "Planga",
+    "isReal": true,
+    "definition": "Zonnebril."
+  },
+  {
+    "id": "7da2db2f-add6-437c-ba42-adff442b8912",
+    "word": "Tantoe",
+    "isReal": true,
+    "definition": "Heel erg, heel veel."
+  },
+  {
+    "id": "5adee564-8da4-4200-95ed-a3627c5fcea7",
+    "word": "Moker",
+    "isReal": true,
+    "definition": "Heel erg (bijv. mokerhard)."
+  },
+  {
+    "id": "8c9ed915-38bf-43fe-ab8c-eb656d3fa3c4",
+    "word": "Dampoe",
+    "isReal": true,
+    "definition": "Stank, of iets dat zwaar tegenvalt."
+  },
+  {
+    "id": "0688c784-1ffe-4df8-a0f1-b61a04ffcc20",
+    "word": "Djoek",
+    "isReal": true,
+    "definition": "Steken (met een mes)."
+  },
+  {
+    "id": "64cf9918-2371-4d0c-9bf6-3e065d12226d",
+    "word": "Skooien",
+    "isReal": true,
+    "definition": "Bedelen om iets."
+  },
+  {
+    "id": "61bd06c6-1341-4e3c-81f3-bc92ca1a17c5",
+    "word": "Kliti",
+    "isReal": false,
+    "definition": "AI-verzonnen woord voor sleutel."
+  },
+  {
+    "id": "ef7a4371-6955-4e76-9278-6c202b446f53",
+    "word": "Spang",
+    "isReal": true,
+    "definition": "Lekker, mooi of spannend."
+  },
+  {
+    "id": "8bac3a2c-ff92-4467-829b-12bb86840aa0",
+    "word": "Bonje",
+    "isReal": true,
+    "definition": "Ruzie (oudere straattaal/Bargoens)."
+  },
+  {
+    "id": "809aabfd-a1ee-4c78-984b-9c817c1ddd9b",
+    "word": "Tjoeper",
+    "isReal": false,
+    "definition": "AI-verzonnen woord voor een dikke auto."
+  },
+  {
+    "id": "0208fbf8-c071-4c76-a833-dc9f443feb87",
+    "word": "Lauw",
+    "isReal": true,
+    "definition": "Cool, gek, of bizar."
+  },
+  {
+    "id": "7376b638-7719-4deb-8137-b693b6f87865",
+    "word": "Waggi",
+    "isReal": true,
+    "definition": "Auto."
+  },
+  {
+    "id": "2635fbb1-4532-4967-b5f5-56fb7227496c",
+    "word": "Wiggel",
+    "isReal": false,
+    "definition": "AI-verzonnen: een nep-versie van Waggi."
+  },
+  {
+    "id": "e03ee438-6dde-4a1e-bfc7-20036ce1d1ff",
+    "word": "Doekoe",
+    "isReal": true,
+    "definition": "Geld."
+  },
+  {
+    "id": "58aaf383-7df2-4105-9a21-1daef2e7b58f",
+    "word": "Pikket",
+    "isReal": false,
+    "definition": "AI-verzonnen: Zogenaamd een klein bedrag."
+  },
+  {
+    "id": "76adaab6-c546-4ed5-b45b-995027630d0d",
+    "word": "Skaffa",
+    "isReal": true,
+    "definition": "High of stoned zijn."
+  },
+  {
+    "id": "e5f1e762-4f60-4852-8dc1-f195e8c0ca5a",
+    "word": "Faya",
+    "isReal": true,
+    "definition": "Vuur, heet, of erg (bijv. 'dat is faya')."
+  },
+  {
+    "id": "0065efb0-0532-484b-aba9-64a7f9b73f1b",
+    "word": "Brakka",
+    "isReal": true,
+    "definition": "Inbraak."
+  },
+  {
+    "id": "136105c2-c7b4-41bf-b839-36cba0f47ed5",
+    "word": "Barkie",
+    "isReal": true,
+    "definition": "Honderd (euro)."
+  },
+  {
+    "id": "46e8b591-6727-48fe-b054-ee0ec27b3a63",
+    "word": "Donnie",
+    "isReal": true,
+    "definition": "Tien (euro)."
+  },
+  {
+    "id": "ee126b1d-7ae5-478b-a355-cd82254207e9",
+    "word": "Doezoe",
+    "isReal": true,
+    "definition": "Duizend (euro)."
+  },
+  {
+    "id": "3dee8194-e8f6-4d50-b474-723d789fcff6",
+    "word": "Tjak",
+    "isReal": true,
+    "definition": "Slecht spul of drugs."
+  },
+  {
+    "id": "e7a1c66f-168e-4c5b-b0d7-258c2193ee00",
+    "word": "Drerrie",
+    "isReal": true,
+    "definition": "Jongen, vriend, gast."
+  },
+  {
+    "id": "c9801044-960f-4dbd-bffe-ea274a26a5f6",
+    "word": "Sjapie",
+    "isReal": true,
+    "definition": "Dommerik of sukkel."
+  },
+  {
+    "id": "b522fd3a-825f-4750-a0ef-81b067dd46b3",
+    "word": "Patoe",
+    "isReal": false,
+    "definition": "AI-verzonnen: zogenaamd een grote jas."
+  },
+  {
+    "id": "753b8117-0c6e-4fa7-b6d8-e5f013a07062",
+    "word": "Gappie",
+    "isReal": true,
+    "definition": "Vriend."
+  },
+  {
+    "id": "d25887b7-038f-4c4d-9d63-821eac8ce94d",
+    "word": "Matttie",
+    "isReal": true,
+    "definition": "Vriend (Mattie)."
+  },
+  {
+    "id": "1b53d2c8-c95d-4b0a-80f9-2f6cf2f23780",
+    "word": "Hosselen",
+    "isReal": true,
+    "definition": "Geld verdienen (vaak op straat) of versieren."
+  },
+  {
+    "id": "18bbe75f-c288-4690-9d45-172948d42406",
+    "word": "Scotoe",
+    "isReal": true,
+    "definition": "Politie."
+  },
+  {
+    "id": "7e929d1f-61d5-4390-9958-217a87f2527c",
+    "word": "Woute",
+    "isReal": true,
+    "definition": "Politie (oude straattaal)."
+  },
+  {
+    "id": "f8e49dd2-89ad-4611-bf90-487cf72735ae",
+    "word": "Popo",
+    "isReal": true,
+    "definition": "Politie."
+  },
+  {
+    "id": "6e0a7f75-ce20-4c5b-b6b3-9ab35eab5f36",
+    "word": "Bami",
+    "isReal": false,
+    "definition": "AI-verzonnen: als scheldwoord, maar bami is gewoon eten."
+  },
+  {
+    "id": "36de479a-734a-4fcc-8456-8ccbffef8a58",
+    "word": "Skeer",
+    "isReal": true,
+    "definition": "Gierig of blut."
+  },
+  {
+    "id": "2acc910d-8604-4dbc-aff5-34b87abf90be",
+    "word": "Plakka",
+    "isReal": false,
+    "definition": "AI-verzonnen: zogenaamd een bankbiljet."
+  },
+  {
+    "id": "5828be7b-444c-4f3b-adbd-253cecd3a3e5",
+    "word": "Kek",
+    "isReal": true,
+    "definition": "Leuk, hip (ouderwets)."
+  },
+  {
+    "id": "403246ac-62b8-4156-a11f-973bf93b4bd5",
+    "word": "Lijp",
+    "isReal": true,
+    "definition": "Gek of heel vet."
+  },
+  {
+    "id": "d884c4c9-61a4-451f-94c9-172849266710",
+    "word": "Faf",
+    "isReal": false,
+    "definition": "AI-verzonnen: zogenaamd een saai feestje."
+  },
+  {
+    "id": "3f1d329e-1c1a-4e6b-85a1-bf95c42fe142",
+    "word": "Chillen",
+    "isReal": true,
+    "definition": "Ontspannen of rondhangen."
+  },
+  {
+    "id": "fe703ce4-90ed-4410-a6af-46b92c3333fa",
+    "word": "Fixen",
+    "isReal": true,
+    "definition": "Regelen of versieren."
+  },
+  {
+    "id": "846a6737-7f47-441e-ba67-ca96c7e7ad16",
+    "word": "Gauw",
+    "isReal": false,
+    "definition": "Niet echt straattaal, gewoon een Nederlands woord."
+  },
+  {
+    "id": "e2e237f3-2cdb-48e1-9397-f2a14bde4a15",
+    "word": "Poko",
+    "isReal": false,
+    "definition": "AI-verzonnen: klinkt als pokoe (muziek), maar fout."
+  },
+  {
+    "id": "d4c30d62-10a3-46a7-9d9d-24846c4de808",
+    "word": "Pokoe",
+    "isReal": true,
+    "definition": "Liedje of track."
+  },
+  {
+    "id": "8a08c700-9267-4526-aae3-c732f46dda62",
+    "word": "Illie",
+    "isReal": true,
+    "definition": "Illegaal of gek/vet."
+  },
+  {
+    "id": "d63fa70b-684a-478c-b071-0ebe0baf3cc0",
+    "word": "Strijder",
+    "isReal": true,
+    "definition": "Iemand die hard werkt of iets goeds doet."
+  },
+  {
+    "id": "fbb710b4-eaf6-46fb-8699-2a6d9a45eba2",
+    "word": "Gruwelijk",
+    "isReal": true,
+    "definition": "Heel erg goed of vet."
+  },
+  {
+    "id": "b8c09227-818a-4039-801b-d93160862162",
+    "word": "Bossen",
+    "isReal": true,
+    "definition": "Slaan, kapotmaken of opmaken (geld)."
+  },
+  {
+    "id": "11824331-c733-4a70-bf45-cdf7d2c29078",
+    "word": "Zemmerman",
+    "isReal": false,
+    "definition": "AI-verzonnen samenvoeging van zemmel en timmerman."
+  },
+  {
+    "id": "83b1e7a5-cdf6-4ca6-b578-029e0d87f2fb",
+    "word": "Zemmel",
+    "isReal": true,
+    "definition": "Scheldwoord voor homo (Arabisch)."
+  },
+  {
+    "id": "9bb64e21-38fc-434c-a820-e5ee395eb41c",
+    "word": "Niffauw",
+    "isReal": true,
+    "definition": "Neef of vriend."
+  },
+  {
+    "id": "3a30096f-8617-49e3-9a48-15dca3632f13",
+    "word": "Fouilleren",
+    "isReal": false,
+    "definition": "Dit is gewoon een officieel Nederlands woord."
+  },
+  {
+    "id": "08143a8f-9976-453f-a01b-151271c05bad",
+    "word": "Smikkelbeer",
+    "isReal": false,
+    "definition": "AI-verzonnen als straattaal."
+  },
+  {
+    "id": "c367488b-add8-4272-9e63-0e723affd6a8",
+    "word": "Brak",
+    "isReal": true,
+    "definition": "Ziek of moe na veel drinken."
+  },
+  {
+    "id": "73d72e11-2217-485a-ab89-46a9d8ae1fa2",
+    "word": "Para",
+    "isReal": true,
+    "definition": "Paranoïde of boos."
+  },
+  {
+    "id": "e0f773aa-c020-4050-9269-b1df70e3c0d1",
+    "word": "Kieren",
+    "isReal": true,
+    "definition": "Betrapt worden of falen (oud-Hollands/Bargoens)."
+  },
+  {
+    "id": "7150cd2a-4b2b-42d9-8158-02063f2e303e",
+    "word": "Wastie",
+    "isReal": false,
+    "definition": "AI-verzonnen: zogenaamd een wasmachine of badkamer."
+  },
+  {
+    "id": "b0659023-c019-4920-ba96-f094262b1778",
+    "word": "Pik",
+    "isReal": true,
+    "definition": "Vriend of gast."
+  },
+  {
+    "id": "e16daf70-9883-4ec2-b691-de63361bbd43",
+    "word": "Trek",
+    "isReal": false,
+    "definition": "AI-verzonnen in deze context, betekent gewoon honger."
+  },
+  {
+    "id": "27065855-bb2c-4b3c-9731-57c2a2c21d93",
+    "word": "Spijbelen",
+    "isReal": false,
+    "definition": "Dit is Standaardnederlands, geen slang."
+  },
+  {
+    "id": "94852e48-cca5-4f9b-a384-f749dd05e92b",
+    "word": "Zolder",
+    "isReal": false,
+    "definition": "Dit is gewoon het bovenste van een huis."
+  },
+  {
+    "id": "52a47a0d-52c8-4929-96c8-fa1c2cd45f36",
+    "word": "Aandacht",
+    "isReal": false,
+    "definition": "Dit is Standaardnederlands."
+  },
+  {
+    "id": "88905229-0a9e-4cad-9b7d-24756a6f97b1",
+    "word": "Bocht",
+    "isReal": true,
+    "definition": "Slechte drank (Bargoens/informeel)."
+  },
+  {
+    "id": "78bc2955-8858-4761-a14b-279d9761ff08",
+    "word": "Zopie",
+    "isReal": true,
+    "definition": "Ouderwets woord voor drankje."
+  },
+  {
+    "id": "6471bc47-cea5-4782-a6c7-90b9dd897af1",
+    "word": "Giechel",
+    "isReal": true,
+    "definition": "Gezicht (bijv. 'een klap voor je giechel')."
+  },
+  {
+    "id": "3b46a7b0-21e0-4b13-81b5-383b604f66a4",
+    "word": "Peers",
+    "isReal": false,
+    "definition": "AI-verzonnen: nep-woord voor ogen."
+  },
+  {
+    "id": "4f048b1b-243f-4739-8418-1888b1bc9320",
+    "word": "Dopen",
+    "isReal": false,
+    "definition": "AI-verzonnen: nep-straatwoord voor chillen."
+  },
+  {
+    "id": "134527f3-bf2b-415e-ac86-1180981e6a79",
+    "word": "Blaka",
+    "isReal": true,
+    "definition": "Zwart (Sranantongo)."
+  },
+  {
+    "id": "cacf5954-c17c-4ea2-b7f9-2be9ec6b58a2",
+    "word": "Gloeika",
+    "isReal": false,
+    "definition": "AI-verzonnen vuurwapen."
+  },
+  {
+    "id": "1859b932-1dc9-44ee-80fa-90ac7bffb81c",
+    "word": "Fitti",
+    "isReal": true,
+    "definition": "Andere spelling voor ruzie/fittie."
+  }
 ];
