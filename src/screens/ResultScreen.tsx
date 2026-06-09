@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
-import { GlassButton } from '../components/GlassButton';
-import { Colors } from '../theme/colors';
+import { BouncyButton } from '../components/BouncyButton';
+import { Confetti } from '../components/Confetti';
+import { Colors, useAppTheme } from '../theme/colors';
+import { statsStore } from '../store/statsStore';
 
 type RootStackParamList = {
   Home: undefined;
@@ -15,60 +17,85 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Result'>;
 
-function getResultMessage(score: number, total: number) {
-  if (total === 0) return { emoji: '😬', message: 'Beter volgende keer!' };
-  const pct = score / total;
-  if (pct >= 0.9) return { emoji: '🏆', message: 'Taalmeester!' };
-  if (pct >= 0.7) return { emoji: '🔥', message: 'Lekker bezig!' };
-  if (pct >= 0.5) return { emoji: '👍', message: 'Niet slecht!' };
-  if (pct >= 0.3) return { emoji: '😅', message: 'Kan beter...' };
-  return { emoji: '😬', message: 'Oefening baart kunst!' };
-}
-
-export function ResultScreen({ navigation, route }: Props) {
+export function ResultScreen({ route, navigation }: Props) {
   const { score, total, mode } = route.params;
-  const { emoji, message } = getResultMessage(score, total);
+  const theme = useAppTheme();
+  
+  const percentage = total > 0 ? (score / total) * 100 : 0;
+  let emoji = '😐';
+  let message = 'Kan beter...';
+  
+  if (percentage >= 80) {
+    emoji = '🔥';
+    message = 'Taal-Baas!';
+  } else if (percentage >= 50) {
+    emoji = '👍';
+    message = 'Lekker bezig!';
+  }
+
+  const isPerfect = percentage >= 100 && total > 5;
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `Ik scoorde ${score}/${total} (${Math.round(percentage)}%) in de TaalSwipe modus "${mode}"! ${emoji} Kan jij beter?`,
+      });
+    } catch (error: any) {
+      console.log('Share error:', error.message);
+    }
+  };
 
   return (
     <GradientBackground>
+      {isPerfect && <Confetti />}
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <Animated.View
-            entering={FadeInDown.delay(100).duration(600).springify()}
-            style={styles.resultContainer}
+          <Animated.View 
+            entering={ZoomIn.duration(600).springify()}
+            style={[styles.scoreCard, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}
           >
             <Text style={styles.emoji}>{emoji}</Text>
-            <Text style={styles.message}>{message}</Text>
-            <Text style={styles.modeLabel}>{mode}</Text>
-
-            <View style={styles.scoreContainer}>
-              <Text style={styles.scoreValue}>{score}</Text>
-              <Text style={styles.scoreDivider}>/</Text>
-              <Text style={styles.scoreTotal}>{total}</Text>
+            <Text style={[styles.message, { color: theme.cardTextPrimary }]}>{message}</Text>
+            
+            <View style={styles.statsContainer}>
+              <View style={styles.statBox}>
+                <Text style={[styles.statValue, { color: theme.cardTextPrimary }]}>{score}</Text>
+                <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Goed</Text>
+              </View>
+              <View style={[styles.divider, { backgroundColor: theme.glass.border }]} />
+              <View style={styles.statBox}>
+                <Text style={[styles.statValue, { color: theme.cardTextPrimary }]}>{total}</Text>
+                <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Totaal</Text>
+              </View>
             </View>
 
-            <Text style={styles.percentText}>
-              {total > 0 ? Math.round((score / total) * 100) : 0}% goed
-            </Text>
+            <Text style={[styles.modeText, { color: theme.cardTextSecondary }]}>Modus: {mode}</Text>
           </Animated.View>
 
-          <Animated.View
-            entering={FadeInUp.delay(400).duration(500).springify()}
-            style={styles.buttonsContainer}
+          <Animated.View 
+            entering={FadeInDown.delay(300).duration(500)}
+            style={styles.buttonContainer}
           >
-            <GlassButton
-              emoji="🔄"
-              title="Opnieuw"
-              onPress={() => navigation.replace('Game', {
-                mode: mode === 'Straattaal of AI?' ? 'straattaal'
-                  : mode === 'Steenkolenengels' ? 'dunglish'
-                  : 'spelling'
-              })}
+            <BouncyButton
+              title="Nog een keer 🔄"
+              color={Colors.accent}
+              borderColor="#8B5CF6"
+              bottomBorderColor="#7C3AED"
+              onPress={() => navigation.navigate('Game', { mode: route.params.mode as any })}
             />
-            <GlassButton
-              emoji="🏠"
-              title="Home"
-              onPress={() => navigation.popToTop()}
+            <BouncyButton
+              title="Deel Score 📤"
+              color="#38BDF8"
+              borderColor="#0284C7"
+              bottomBorderColor="#0369A1"
+              onPress={handleShare}
+            />
+            <BouncyButton
+              title="Naar Menu 🏠"
+              color="#94A3B8"
+              borderColor="#64748B"
+              bottomBorderColor="#475569"
+              onPress={() => navigation.navigate('Home')}
             />
           </Animated.View>
         </View>
@@ -86,9 +113,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-  resultContainer: {
+  scoreCard: {
+    padding: 32,
+    borderRadius: 24,
+    borderWidth: 1,
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 32, // More margin to separate from buttons
+    paddingBottom: 40, // Add padding to fix the modeText stickiness
   },
   emoji: {
     fontSize: 72,
@@ -104,39 +135,36 @@ const styles = StyleSheet.create({
   },
   modeLabel: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    color: Colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 24,
   },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    marginBottom: 8,
+  statBox: {
+    alignItems: 'center',
+    paddingHorizontal: 24,
   },
-  scoreValue: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 64,
-    color: Colors.correct,
+  statValue: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 48,
   },
-  scoreDivider: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 36,
-    color: Colors.textMuted,
-    marginHorizontal: 8,
+  statLabel: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
-  scoreTotal: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 36,
-    color: Colors.textSecondary,
+  divider: {
+    width: 2,
+    height: 40,
   },
-  percentText: {
+  modeText: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 18,
-    color: Colors.textSecondary,
+    fontSize: 14,
   },
-  buttonsContainer: {
-    gap: 4,
+  buttonContainer: {
+    gap: 12,
   },
 });
