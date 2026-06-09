@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, View } from 'react-native';
+import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, View, StyleProp } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -8,8 +8,8 @@ interface Props {
   onPress: () => void;
   title?: string;
   children?: React.ReactNode;
-  style?: ViewStyle | ViewStyle[];
-  textStyle?: TextStyle | TextStyle[];
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   color?: string;
   borderColor?: string;
   bottomBorderColor?: string;
