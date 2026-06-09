@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch, Alert } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from 'expo-haptics';
 import { statsStore } from '../store/statsStore';
+import { CustomAlertModal } from './CustomAlertModal';
 
 interface Props {
   readonly visible: boolean;
@@ -15,6 +16,9 @@ interface Props {
 export function SettingsModal({ visible, onClose }: Props) {
   const { isSoundEnabled, toggleSound, hardcoreMode, toggleHardcoreMode, themePreference, setThemePreference, survivalMode, toggleSurvivalMode, speedrunMode, toggleSpeedrunMode } = useSettingsStore();
   const theme = useAppTheme();
+  
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertConfig, setAlertConfig] = React.useState({ title: '', message: '' });
 
   if (!visible) return null;
 
@@ -45,7 +49,8 @@ export function SettingsModal({ visible, onClose }: Props) {
     };
     await statsStore.saveStats(currentStats);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    Alert.alert('Tutorials Gereset! 🦉', 'Je zult bij elke gamemode de tutorial weer één keer zien.');
+    setAlertConfig({ title: 'Tutorials Gereset! 🦉', message: 'Je zult bij elke gamemode de tutorial weer één keer zien.' });
+    setAlertVisible(true);
   };
 
   return (
@@ -218,10 +223,16 @@ export function SettingsModal({ visible, onClose }: Props) {
             >
               <Text style={[styles.settingTitle, { color: theme.cardTextPrimary, textAlign: 'center' }]}>🔄 Herstel Tutorials</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </BlurView>
+      
+      <CustomAlertModal
+        visible={alertVisible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={() => setAlertVisible(false)}
+      />
     </Modal>
   );
 }
