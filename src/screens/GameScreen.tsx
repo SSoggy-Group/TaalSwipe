@@ -748,7 +748,6 @@ export function GameScreen({ navigation, route }: Props) {
       </SafeAreaView>
 
       <TutorialOverlay
-        visible={showTutorial}
         onDismiss={handleDismissTutorial}
         mode={mode}
       />
