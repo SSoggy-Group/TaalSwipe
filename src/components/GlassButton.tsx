@@ -60,9 +60,9 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   title: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 18,
-    color: Colors.textPrimary,
+    fontFamily: 'Inter_700Bold', // Make it bolder for playfulness
+    fontSize: 20,
+    color: '#1E293B', // Dark slate instead of white
     letterSpacing: -0.3,
   },
 });
