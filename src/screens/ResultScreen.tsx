@@ -10,7 +10,7 @@ import { Colors, useAppTheme } from '../theme/colors';
 
 type RootStackParamList = {
   Home: undefined;
-  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' };
+  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
   Result: { score: number; total: number; mode: string };
 };
 

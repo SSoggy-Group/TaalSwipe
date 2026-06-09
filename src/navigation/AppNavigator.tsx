@@ -7,7 +7,7 @@ import { ResultScreen } from '../screens/ResultScreen';
 
 export type RootStackParamList = {
   Home: undefined;
-  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' };
+  Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
   Result: { score: number; total: number; mode: string };
 };
 
