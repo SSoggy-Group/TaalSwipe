@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
 import { useSettingsStore } from '../store/settingsStore';
 
 type SoundKey = 'swoosh' | 'correct' | 'incorrect' | 'gameover' | 'win' | 'purchase';
@@ -13,58 +13,67 @@ const SOUND_FILES: Record<SoundKey, any> = {
 };
 
 class SoundManager {
-  private sounds: Partial<Record<SoundKey, Audio.Sound>> = {};
+  private players: Partial<Record<SoundKey, AudioPlayer>> = {};
   private initialized = false;
 
   async init() {
     if (this.initialized) return;
     try {
-      await Audio.setAudioModeAsync({
+      await setAudioModeAsync({
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
+        interruptionModeIOS: 'mixWithOthers',
+        interruptionModeAndroid: 'doNotMix',
       });
 
       for (const key of Object.keys(SOUND_FILES) as SoundKey[]) {
-        const { sound } = await Audio.Sound.createAsync(SOUND_FILES[key]);
-        this.sounds[key] = sound;
+        try {
+          this.players[key] = createAudioPlayer(SOUND_FILES[key]);
+        } catch (e) {
+          console.warn(`[SoundManager] Failed to load "${key}":`, e);
+        }
       }
       this.initialized = true;
     } catch (e) {
-      console.warn('[SoundManager] Failed to init sounds:', e);
+      console.warn('[SoundManager] Failed to init audio mode:', e);
     }
   }
 
-  private async play(key: SoundKey, rate: number = 1.0) {
+  private play(key: SoundKey, rate: number = 1.0) {
     if (!useSettingsStore.getState().isSoundEnabled) return;
-    const sound = this.sounds[key];
-    if (!sound) {
-      console.warn(`[SoundManager] Sound "${key}" not loaded`);
+    const player = this.players[key];
+    if (!player) {
+      console.warn(`[SoundManager] Player "${key}" not loaded`);
       return;
     }
     try {
-      await sound.setRateAsync(rate, true);
-      await sound.setPositionAsync(0);
-      await sound.playAsync();
+      player.setPlaybackRate(rate);
+      player.seekTo(0);
+      player.play();
     } catch (e) {
       console.warn(`[SoundManager] Error playing "${key}":`, e);
     }
   }
 
   playSwoosh() { this.play('swoosh'); }
+  
   playCorrect(combo: number = 0) {
     const rate = Math.min(1.0 + (combo * 0.05), 1.6);
     this.play('correct', rate);
   }
+
   playIncorrect() { this.play('incorrect'); }
   playGameOver() { this.play('gameover'); }
   playWin() { this.play('win'); }
   playPurchase() { this.play('purchase'); }
 
-  async unload() {
-    for (const sound of Object.values(this.sounds)) {
-      try { await sound.unloadAsync(); } catch (_) {}
+  unload() {
+    for (const key of Object.keys(this.players) as SoundKey[]) {
+      try {
+        this.players[key]?.remove();
+      } catch (_) {}
     }
-    this.sounds = {};
+    this.players = {};
     this.initialized = false;
   }
 }
