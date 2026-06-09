@@ -20,6 +20,10 @@ export interface AppStats {
     dt: boolean;
   };
   unlockedItems: string[];
+  shields: number;
+  timeSlows: number;
+  hints: number;
+  xpMultiplier: number;
 }
 
 const DEFAULT_STATS: AppStats = {
@@ -42,6 +46,10 @@ const DEFAULT_STATS: AppStats = {
     dt: false,
   },
   unlockedItems: [],
+  shields: 0,
+  timeSlows: 0,
+  hints: 0,
+  xpMultiplier: 1,
 };
 
 const STATS_KEY = '@taalswipe_stats';
