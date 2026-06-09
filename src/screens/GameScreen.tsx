@@ -34,28 +34,12 @@ type RootStackParamList = {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
 
+// No progressive shuffle anymore, just fully random so the user doesn't get the same short words every time!
 function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
+  const result = [...array];
+  for (let i = result.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-function progressiveShuffle<T>(array: T[]): T[] {
-  // Sort by length to put shorter (often easier) words/sentences first
-  const sorted = [...array].sort((a: any, b: any) => {
-    const getLen = (item: any) => item.word ? item.word.length : (item.sentence ? item.sentence.length : 0);
-    return getLen(a) - getLen(b);
-  });
-
-  // Chunk in groups of 10 and shuffle within each chunk to keep it unpredictable
-  const chunkSize = 10;
-  let result: T[] = [];
-  for (let i = 0; i < sorted.length; i += chunkSize) {
-    const chunk = sorted.slice(i, i + chunkSize);
-    result = result.concat(shuffleArray(chunk));
+    [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
 }
@@ -69,25 +53,15 @@ export function GameScreen({ navigation, route }: Props) {
   const timerRef = React.useRef<TimerBarRef>(null);
   const stopwatchRef = React.useRef<StopwatchRef>(null);
 
-  const data = useMemo(() => {
-    let rawData: any[] = [];
-    switch (mode) {
-      case 'straattaal': rawData = progressiveShuffle(straattaalData); break;
-      case 'dunglish': rawData = progressiveShuffle(dunglishData); break;
-      case 'spelling': rawData = progressiveShuffle(spellingData); break;
-      case 'dt': rawData = progressiveShuffle(dtData).map(item => ({
-        ...item,
-        isCorrect: Math.random() > 0.5,
-      })); break;
-      case 'vandale': rawData = progressiveShuffle(vanDaleData); break;
-      case 'brand': rawData = progressiveShuffle(brandData); break;
-    }
-    
-    if (speedrunMode) {
-      return rawData.slice(0, 50); // limit to 50 items for speedrun
-    }
-    return rawData;
-  }, [mode, speedrunMode]);
+  const [data, setData] = useState<any[]>([]);
+
+  const getItemId = useCallback((item: any) => {
+    if (item.id) return item.id.toString();
+    if (item.word) return item.word;
+    if (item.text) return item.text;
+    if (item.sentence) return item.sentence;
+    return Math.random().toString();
+  }, []);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -128,9 +102,39 @@ export function GameScreen({ navigation, route }: Props) {
           setIsPaused(true);
         }
       }
+
+      // Load data with cache checking
+      let rawData: any[] = [];
+      switch (mode) {
+        case 'straattaal': rawData = [...straattaalData]; break;
+        case 'dunglish': rawData = [...dunglishData]; break;
+        case 'spelling': rawData = [...spellingData]; break;
+        case 'dt': rawData = dtData.map(item => ({
+          ...item,
+          isCorrect: Math.random() > 0.5,
+        })); break;
+        case 'vandale': rawData = [...vanDaleData]; break;
+        case 'brand': rawData = [...brandData]; break;
+      }
+
+      const seenIds = currentStats?.seenHistory?.[mode] || [];
+      
+      const unseen = rawData.filter(item => !seenIds.includes(getItemId(item)));
+      const seen = rawData.filter(item => seenIds.includes(getItemId(item)));
+
+      let shuffled = [
+        ...shuffleArray(unseen),
+        ...shuffleArray(seen) // Fallback if unseen runs out
+      ];
+
+      if (speedrunMode) {
+        setData(shuffled.slice(0, 50));
+      } else {
+        setData(shuffled.slice(0, 20));
+      }
     }
     initGame();
-  }, [mode]);
+  }, [mode, speedrunMode, getItemId]);
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0) => {
     const currentStats = await statsStore.getStats();
@@ -252,6 +256,9 @@ export function GameScreen({ navigation, route }: Props) {
     
     // Add to history
     setHistory(prev => [...prev, { word: wordText, correct, explanation: explanationText }]);
+
+    // Mark as seen in cache
+    statsStore.markAsSeen(mode, getItemId(item));
 
     if (correct) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -502,7 +509,7 @@ export function GameScreen({ navigation, route }: Props) {
           <View style={styles.cardContent}>
             <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt straattaal of AI-verzonnen?</Text>
             <View style={styles.wordRow}>
-              <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{s.word}</Text>
+              <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{s.word}</Text>
               <TouchableOpacity onPress={() => speakWord(s.word)} style={styles.speakButton}>
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
@@ -517,7 +524,7 @@ export function GameScreen({ navigation, route }: Props) {
           <View style={styles.cardContent}>
             <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt Nederlands spreekwoord?</Text>
             <View style={styles.wordRow}>
-              <Text style={[styles.proverbText, { color: theme.cardTextPrimary }]}>"{d.text}"</Text>
+              <Text style={[styles.proverbText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>"{d.text}"</Text>
               <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={styles.speakButton}>
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
@@ -531,7 +538,7 @@ export function GameScreen({ navigation, route }: Props) {
           <View style={styles.cardContent}>
             <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed of fout gespeld?</Text>
             <View style={styles.wordRow}>
-              <Text style={[styles.spellingText, { color: theme.cardTextPrimary }]}>{sp.text}</Text>
+              <Text style={[styles.spellingText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{sp.text}</Text>
               <TouchableOpacity onPress={() => speakWord(sp.text)} style={styles.speakButton}>
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
@@ -566,7 +573,7 @@ export function GameScreen({ navigation, route }: Props) {
           <View style={styles.cardContent}>
             <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Staat dit in de Van Dale?</Text>
             <View style={styles.wordRow}>
-              <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{vd.word}</Text>
+              <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{vd.word}</Text>
               <TouchableOpacity onPress={() => speakWord(vd.word)} style={styles.speakButton}>
                 <Ionicons name="volume-high" size={24} color={Colors.accent} />
               </TouchableOpacity>
@@ -657,6 +664,7 @@ export function GameScreen({ navigation, route }: Props) {
               active={!gameOver}
               leftLabel={leftLabel}
               rightLabel={rightLabel}
+              combo={combo}
             >
               {renderCardContent(currentItem)}
             </SwipeCard>
@@ -779,7 +787,7 @@ export function GameScreen({ navigation, route }: Props) {
       )}
 
       <PauseModal
-        visible={isPaused}
+        visible={isPaused && !showTutorial}
         onResume={() => setIsPaused(false)}
         onQuit={handleQuit}
         score={score}
