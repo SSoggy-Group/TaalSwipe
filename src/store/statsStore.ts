@@ -11,6 +11,7 @@ export interface AppStats {
     straattaal: number;
     dunglish: number;
     spelling: number;
+    dt: number;
   };
   tutorialSeen: {
     straattaal: boolean;
