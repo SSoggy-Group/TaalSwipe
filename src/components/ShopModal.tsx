@@ -44,10 +44,22 @@ const SHOP_ITEMS = [
   { id: 'powerup_shield', name: 'Shield (Schild)', type: 'powerup', statsKey: 'shields', price: 250, icon: '🛡️', description: 'Voorkomt één fout en behoudt je combo/levens. Activeert automatisch.' },
   { id: 'powerup_timer', name: 'Time Slow (Tijd-Freeze)', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: '⏱️', description: 'Voorkomt game over door de timer te resetten in Speed-Spelling.' },
   { id: 'powerup_hint', name: 'Hint Joker', type: 'powerup', statsKey: 'hints', price: 400, icon: '🔍', description: 'Onthult de juiste swipe-richting door de knop op te lichten.' },
+  { id: 'powerup_double', name: 'Dubbele XP (1 sessie)', type: 'powerup', statsKey: 'hints', price: 600, icon: '💰', description: 'Verdubbelt de XP voor jouw volgende sessie. Gebruik spaarzaam!' },
 
   // UPGRADES
   { id: 'upgrade_xp_15', name: 'XP Booster (1.5x)', type: 'upgrade', multiplier: 1.5, price: 1500, icon: '🚀', description: 'Verdien permanent 50% extra XP uit al je swipes.' },
   { id: 'upgrade_xp_20', name: 'XP Supercharger (2.0x)', type: 'upgrade', multiplier: 2, price: 3000, icon: '⚡', description: 'Verdien permanent 100% extra XP (overschrijft 1.5x booster).' },
+  { id: 'upgrade_xp_30', name: 'XP Godmode (3.0x)', type: 'upgrade', multiplier: 3, price: 6000, icon: '🌟', description: 'Verdien permanent 200% extra XP. De ultieme upgrade!' },
+
+  // EXTRA BACKGROUNDS
+  { id: 'bg_lava', name: 'Lava Lamp', type: 'background', price: 1800, icon: '🫧', description: 'Zachte, borrelende lava lamp kleuren' },
+  { id: 'bg_cherry', name: 'Cherry Blossom', type: 'background', price: 2200, icon: '🌸', description: 'Japanse kersenbloesem roze tinten' },
+  { id: 'bg_arctic', name: 'Arctic Frost', type: 'background', price: 2800, icon: '❄️', description: 'IJskoude poolnacht blauw-wit' },
+  { id: 'bg_deep_sea', name: 'Deep Sea', type: 'background', price: 3500, icon: '🐋', description: 'Diepzee mysterieuze oceaan blauw' },
+
+  // EXTRA CARD STYLES
+  { id: 'card_flame', name: 'Flame Card', type: 'card', price: 2200, icon: '🔥', description: 'Vurige oranje-rode kaartrand met gloei-effect' },
+  { id: 'card_ice', name: 'Ice Crystal', type: 'card', price: 2800, icon: '🧊', description: 'Ijskristallen met blauwe glasranden' },
 ];
 
 export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
