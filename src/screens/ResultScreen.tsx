@@ -19,14 +19,15 @@ type RootStackParamList = {
     mode: string; 
     rawMode?: string;
     history?: { word: string; correct: boolean; explanation: string }[];
+    timeMs?: number;
   };
 };
 
 type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Result'>>;
 
 export function ResultScreen({ route, navigation }: Props) {
-  const { score, total, mode, rawMode, history } = route.params;
-  const theme = useAppTheme();
+  const { score, total, mode, rawMode, history, timeMs } = route.params;
+  const theme = useAppTheme(rawMode);
   
   const [isNewHighScore, setIsNewHighScore] = useState(false);
 
@@ -63,12 +64,23 @@ export function ResultScreen({ route, navigation }: Props) {
 
   const handleShare = async () => {
     try {
+      const timeStr = timeMs ? ` in ${formatTime(timeMs)}` : '';
       await Share.share({
-        message: `Ik scoorde ${score}/${total} (${Math.round(percentage)}%) in de TaalSwipe modus "${mode}"! ${emoji} Kan jij beter?`,
+        message: `Ik scoorde ${score}/${total} (${Math.round(percentage)}%)${timeStr} in de TaalSwipe modus "${mode}"! ${emoji} Kan jij beter?`,
       });
     } catch (error: any) {
       console.log('Share error:', error.message);
     }
+  };
+
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const deciseconds = Math.floor((ms % 1000) / 100);
+    const mStr = minutes > 0 ? `${minutes}:` : '';
+    const sStr = minutes > 0 ? seconds.toString().padStart(2, '0') : seconds.toString();
+    return `${mStr}${sStr}.${deciseconds}`;
   };
 
   const renderHistoryItem = ({ item, index }: { item: NonNullable<typeof history>[0], index: number }) => (
@@ -109,6 +121,15 @@ export function ResultScreen({ route, navigation }: Props) {
                   <Text style={[styles.statValue, { color: theme.cardTextPrimary }]}>{total}</Text>
                   <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Totaal</Text>
                 </View>
+                {timeMs !== undefined && (
+                  <>
+                    <View style={[styles.divider, { backgroundColor: theme.glass.border }]} />
+                    <View style={styles.statBox}>
+                      <Text style={[styles.statValue, { color: '#38BDF8', fontSize: 32 }]}>{formatTime(timeMs)}</Text>
+                      <Text style={[styles.statLabel, { color: theme.cardTextSecondary }]}>Tijd</Text>
+                    </View>
+                  </>
+                )}
               </View>
 
               <Text style={[styles.modeText, { color: theme.cardTextSecondary }]}>Modus: {mode}</Text>
