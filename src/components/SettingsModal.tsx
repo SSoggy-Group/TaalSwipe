@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Colors, useAppTheme } from '../theme/colors';
+import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from 'expo-haptics';
 
 interface Props {
-  visible: boolean;
-  onClose: () => void;
+  readonly visible: boolean;
+  readonly onClose: () => void;
 }
 
 export function SettingsModal({ visible, onClose }: Props) {
@@ -72,7 +72,15 @@ export function SettingsModal({ visible, onClose }: Props) {
               >
                 {(['system', 'light', 'dark'] as const).map((pref) => {
                   const isActive = themePreference === pref;
-                  const icon = pref === 'system' ? 'phone-portrait-outline' : pref === 'light' ? 'sunny' : 'moon';
+                  let icon: 'phone-portrait-outline' | 'sunny' | 'moon';
+                  if (pref === 'system') {
+                    icon = 'phone-portrait-outline';
+                  } else if (pref === 'light') {
+                    icon = 'sunny';
+                  } else {
+                    icon = 'moon';
+                  }
+                  
                   return (
                     <TouchableOpacity
                       key={pref}
