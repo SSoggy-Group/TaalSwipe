@@ -11,6 +11,12 @@ import {
 } from '@expo-google-fonts/inter';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://examplePublicKey@o0.ingest.sentry.io/0', // Placeholder DSN, te vervangen met echte DSN
+  debug: false,
+});
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -39,3 +45,5 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(App);

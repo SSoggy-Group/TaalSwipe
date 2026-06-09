@@ -25,7 +25,8 @@
     },
     "plugins": [
       "expo-font",
-      "expo-audio"
+      "expo-audio",
+      "@sentry/react-native"
     ],
     "owner": "ssoggy-group",
     "extra": {
