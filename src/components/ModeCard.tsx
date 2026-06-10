@@ -45,8 +45,8 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onPress={onPress}
-        android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
         accessible={true}
+        focusable={false}
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${description}`}
       >
