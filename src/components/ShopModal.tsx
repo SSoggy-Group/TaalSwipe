@@ -6,8 +6,8 @@ import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
-import ConfettiCannon from 'react-native-confetti-cannon';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
+import { ConfettiBurst } from '../platform/ConfettiBurst';
 import { BouncyButton } from './BouncyButton';
 import { CustomAlertModal } from './CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
@@ -361,14 +361,14 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
 
       {shootConfetti && (
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <ConfettiCannon 
+          <ConfettiBurst 
             count={100} 
             origin={{x: -10, y: 0}} 
             fallSpeed={2500} 
             explosionSpeed={350} 
             fadeOut={true} 
           />
-          <ConfettiCannon 
+          <ConfettiBurst 
             count={100} 
             origin={{x: 400, y: 0}} 
             fallSpeed={2500} 
