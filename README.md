@@ -40,5 +40,16 @@ Zelf proberen of meehelpen bouwen? Super simpel:
 3. Start de development server: `npx expo start`
 4. Scan de QR-code met je telefoon (Expo Go app) of druk op `i` om de iOS simulator te starten.
 
+## 🌐 Web & desktop
+
+TaalSwipe kan nu ook als web build draaien en heeft een Tauri-shell voor macOS en Windows.
+
+- Web development: `npm run web`
+- Web export: `npm run web:export`
+- Desktop development: `npm run desktop:dev`
+- Desktop build: `npm run desktop:build`
+
+Voor desktop builds heb je Rust/Cargo nodig via [rustup.rs](https://rustup.rs/). De desktop-app gebruikt dezelfde Expo Web build, dus de game blijft TypeScript/React Native.
+
 ---
 *Gemaakt met veel koffie, zweet, en frustratie over d/t fouten.*
