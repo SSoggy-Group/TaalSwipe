@@ -7,7 +7,7 @@ interface SpeakOptions {
 }
 
 function getWebSpeech() {
-  if (typeof globalThis.window === 'undefined') return null;
+  if (globalThis.window === undefined) return null;
   return globalThis.window.speechSynthesis ?? null;
 }
 
