@@ -12,6 +12,9 @@ interface SettingsState {
   themePreference: ThemePreference;
   equippedBackground: string;
   equippedCard: string;
+  incorrectSoundId: string;
+  gameoverSoundId: string;
+  swooshSoundId: string;
   toggleSound: () => void;
   toggleHardcoreMode: () => void;
   toggleSurvivalMode: () => void;
@@ -19,6 +22,9 @@ interface SettingsState {
   setThemePreference: (pref: ThemePreference) => void;
   setEquippedBackground: (bg: string) => void;
   setEquippedCard: (card: string) => void;
+  setIncorrectSoundId: (id: string) => void;
+  setGameoverSoundId: (id: string) => void;
+  setSwooshSoundId: (id: string) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -31,6 +37,9 @@ export const useSettingsStore = create<SettingsState>()(
       themePreference: 'system',
       equippedBackground: 'bg_ocean',
       equippedCard: 'card_default',
+      incorrectSoundId: 'default',
+      gameoverSoundId: 'default',
+      swooshSoundId: 'default',
       toggleSound: () => set((state) => ({ isSoundEnabled: !state.isSoundEnabled })),
       toggleHardcoreMode: () => set((state) => ({ hardcoreMode: !state.hardcoreMode })),
       toggleSurvivalMode: () => set((state) => ({ survivalMode: !state.survivalMode })),
@@ -38,6 +47,9 @@ export const useSettingsStore = create<SettingsState>()(
       setThemePreference: (pref) => set({ themePreference: pref }),
       setEquippedBackground: (bg) => set({ equippedBackground: bg }),
       setEquippedCard: (card) => set({ equippedCard: card }),
+      setIncorrectSoundId: (id) => set({ incorrectSoundId: id }),
+      setGameoverSoundId: (id) => set({ gameoverSoundId: id }),
+      setSwooshSoundId: (id) => set({ swooshSoundId: id }),
     }),
     {
       name: 'settings-storage',
