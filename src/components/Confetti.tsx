@@ -1,12 +1,12 @@
 import React from 'react';
-import ConfettiCannon from 'react-native-confetti-cannon';
 import { Dimensions } from 'react-native';
+import { ConfettiBurst } from '../platform/ConfettiBurst';
 
 const { width } = Dimensions.get('window');
 
 export function Confetti() {
   return (
-    <ConfettiCannon
+    <ConfettiBurst
       count={150}
       origin={{ x: width / 2, y: -20 }}
       autoStart={true}
