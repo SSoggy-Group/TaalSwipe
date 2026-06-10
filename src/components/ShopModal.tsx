@@ -199,6 +199,7 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       transparent
       animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
