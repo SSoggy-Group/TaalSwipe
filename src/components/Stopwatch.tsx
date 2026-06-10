@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +11,8 @@ interface Props {
 }
 
 export const Stopwatch = React.memo(React.forwardRef<StopwatchRef, Props>(
-  ({ running }, ref) => {
+  (props, ref) => {
+    const { running } = props;
     const [elapsedMs, setElapsedMs] = useState(0);
 
     useEffect(() => {
