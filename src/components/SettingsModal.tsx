@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch, ScrollView } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,14 +7,59 @@ import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from 'expo-haptics';
 import { statsStore } from '../store/statsStore';
 import { CustomAlertModal } from './CustomAlertModal';
+import { soundManager } from '../audio/SoundManager';
 
 interface Props {
   readonly visible: boolean;
   readonly onClose: () => void;
 }
 
+const INCORRECT_SOUNDS = [
+  { id: 'default', name: 'Standaard' },
+  { id: '2042', name: 'Zacht' },
+  { id: '954', name: 'Buzzer' },
+  { id: '950', name: 'Chirp' },
+  { id: '472', name: 'Blip' },
+  { id: '2939', name: 'Arcade' },
+  { id: '240', name: 'Zachte Klik' },
+  { id: '1540', name: 'Klokje' },
+];
+
+const GAMEOVER_SOUNDS = [
+  { id: 'default', name: 'Standaard' },
+  { id: '2941', name: 'Melodie' },
+  { id: '568', name: 'Dromerig' },
+  { id: '571', name: 'Trombone' },
+  { id: '2960', name: 'Retro Lose' },
+  { id: '3053', name: 'Zacht Signaal' },
+];
+
+const SWOOSH_SOUNDS = [
+  { id: 'default', name: 'Standaard' },
+  { id: '1152', name: 'Lucht' },
+  { id: '1153', name: 'Wind' },
+];
+
 export function SettingsModal({ visible, onClose }: Props) {
-  const { isSoundEnabled, toggleSound, hardcoreMode, toggleHardcoreMode, themePreference, setThemePreference, survivalMode, toggleSurvivalMode, speedrunMode, toggleSpeedrunMode } = useSettingsStore();
+  const {
+    isSoundEnabled,
+    toggleSound,
+    hardcoreMode,
+    toggleHardcoreMode,
+    themePreference,
+    setThemePreference,
+    survivalMode,
+    toggleSurvivalMode,
+    speedrunMode,
+    toggleSpeedrunMode,
+    incorrectSoundId,
+    setIncorrectSoundId,
+    gameoverSoundId,
+    setGameoverSoundId,
+    swooshSoundId,
+    setSwooshSoundId,
+  } = useSettingsStore();
+  
   const theme = useAppTheme();
   
   const [alertVisible, setAlertVisible] = React.useState(false);
@@ -53,6 +98,30 @@ export function SettingsModal({ visible, onClose }: Props) {
     setAlertVisible(true);
   };
 
+  const selectIncorrectSound = (id: string) => {
+    setIncorrectSoundId(id);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => {
+      soundManager.testIncorrect(id);
+    }, 50);
+  };
+
+  const selectGameoverSound = (id: string) => {
+    setGameoverSoundId(id);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => {
+      soundManager.testGameOver(id);
+    }, 50);
+  };
+
+  const selectSwooshSound = (id: string) => {
+    setSwooshSoundId(id);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTimeout(() => {
+      soundManager.testSwoosh(id);
+    }, 50);
+  };
+
   return (
     <Modal
       visible={visible}
@@ -71,8 +140,8 @@ export function SettingsModal({ visible, onClose }: Props) {
             </TouchableOpacity>
           </View>
 
-          {/* Settings Cards list */}
-          <View style={styles.settingsList}>
+          {/* Settings list (Scrollable to prevent overflow) */}
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsList}>
             
             {/* Setting: Theme Preference */}
             <View 
@@ -140,6 +209,88 @@ export function SettingsModal({ visible, onClose }: Props) {
                 thumbColor={'#FFFFFF'}
               />
             </View>
+
+            {/* SOUND CUSTOMIZATION PANEL (Shows only if SFX is enabled) */}
+            {isSoundEnabled && (
+              <View style={[styles.soundSection, { borderColor: theme.glass.border }]}>
+                <Text style={[styles.sectionTitle, { color: theme.cardTextPrimary }]}>🎵 Soundboard (Kies Geluiden)</Text>
+                
+                {/* 1. Swoosh Sound Selector */}
+                <View style={styles.soundSelectorRow}>
+                  <Text style={[styles.soundLabel, { color: theme.cardTextSecondary }]}>Swipe Geluid (Swoosh):</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.soundChipsContainer}>
+                    {SWOOSH_SOUNDS.map((sound) => {
+                      const isActive = (swooshSoundId || 'default') === sound.id;
+                      return (
+                        <TouchableOpacity
+                          key={sound.id}
+                          onPress={() => selectSwooshSound(sound.id)}
+                          style={[
+                            styles.soundChip,
+                            { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                            isActive && { borderColor: theme.accent, backgroundColor: theme.glass.background }
+                          ]}
+                        >
+                          <Text style={[styles.soundChipText, { color: isActive ? theme.accent : theme.cardTextPrimary }]}>
+                            {sound.name} {isActive && '✓'}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+
+                {/* 2. Incorrect Sound Selector */}
+                <View style={styles.soundSelectorRow}>
+                  <Text style={[styles.soundLabel, { color: theme.cardTextSecondary }]}>Fout Antwoord Geluid:</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.soundChipsContainer}>
+                    {INCORRECT_SOUNDS.map((sound) => {
+                      const isActive = (incorrectSoundId || 'default') === sound.id;
+                      return (
+                        <TouchableOpacity
+                          key={sound.id}
+                          onPress={() => selectIncorrectSound(sound.id)}
+                          style={[
+                            styles.soundChip,
+                            { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                            isActive && { borderColor: theme.accent, backgroundColor: theme.glass.background }
+                          ]}
+                        >
+                          <Text style={[styles.soundChipText, { color: isActive ? theme.accent : theme.cardTextPrimary }]}>
+                            {sound.name} {isActive && '✓'}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+
+                {/* 3. Game Over Sound Selector */}
+                <View style={styles.soundSelectorRow}>
+                  <Text style={[styles.soundLabel, { color: theme.cardTextSecondary }]}>Game Over Geluid:</Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.soundChipsContainer}>
+                    {GAMEOVER_SOUNDS.map((sound) => {
+                      const isActive = (gameoverSoundId || 'default') === sound.id;
+                      return (
+                        <TouchableOpacity
+                          key={sound.id}
+                          onPress={() => selectGameoverSound(sound.id)}
+                          style={[
+                            styles.soundChip,
+                            { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                            isActive && { borderColor: theme.accent, backgroundColor: theme.glass.background }
+                          ]}
+                        >
+                          <Text style={[styles.soundChipText, { color: isActive ? theme.accent : theme.cardTextPrimary }]}>
+                            {sound.name} {isActive && '✓'}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </View>
+            )}
 
             {/* Setting: Hardcore Mode */}
             <View 
@@ -211,7 +362,7 @@ export function SettingsModal({ visible, onClose }: Props) {
                 trackColor={{ false: '#475569', true: '#38BDF8' }}
                 thumbColor={'#FFFFFF'}
               />
-              </View>
+            </View>
 
             {/* Reset Tutorials Button */}
             <TouchableOpacity 
@@ -223,7 +374,7 @@ export function SettingsModal({ visible, onClose }: Props) {
             >
               <Text style={[styles.settingTitle, { color: theme.cardTextPrimary, textAlign: 'center' }]}>🔄 Herstel Tutorials</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
       </BlurView>
       
@@ -248,7 +399,7 @@ const styles = StyleSheet.create({
     padding: 32,
     width: '100%',
     borderWidth: 1,
-    minHeight: '45%',
+    maxHeight: '85%',
   },
   header: {
     flexDirection: 'row',
@@ -266,6 +417,7 @@ const styles = StyleSheet.create({
   },
   settingsList: {
     gap: 16,
+    paddingBottom: 24,
   },
   settingCard3D: {
     flexDirection: 'row',
@@ -304,5 +456,37 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  soundSection: {
+    borderWidth: 2,
+    borderRadius: 22,
+    padding: 16,
+    gap: 16,
+  },
+  sectionTitle: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 15,
+    marginBottom: 4,
+  },
+  soundSelectorRow: {
+    gap: 8,
+  },
+  soundLabel: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 12,
+  },
+  soundChipsContainer: {
+    gap: 8,
+    paddingVertical: 4,
+  },
+  soundChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 14,
+    borderWidth: 2,
+  },
+  soundChipText: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 12,
   },
 });
