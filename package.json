@@ -4,6 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo/metro-runtime": "~56.0.14",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/native": "^7.3.0",
@@ -18,15 +19,18 @@
     "expo-speech": "~56.0.3",
     "expo-status-bar": "~56.0.4",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.85.3",
     "react-native-confetti-cannon": "^1.5.2",
     "react-native-gesture-handler": "~2.31.1",
     "react-native-reanimated": "4.3.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
+    "react-native-web": "^0.21.2",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.11.2",
     "@testing-library/react-native": "^14.0.0",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.2.2",
@@ -39,6 +43,10 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "web:dev": "expo start --web --port 8081",
+    "web:export": "node scripts/prepare-tauri-web.js",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
     "test": "jest"
   },
   "jest": {
