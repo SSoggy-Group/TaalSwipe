@@ -10,6 +10,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import * as Haptics from 'expo-haptics';
 import { BouncyButton } from './BouncyButton';
 import { CustomAlertModal } from './CustomAlertModal';
+import { soundManager } from '../audio/SoundManager';
 
 interface Props {
   readonly visible: boolean;
@@ -384,6 +385,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  safeArea: {
+    width: '100%',
   },
   content: {
     borderTopLeftRadius: 32,
