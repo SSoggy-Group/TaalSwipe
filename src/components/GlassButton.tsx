@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 import { Colors } from '../theme/colors';
 
 interface GlassButtonProps {
@@ -64,6 +64,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_700Bold', // Make it bolder for playfulness
     fontSize: 20,
     color: '#1E293B', // Dark slate instead of white
-    letterSpacing: -0.3,
+    letterSpacing: 0,
   },
 });
