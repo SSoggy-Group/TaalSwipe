@@ -21,6 +21,7 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
       transparent
       animationType="fade"
       onRequestClose={onResume}
+      statusBarTranslucent={true}
     >
       <BlurView intensity={80} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
         <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
