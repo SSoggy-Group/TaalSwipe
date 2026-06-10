@@ -44,6 +44,7 @@ interface MultiplayerItem {
   rightLabel: string;
   color: string;
   explanation: string;
+  subText?: string;
 }
 
 const MODES_CONFIG = [
@@ -56,12 +57,13 @@ const MODES_CONFIG = [
 ];
 
 const TARGET_SCORE = 15;
-const PENALTY_MS = 2000; // 2 seconds lockout to read explanation
+const PENALTY_MS = 1200; // 1.2 seconds lockout
 
 export function MultiplayerScreen({ navigation }: Props) {
   const theme = useAppTheme();
   
   const [gameStarted, setGameStarted] = useState(false);
+  const [showDefinitions, setShowDefinitions] = useState(true); // Toggle displaying definitions/subtexts on cards
   const [enabledModes, setEnabledModes] = useState<Record<string, boolean>>({
     spelling: true,
     dt: true,
@@ -131,7 +133,8 @@ export function MultiplayerScreen({ navigation }: Props) {
           leftLabel: 'FOUT ✗',
           rightLabel: 'GOED ✓',
           color: '#F59E0B',
-          explanation: `Werkwoord: ${x.verb}.\n${x.explanation}`
+          explanation: `Werkwoord: ${x.verb}.\n${x.explanation}`,
+          subText: `Werkwoord: ${x.verb}`
         };
       }));
     }
@@ -143,7 +146,8 @@ export function MultiplayerScreen({ navigation }: Props) {
         leftLabel: 'VERZONNEN ✗',
         rightLabel: 'ECHT ✓',
         color: '#8B5CF6',
-        explanation: x.isReal ? `Bestaat echt! Betekenis:\n"${x.definition}"` : `AI-verzonnen! Zou betekenen:\n"${x.definition}"`
+        explanation: x.isReal ? `Bestaat echt! Betekenis:\n"${x.definition}"` : `AI-verzonnen! Zou betekenen:\n"${x.definition}"`,
+        subText: `"${x.definition}"`
       })));
     }
     if (enabledModes.dunglish) {
@@ -165,7 +169,8 @@ export function MultiplayerScreen({ navigation }: Props) {
         leftLabel: 'ONZIN ✗',
         rightLabel: 'VAN DALE ✓',
         color: '#10B981',
-        explanation: x.inVanDale ? `Staat in de Dikke Van Dale!\n"${x.definition}"` : `Staat niet in de Dikke Van Dale.\n"${x.definition}"`
+        explanation: x.inVanDale ? `Staat in de Dikke Van Dale!\n"${x.definition}"` : `Staat niet in de Dikke Van Dale.\n"${x.definition}"`,
+        subText: `"${x.definition}"`
       })));
     }
     if (enabledModes.brand) {
@@ -281,6 +286,11 @@ export function MultiplayerScreen({ navigation }: Props) {
               <Text style={[styles.word, { color: theme.cardTextPrimary }]} adjustsFontSizeToFit numberOfLines={2}>
                 {currentItem.text}
               </Text>
+              {showDefinitions && currentItem.subText && (
+                <Text style={[styles.cardSubText, { color: theme.cardTextSecondary }]} adjustsFontSizeToFit numberOfLines={2}>
+                  {currentItem.subText}
+                </Text>
+              )}
             </SwipeCard>
           )}
         </View>
@@ -334,6 +344,32 @@ export function MultiplayerScreen({ navigation }: Props) {
                 );
               })}
             </View>
+
+            {/* Option to show definitions */}
+            <TouchableOpacity
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowDefinitions(!showDefinitions);
+              }}
+              style={[
+                styles.setupItem,
+                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border, width: '100%', marginBottom: 20 },
+                showDefinitions && { borderColor: '#10B981', backgroundColor: 'rgba(255, 255, 255, 0.05)' }
+              ]}
+              focusable={false}
+            >
+              <View style={styles.setupItemLeft}>
+                <Text style={styles.setupItemIcon}>📖</Text>
+                <Text style={[styles.setupItemName, { color: theme.cardTextPrimary }]}>Definities tonen</Text>
+              </View>
+              <View style={[
+                styles.checkbox,
+                { borderColor: theme.glass.border },
+                showDefinitions && { backgroundColor: '#10B981', borderColor: '#10B981' }
+              ]}>
+                {showDefinitions && <Ionicons name="checkmark" size={16} color="#FFF" />}
+              </View>
+            </TouchableOpacity>
 
             <BouncyButton
               title="START GEVECHT ⚔️"
@@ -434,6 +470,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_900Black',
     fontSize: 28,
     textAlign: 'center',
+  },
+  cardSubText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    textAlign: 'center',
+    marginTop: 8,
+    opacity: 0.8,
+    fontStyle: 'italic',
+    paddingHorizontal: 16,
   },
   penaltyCard: {
     width: '100%',
