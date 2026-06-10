@@ -1,5 +1,5 @@
 export interface DunglishItem {
-  id: number;
+  id: string | number;
   text: string;
   explanation: string;
   isRealProverb: boolean;
