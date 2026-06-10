@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      SENTRY_DISABLE_AUTO_UPLOAD: 'true'
+      NODE_ENV: 'production'
 
     steps:
       - name: Checkout repository
