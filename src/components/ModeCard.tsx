@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
 import { Colors, useAppTheme } from '../theme/colors';
 import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 
 interface Props {
   emoji: string;
@@ -10,13 +10,15 @@ interface Props {
   description: string;
   onPress: () => void;
   style?: ViewStyle;
+  wrapperStyle?: StyleProp<ViewStyle>;
   delay?: number;
   color?: string;
+  compact?: boolean;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, delay = 0, color = Colors.accent }: Props) {
+export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color = Colors.accent, compact = false }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
 
@@ -34,13 +36,15 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
   }));
 
   return (
-    <Animated.View entering={FadeInUp.delay(delay).duration(600).springify()}>
+    <Animated.View entering={FadeInUp.delay(delay).duration(600).springify()} style={wrapperStyle}>
       <AnimatedPressable 
         style={[
           styles.card, 
+          compact && styles.compactCard,
           style, 
           animatedStyle,
-          { backgroundColor: theme.glass.background, borderColor: theme.glass.border }
+          { backgroundColor: theme.glass.background, borderColor: theme.glass.border },
+          compact && styles.desktopCardSurface,
         ]} 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -50,12 +54,12 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${description}`}
       >
-        <View style={[styles.iconContainer, { backgroundColor: color, borderBottomColor: 'rgba(0,0,0,0.2)' }]}>
-          <Text style={styles.emoji}>{emoji}</Text>
+        <View style={[styles.iconContainer, compact && styles.compactIconContainer, { backgroundColor: color, borderBottomColor: 'rgba(0,0,0,0.2)' }]}>
+          <Text style={[styles.emoji, compact && styles.compactEmoji]}>{emoji}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, { color: theme.cardTextPrimary }]}>{title}</Text>
-          <Text style={[styles.description, { color: theme.cardTextSecondary }]}>{description}</Text>
+          <Text style={[styles.title, compact && styles.compactTitle, { color: compact ? '#FFFFFF' : theme.cardTextPrimary }]}>{title}</Text>
+          <Text style={[styles.description, compact && styles.compactDescription, { color: compact ? 'rgba(255,255,255,0.68)' : theme.cardTextSecondary }]}>{description}</Text>
         </View>
       </AnimatedPressable>
     </Animated.View>
@@ -72,6 +76,22 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderBottomWidth: 8,
   },
+  compactCard: {
+    minHeight: 132,
+    padding: 14,
+    marginBottom: 0,
+    borderRadius: 18,
+    borderBottomWidth: 6,
+  },
+  desktopCardSurface: {
+    backgroundColor: 'rgba(15, 23, 42, 0.56)',
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderBottomColor: 'rgba(0,0,0,0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.18,
+    shadowRadius: 18,
+  },
   iconContainer: {
     width: 64,
     height: 64,
@@ -84,8 +104,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+  compactIconContainer: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    marginRight: 12,
+  },
   emoji: {
     fontSize: 32,
+  },
+  compactEmoji: {
+    fontSize: 26,
   },
   textContainer: {
     flex: 1,
@@ -95,10 +124,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 4,
   },
+  compactTitle: {
+    fontSize: 16,
+  },
   description: {
     fontFamily: 'Inter_500Medium',
     fontSize: 13,
     lineHeight: 18,
+  },
+  compactDescription: {
+    fontSize: 12,
+    lineHeight: 16,
   },
   chevron: {
     fontFamily: 'Inter_400Regular',
