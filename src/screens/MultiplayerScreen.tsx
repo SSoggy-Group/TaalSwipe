@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { useAppTheme } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
-import ConfettiCannon from 'react-native-confetti-cannon';
+import { ConfettiBurst } from '../platform/ConfettiBurst';
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard } from '../components/SwipeCard';
 import { BouncyButton } from '../components/BouncyButton';
@@ -59,7 +59,7 @@ const MODES_CONFIG = [
 const TARGET_SCORE = 15;
 const PENALTY_MS = 1200; // 1.2 seconds lockout
 
-export function MultiplayerScreen({ navigation }: Props) {
+export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   const theme = useAppTheme();
   
   const [gameStarted, setGameStarted] = useState(false);
@@ -111,15 +111,23 @@ export function MultiplayerScreen({ navigation }: Props) {
     
     const selectedData: MultiplayerItem[] = [];
     if (enabledModes.spelling) {
-      selectedData.push(...spellingData.map(x => ({
-        text: x.text,
-        isCorrect: x.isCorrect,
-        mode: 'SPELLING',
-        leftLabel: 'FOUT ✗',
-        rightLabel: 'GOED ✓',
-        color: '#0EA5E9',
-        explanation: x.isCorrect ? 'Dit woord is correct gespeld!' : (x.correction ? `Fout gespeld! Het moet zijn: "${x.correction}"` : 'Dit woord is onjuist gespeld!')
-      })));
+      selectedData.push(...spellingData.map(x => {
+        let spellingExplanation = 'Dit woord is onjuist gespeld!';
+        if (x.isCorrect) {
+          spellingExplanation = 'Dit woord is correct gespeld!';
+        } else if (x.correction) {
+          spellingExplanation = `Fout gespeld! Het moet zijn: "${x.correction}"`;
+        }
+        return {
+          text: x.text,
+          isCorrect: x.isCorrect,
+          mode: 'SPELLING',
+          leftLabel: 'FOUT ✗',
+          rightLabel: 'GOED ✓',
+          color: '#0EA5E9',
+          explanation: spellingExplanation,
+        };
+      }));
     }
     if (enabledModes.dt) {
       selectedData.push(...dtData.map(x => {
@@ -249,6 +257,52 @@ export function MultiplayerScreen({ navigation }: Props) {
     if (gameData.length === 0) return null;
     const currentItem = gameData[currentIndex % gameData.length];
 
+    const renderCard = () => {
+      if (winner !== null) {
+        return (
+          <Animated.View entering={ZoomIn} style={styles.winnerCard}>
+            <Text style={styles.winnerText}>
+              {winner === player ? '🏆 JIJ WINT!' : '💀 VERLOREN...'}
+            </Text>
+          </Animated.View>
+        );
+      }
+      if (isPenalty) {
+        return (
+          <View style={styles.penaltyCard}>
+            <Text style={styles.penaltyHeader}>FOUT! ❌</Text>
+            <Text style={styles.penaltyWord}>{currentItem.text}</Text>
+            <Text style={styles.penaltyExplanation}>{currentItem.explanation}</Text>
+          </View>
+        );
+      }
+      return (
+        <SwipeCard
+          key={currentIndex}
+          active={true}
+          compact={true}
+          onSwipeLeft={() => handleSwipe(player, false)}
+          onSwipeRight={() => handleSwipe(player, true)}
+          leftLabel={currentItem.leftLabel}
+          rightLabel={currentItem.rightLabel}
+        >
+          <View style={styles.cardHeader}>
+            <Text style={[styles.modeBadge, { color: currentItem.color, borderColor: currentItem.color }]}>
+              {currentItem.mode}
+            </Text>
+          </View>
+          <Text style={[styles.word, { color: theme.cardTextPrimary }]} adjustsFontSizeToFit numberOfLines={2}>
+            {currentItem.text}
+          </Text>
+          {showDefinitions && currentItem.subText && (
+            <Text style={[styles.cardSubText, { color: theme.cardTextSecondary }]} adjustsFontSizeToFit numberOfLines={2}>
+              {currentItem.subText}
+            </Text>
+          )}
+        </SwipeCard>
+      );
+    };
+
     return (
       <View style={[styles.playerArea, isP2 && styles.rotated]}>
         <View style={styles.scoreHeader}>
@@ -256,43 +310,7 @@ export function MultiplayerScreen({ navigation }: Props) {
         </View>
         
         <View style={styles.cardContainer}>
-          {winner !== null ? (
-            <Animated.View entering={ZoomIn} style={styles.winnerCard}>
-              <Text style={styles.winnerText}>
-                {winner === player ? '🏆 JIJ WINT!' : '💀 VERLOREN...'}
-              </Text>
-            </Animated.View>
-          ) : isPenalty ? (
-            <View style={styles.penaltyCard}>
-              <Text style={styles.penaltyHeader}>FOUT! ❌</Text>
-              <Text style={styles.penaltyWord}>{currentItem.text}</Text>
-              <Text style={styles.penaltyExplanation}>{currentItem.explanation}</Text>
-            </View>
-          ) : (
-            <SwipeCard
-              key={currentIndex}
-              active={true}
-              compact={true}
-              onSwipeLeft={() => handleSwipe(player, false)}
-              onSwipeRight={() => handleSwipe(player, true)}
-              leftLabel={currentItem.leftLabel}
-              rightLabel={currentItem.rightLabel}
-            >
-              <View style={styles.cardHeader}>
-                <Text style={[styles.modeBadge, { color: currentItem.color, borderColor: currentItem.color }]}>
-                  {currentItem.mode}
-                </Text>
-              </View>
-              <Text style={[styles.word, { color: theme.cardTextPrimary }]} adjustsFontSizeToFit numberOfLines={2}>
-                {currentItem.text}
-              </Text>
-              {showDefinitions && currentItem.subText && (
-                <Text style={[styles.cardSubText, { color: theme.cardTextSecondary }]} adjustsFontSizeToFit numberOfLines={2}>
-                  {currentItem.subText}
-                </Text>
-              )}
-            </SwipeCard>
-          )}
+          {renderCard()}
         </View>
       </View>
     );
@@ -393,13 +411,17 @@ export function MultiplayerScreen({ navigation }: Props) {
   // 2. ACTIVE GAMEPLAY STATE UI
   return (
     <GradientBackground>
-      {winner !== null && <ConfettiCannon count={150} origin={{x: -10, y: 0}} />}
+      {winner !== null && <ConfettiBurst count={150} origin={{x: -10, y: 0}} />}
       <SafeAreaView style={styles.container}>
         {/* Player 2 Area (Top) */}
         {renderPlayerArea(2)}
         
         <View style={styles.divider}>
-          {winner !== null ? (
+          {winner === null ? (
+            <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => setGameStarted(false)}>
+              <Text style={styles.quitText}>STOP</Text>
+            </TouchableOpacity>
+          ) : (
             <BouncyButton 
               title="Terug ⚙️" 
               color="#38BDF8" 
@@ -407,10 +429,6 @@ export function MultiplayerScreen({ navigation }: Props) {
               bottomBorderColor="#0369A1" 
               onPress={() => setGameStarted(false)} 
             />
-          ) : (
-            <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => setGameStarted(false)}>
-              <Text style={styles.quitText}>STOP</Text>
-            </TouchableOpacity>
           )}
         </View>
 
