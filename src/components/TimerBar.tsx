@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useImperativeHandle } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -25,7 +26,8 @@ interface TimerBarProps {
 }
 
 export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
-  ({ duration, running, onTimeUp, onPanicChange, resetKey }, ref) => {
+  (props, ref) => {
+    const { duration, running, onTimeUp, onPanicChange, resetKey } = props;
     const progress = useSharedValue(1);
     const hasPanicked = useSharedValue(false);
 
