@@ -354,18 +354,18 @@ export function MultiplayerScreen({ navigation }: Props) {
               style={[
                 styles.setupItem,
                 { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border, width: '100%', marginBottom: 20 },
-                showDefinitions && { borderColor: '#10B981', backgroundColor: 'rgba(255, 255, 255, 0.05)' }
+                showDefinitions && { borderColor: theme.accent, backgroundColor: 'rgba(255, 255, 255, 0.05)' }
               ]}
               focusable={false}
             >
               <View style={styles.setupItemLeft}>
-                <Text style={styles.setupItemIcon}>📖</Text>
+                <Text style={styles.setupItemIcon}>💡</Text>
                 <Text style={[styles.setupItemName, { color: theme.cardTextPrimary }]}>Definities tonen</Text>
               </View>
               <View style={[
                 styles.checkbox,
                 { borderColor: theme.glass.border },
-                showDefinitions && { backgroundColor: '#10B981', borderColor: '#10B981' }
+                showDefinitions && { backgroundColor: theme.accent, borderColor: theme.accent }
               ]}>
                 {showDefinitions && <Ionicons name="checkmark" size={16} color="#FFF" />}
               </View>
