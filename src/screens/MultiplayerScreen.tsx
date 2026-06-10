@@ -43,6 +43,7 @@ interface MultiplayerItem {
   leftLabel: string;
   rightLabel: string;
   color: string;
+  explanation: string;
 }
 
 const MODES_CONFIG = [
@@ -55,7 +56,7 @@ const MODES_CONFIG = [
 ];
 
 const TARGET_SCORE = 15;
-const PENALTY_MS = 600; // Snappy lockout
+const PENALTY_MS = 2000; // 2 seconds lockout to read explanation
 
 export function MultiplayerScreen({ navigation }: Props) {
   const theme = useAppTheme();
@@ -108,22 +109,75 @@ export function MultiplayerScreen({ navigation }: Props) {
     
     const selectedData: MultiplayerItem[] = [];
     if (enabledModes.spelling) {
-      selectedData.push(...spellingData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#0EA5E9' })));
+      selectedData.push(...spellingData.map(x => ({
+        text: x.text,
+        isCorrect: x.isCorrect,
+        mode: 'SPELLING',
+        leftLabel: 'FOUT ✗',
+        rightLabel: 'GOED ✓',
+        color: '#0EA5E9',
+        explanation: x.isCorrect ? 'Dit woord is correct gespeld!' : (x.correction ? `Fout gespeld! Het moet zijn: "${x.correction}"` : 'Dit woord is onjuist gespeld!')
+      })));
     }
     if (enabledModes.dt) {
-      selectedData.push(...dtData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'D/T SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#F59E0B' })));
+      selectedData.push(...dtData.map(x => {
+        const isCorrect = Math.random() > 0.5;
+        const displayedAnswer = isCorrect ? x.correctAnswer : x.wrongAnswer;
+        const formattedText = x.sentence.replace('___', displayedAnswer);
+        return {
+          text: formattedText,
+          isCorrect,
+          mode: 'D/T SPELLING',
+          leftLabel: 'FOUT ✗',
+          rightLabel: 'GOED ✓',
+          color: '#F59E0B',
+          explanation: `Werkwoord: ${x.verb}.\n${x.explanation}`
+        };
+      }));
     }
     if (enabledModes.straattaal) {
-      selectedData.push(...straattaalData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'STRAATTAAL', leftLabel: 'VERZONNEN ✗', rightLabel: 'ECHT ✓', color: '#8B5CF6' })));
+      selectedData.push(...straattaalData.map(x => ({
+        text: x.word,
+        isCorrect: x.isReal,
+        mode: 'STRAATTAAL',
+        leftLabel: 'VERZONNEN ✗',
+        rightLabel: 'ECHT ✓',
+        color: '#8B5CF6',
+        explanation: x.isReal ? `Bestaat echt! Betekenis:\n"${x.definition}"` : `AI-verzonnen! Zou betekenen:\n"${x.definition}"`
+      })));
     }
     if (enabledModes.dunglish) {
-      selectedData.push(...dunglishData.map(x => ({ text: x.text, isCorrect: x.isRealProverb, mode: 'DUNGLISH', leftLabel: 'NEP ✗', rightLabel: 'ECHT ✓', color: '#EC4899' })));
+      selectedData.push(...dunglishData.map(x => ({
+        text: x.text,
+        isCorrect: x.isRealProverb,
+        mode: 'DUNGLISH',
+        leftLabel: 'NEP ✗',
+        rightLabel: 'ECHT ✓',
+        color: '#EC4899',
+        explanation: x.isRealProverb ? x.explanation : `Geen echt spreekwoord!\n"${x.explanation}"`
+      })));
     }
     if (enabledModes.vandale) {
-      selectedData.push(...vanDaleData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'VAN DALE', leftLabel: 'ONZIN ✗', rightLabel: 'VAN DALE ✓', color: '#10B981' })));
+      selectedData.push(...vanDaleData.map(x => ({
+        text: x.word,
+        isCorrect: x.inVanDale,
+        mode: 'VAN DALE',
+        leftLabel: 'ONZIN ✗',
+        rightLabel: 'VAN DALE ✓',
+        color: '#10B981',
+        explanation: x.inVanDale ? `Staat in de Dikke Van Dale!\n"${x.definition}"` : `Staat niet in de Dikke Van Dale.\n"${x.definition}"`
+      })));
     }
     if (enabledModes.brand) {
-      selectedData.push(...brandData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'MERKEN', leftLabel: 'SOORT ✗', rightLabel: 'MERK ✓', color: '#EF4444' })));
+      selectedData.push(...brandData.map(x => ({
+        text: x.word,
+        isCorrect: x.isBrand,
+        mode: 'MERKEN',
+        leftLabel: 'SOORT ✗',
+        rightLabel: 'MERK ✓',
+        color: '#EF4444',
+        explanation: x.explanation
+      })));
     }
 
     if (selectedData.length === 0) return;
@@ -205,7 +259,9 @@ export function MultiplayerScreen({ navigation }: Props) {
             </Animated.View>
           ) : isPenalty ? (
             <View style={styles.penaltyCard}>
-              <Text style={styles.penaltyText}>FOUT! ⏳</Text>
+              <Text style={styles.penaltyHeader}>FOUT! ❌</Text>
+              <Text style={styles.penaltyWord}>{currentItem.text}</Text>
+              <Text style={styles.penaltyExplanation}>{currentItem.explanation}</Text>
             </View>
           ) : (
             <SwipeCard
@@ -237,6 +293,14 @@ export function MultiplayerScreen({ navigation }: Props) {
     return (
       <GradientBackground>
         <SafeAreaView style={styles.setupContainer}>
+          <TouchableOpacity 
+            style={[styles.floatingBackBtn, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]} 
+            onPress={() => navigation.goBack()}
+            focusable={false}
+          >
+            <Ionicons name="arrow-back" size={24} color="#FFF" />
+          </TouchableOpacity>
+
           <View style={[styles.setupContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
             <Text style={[styles.setupTitle, { color: theme.cardTextPrimary }]}>⚔️ Multiplayer Gevecht</Text>
             <Text style={styles.setupSubtitle}>Kies de categorieën voor de strijd:</Text>
@@ -381,11 +445,30 @@ const styles = StyleSheet.create({
     borderBottomWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 16,
   },
-  penaltyText: {
-    color: '#FFF',
+  penaltyHeader: {
+    color: '#FFE4E6',
     fontFamily: 'Inter_900Black',
-    fontSize: 36,
+    fontSize: 18,
+    letterSpacing: 1,
+    marginBottom: 6,
+    textTransform: 'uppercase',
+  },
+  penaltyWord: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter_900Black',
+    fontSize: 22,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  penaltyExplanation: {
+    color: '#FFE4E6',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 8,
   },
   winnerCard: {
     width: '100%',
@@ -422,6 +505,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   // SETUP STYLES
+  floatingBackBtn: {
+    position: 'absolute',
+    top: 20,
+    left: 24,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
   setupContainer: {
     flex: 1,
     justifyContent: 'center',
