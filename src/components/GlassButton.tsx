@@ -20,6 +20,7 @@ export function GlassButton({ title, emoji, onPress, style }: GlassButtonProps) 
   return (
     <Pressable
       onPress={handlePress}
+      focusable={false}
       style={({ pressed }) => [
         styles.pressable,
         pressed && styles.pressed,
