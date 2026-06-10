@@ -1,5 +1,5 @@
 export interface StraattaalItem {
-  id: number;
+  id: string | number;
   word: string;
   definition: string;
   isReal: boolean;
