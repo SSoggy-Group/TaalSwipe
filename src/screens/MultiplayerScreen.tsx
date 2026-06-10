@@ -10,6 +10,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard } from '../components/SwipeCard';
 import { BouncyButton } from '../components/BouncyButton';
+import { Ionicons } from '@expo/vector-icons';
 
 // Import all 6 mode databases
 import { straattaalData } from '../data/straattaalData';
@@ -35,34 +36,34 @@ interface MultiplayerItem {
   color: string;
 }
 
-// Map all databases to a single uniform structure
-const COMBINED_DATA: MultiplayerItem[] = [
-  ...spellingData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#0EA5E9' })),
-  ...dtData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'D/T SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#F59E0B' })),
-  ...straattaalData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'STRAATTAAL', leftLabel: 'VERZONNEN ✗', rightLabel: 'ECHT ✓', color: '#8B5CF6' })),
-  ...dunglishData.map(x => ({ text: x.text, isCorrect: x.isRealProverb, mode: 'DUNGLISH', leftLabel: 'NEP ✗', rightLabel: 'ECHT ✓', color: '#EC4899' })),
-  ...vanDaleData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'VAN DALE', leftLabel: 'ONZIN ✗', rightLabel: 'VAN DALE ✓', color: '#10B981' })),
-  ...brandData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'MERKEN', leftLabel: 'SOORT ✗', rightLabel: 'MERK ✓', color: '#EF4444' })),
+const MODES_CONFIG = [
+  { key: 'spelling', name: 'Spelling', color: '#0EA5E9', icon: '✍️' },
+  { key: 'dt', name: 'D/T Spelling', color: '#F59E0B', icon: '📝' },
+  { key: 'straattaal', name: 'Straattaal', color: '#8B5CF6', icon: '🤙' },
+  { key: 'dunglish', name: 'Dunglish', color: '#EC4899', icon: '🇳🇱🇬🇧' },
+  { key: 'vandale', name: 'Van Dale', color: '#10B981', icon: '📖' },
+  { key: 'brand', name: 'Merken', color: '#EF4444', icon: '🏷️' },
 ];
 
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
 const TARGET_SCORE = 15;
-const PENALTY_MS = 600; // Snappy lockout instead of 1500ms
+const PENALTY_MS = 600; // Snappy lockout
 
 export function MultiplayerScreen({ navigation }: Props) {
   const theme = useAppTheme();
   
-  // Independent shuffled data lists for both players to prevent copying and make it a real race!
-  const [p1Data] = useState(() => shuffleArray(COMBINED_DATA));
-  const [p2Data] = useState(() => shuffleArray(COMBINED_DATA));
+  const [gameStarted, setGameStarted] = useState(false);
+  const [enabledModes, setEnabledModes] = useState<Record<string, boolean>>({
+    spelling: true,
+    dt: true,
+    straattaal: true,
+    dunglish: true,
+    vandale: true,
+    brand: true,
+  });
+
+  // Independent shuffled data lists for both players
+  const [p1Data, setP1Data] = useState<MultiplayerItem[]>([]);
+  const [p2Data, setP2Data] = useState<MultiplayerItem[]>([]);
   
   const [p1Index, setP1Index] = useState(0);
   const [p2Index, setP2Index] = useState(0);
@@ -76,15 +77,66 @@ export function MultiplayerScreen({ navigation }: Props) {
   const [winner, setWinner] = useState<number | null>(null);
 
   useEffect(() => {
-    if (p1Score >= TARGET_SCORE && winner === null) setWinner(1);
-    if (p2Score >= TARGET_SCORE && winner === null) setWinner(2);
-  }, [p1Score, p2Score, winner]);
+    if (gameStarted && p1Score >= TARGET_SCORE && winner === null) setWinner(1);
+    if (gameStarted && p2Score >= TARGET_SCORE && winner === null) setWinner(2);
+  }, [p1Score, p2Score, winner, gameStarted]);
+
+  const toggleMode = (key: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setEnabledModes(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      // Make sure at least one mode remains enabled
+      const values = Object.values(next);
+      if (values.filter(Boolean).length === 0) {
+        return prev;
+      }
+      return next;
+    });
+  };
+
+  const handleStartGame = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    const selectedData: MultiplayerItem[] = [];
+    if (enabledModes.spelling) {
+      selectedData.push(...spellingData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#0EA5E9' })));
+    }
+    if (enabledModes.dt) {
+      selectedData.push(...dtData.map(x => ({ text: x.text, isCorrect: x.isCorrect, mode: 'D/T SPELLING', leftLabel: 'FOUT ✗', rightLabel: 'GOED ✓', color: '#F59E0B' })));
+    }
+    if (enabledModes.straattaal) {
+      selectedData.push(...straattaalData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'STRAATTAAL', leftLabel: 'VERZONNEN ✗', rightLabel: 'ECHT ✓', color: '#8B5CF6' })));
+    }
+    if (enabledModes.dunglish) {
+      selectedData.push(...dunglishData.map(x => ({ text: x.text, isCorrect: x.isRealProverb, mode: 'DUNGLISH', leftLabel: 'NEP ✗', rightLabel: 'ECHT ✓', color: '#EC4899' })));
+    }
+    if (enabledModes.vandale) {
+      selectedData.push(...vanDaleData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'VAN DALE', leftLabel: 'ONZIN ✗', rightLabel: 'VAN DALE ✓', color: '#10B981' })));
+    }
+    if (enabledModes.brand) {
+      selectedData.push(...brandData.map(x => ({ text: x.word, isCorrect: x.isReal, mode: 'MERKEN', leftLabel: 'SOORT ✗', rightLabel: 'MERK ✓', color: '#EF4444' })));
+    }
+
+    if (selectedData.length === 0) return;
+
+    setP1Data(shuffleArray(selectedData));
+    setP2Data(shuffleArray(selectedData));
+    setP1Index(0);
+    setP2Index(0);
+    setP1Score(0);
+    setP2Score(0);
+    setP1Penalty(false);
+    setP2Penalty(false);
+    setWinner(null);
+    setGameStarted(true);
+  };
 
   const handleSwipe = useCallback((player: 1 | 2, answerIsRight: boolean) => {
     if (winner !== null) return;
     
     const currentIndex = player === 1 ? p1Index : p2Index;
     const gameData = player === 1 ? p1Data : p2Data;
+    if (gameData.length === 0) return;
     const item = gameData[currentIndex % gameData.length];
     
     const isCorrect = item.isCorrect === answerIsRight;
@@ -126,6 +178,7 @@ export function MultiplayerScreen({ navigation }: Props) {
     const currentIndex = player === 1 ? p1Index : p2Index;
     const isPenalty = player === 1 ? p1Penalty : p2Penalty;
     const gameData = player === 1 ? p1Data : p2Data;
+    if (gameData.length === 0) return null;
     const currentItem = gameData[currentIndex % gameData.length];
 
     return (
@@ -170,6 +223,65 @@ export function MultiplayerScreen({ navigation }: Props) {
     );
   };
 
+  // 1. SETUP STATE UI (Before start)
+  if (!gameStarted) {
+    return (
+      <GradientBackground>
+        <SafeAreaView style={styles.setupContainer}>
+          <View style={[styles.setupContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+            <Text style={[styles.setupTitle, { color: theme.cardTextPrimary }]}>⚔️ Multiplayer Gevecht</Text>
+            <Text style={styles.setupSubtitle}>Kies de categorieën voor de strijd:</Text>
+            
+            <View style={styles.setupList}>
+              {MODES_CONFIG.map((m) => {
+                const isEnabled = enabledModes[m.key];
+                return (
+                  <TouchableOpacity
+                    key={m.key}
+                    onPress={() => toggleMode(m.key)}
+                    style={[
+                      styles.setupItem,
+                      { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                      isEnabled && { borderColor: m.color, backgroundColor: 'rgba(255, 255, 255, 0.05)' }
+                    ]}
+                    focusable={false}
+                  >
+                    <View style={styles.setupItemLeft}>
+                      <Text style={styles.setupItemIcon}>{m.icon}</Text>
+                      <Text style={[styles.setupItemName, { color: theme.cardTextPrimary }]}>{m.name}</Text>
+                    </View>
+                    <View style={[
+                      styles.checkbox,
+                      { borderColor: theme.glass.border },
+                      isEnabled && { backgroundColor: m.color, borderColor: m.color }
+                    ]}>
+                      {isEnabled && <Ionicons name="checkmark" size={16} color="#FFF" />}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <BouncyButton
+              title="START GEVECHT ⚔️"
+              onPress={handleStartGame}
+              style={styles.startButton}
+            />
+
+            <TouchableOpacity 
+              style={[styles.backBtn, { marginTop: 16 }]} 
+              focusable={false}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backBtnText}>Annuleren</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </GradientBackground>
+    );
+  }
+
+  // 2. ACTIVE GAMEPLAY STATE UI
   return (
     <GradientBackground>
       {winner !== null && <ConfettiCannon count={150} origin={{x: -10, y: 0}} />}
@@ -180,14 +292,14 @@ export function MultiplayerScreen({ navigation }: Props) {
         <View style={styles.divider}>
           {winner !== null ? (
             <BouncyButton 
-              title="Terug 🏠" 
+              title="Terug ⚙️" 
               color="#38BDF8" 
               borderColor="#0284C7" 
               bottomBorderColor="#0369A1" 
-              onPress={() => navigation.goBack()} 
+              onPress={() => setGameStarted(false)} 
             />
           ) : (
-            <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => setGameStarted(false)}>
               <Text style={styles.quitText}>STOP</Text>
             </TouchableOpacity>
           )}
@@ -299,5 +411,75 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontFamily: 'Inter_900Black',
     fontSize: 16,
+  },
+  // SETUP STYLES
+  setupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+  },
+  setupContent: {
+    borderRadius: 32,
+    borderWidth: 1.5,
+    padding: 24,
+    alignItems: 'center',
+  },
+  setupTitle: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 26,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  setupSubtitle: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  setupList: {
+    width: '100%',
+    gap: 12,
+    marginBottom: 28,
+  },
+  setupItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 14,
+    borderRadius: 18,
+    borderWidth: 2,
+  },
+  setupItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  setupItemIcon: {
+    fontSize: 20,
+  },
+  setupItemName: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 15,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  startButton: {
+    width: '100%',
+    paddingVertical: 16,
+  },
+  backBtn: {
+    paddingVertical: 10,
+  },
+  backBtnText: {
+    fontFamily: 'Inter_700Bold',
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 14,
   },
 });
