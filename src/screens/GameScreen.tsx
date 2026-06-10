@@ -207,53 +207,82 @@ function getItemDetails(item: any, mode: string): { wordText: string; explanatio
   }
 }
 
+function getStraattaalFeedback(s: StraattaalItem) {
+  return {
+    title: s.isReal ? 'ECHT! ❌' : 'NEP! ❌',
+    message: `"${s.word}" is ${s.isReal ? 'echt bestaande straattaal' : 'AI-verzonnen nep-slang'}!\n\nBetekenis: ${s.definition}`,
+  };
+}
+
+function getDunglishFeedback(d: DunglishItem) {
+  return {
+    title: d.isRealProverb ? 'ECHT! ❌' : 'NEP! ❌',
+    message: `"${d.text}" is ${d.isRealProverb ? 'een echt spreekwoord' : 'een verzonnen spreekwoord'}!\n\nBetekenis: ${d.explanation}`,
+  };
+}
+
+function getSpellingFeedback(sp: SpellingItem) {
+  return {
+    title: sp.isCorrect ? 'GOED GESPELD! ❌' : 'FOUT GESPELD! ❌',
+    message: sp.isCorrect ? `"${sp.text}" is juist gespeld!` : `"${sp.text}" is onjuist gespeld!\n\nDe juiste spelling is: ${sp.correction}`,
+  };
+}
+
+function getVanDaleFeedback(vd: VanDaleItem) {
+  return {
+    title: vd.inVanDale ? 'ECHT VAN DALE! ❌' : 'VERZONNEN! ❌',
+    message: `"${vd.word}" staat ${vd.inVanDale ? 'wel degelijk' : 'niet'} in de Van Dale!\n\nBetekenis: ${vd.definition}`,
+  };
+}
+
+function getBrandFeedback(b: BrandItem) {
+  return {
+    title: b.isBrand ? 'MERKNAAM! ❌' : 'SOORTNAAM! ❌',
+    message: `"${b.word}" is een ${b.isBrand ? 'beschermde merknaam' : 'soortnaam'}!\n\nUitleg: ${b.explanation}`,
+  };
+}
+
 function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; message: string } {
   if (!item) return { title: 'FOUT! ❌', message: '' };
   switch (mode) {
-    case 'straattaal': {
-      const s = item as StraattaalItem;
-      return {
-        title: s.isReal ? 'ECHT! ❌' : 'NEP! ❌',
-        message: `"${s.word}" is ${s.isReal ? 'echt bestaande straattaal' : 'AI-verzonnen nep-slang'}!\n\nBetekenis: ${s.definition}`,
-      };
-    }
-    case 'dunglish': {
-      const d = item as DunglishItem;
-      return {
-        title: d.isRealProverb ? 'ECHT! ❌' : 'NEP! ❌',
-        message: `"${d.text}" is ${d.isRealProverb ? 'een echt spreekwoord' : 'een verzonnen spreekwoord'}!\n\nBetekenis: ${d.explanation}`,
-      };
-    }
-    case 'spelling': {
-      const sp = item as SpellingItem;
-      return {
-        title: sp.isCorrect ? 'GOED GESPELD! ❌' : 'FOUT GESPELD! ❌',
-        message: sp.isCorrect ? `"${sp.text}" is juist gespeld!` : `"${sp.text}" is onjuist gespeld!\n\nDe juiste spelling is: ${sp.correction}`,
-      };
-    }
-    case 'dt': {
+    case 'straattaal':
+      return getStraattaalFeedback(item);
+    case 'dunglish':
+      return getDunglishFeedback(item);
+    case 'spelling':
+      return getSpellingFeedback(item);
+    case 'dt':
       return {
         title: 'FOUT! ❌',
         message: `Dit is onjuist!\n\nUitleg: ${item.explanation}`,
       };
-    }
-    case 'vandale': {
-      const vd = item as VanDaleItem;
-      return {
-        title: vd.inVanDale ? 'ECHT VAN DALE! ❌' : 'VERZONNEN! ❌',
-        message: `"${vd.word}" staat ${vd.inVanDale ? 'wel degelijk' : 'niet'} in de Van Dale!\n\nBetekenis: ${vd.definition}`,
-      };
-    }
-    case 'brand': {
-      const b = item as BrandItem;
-      return {
-        title: b.isBrand ? 'MERKNAAM! ❌' : 'SOORTNAAM! ❌',
-        message: `"${b.word}" is een ${b.isBrand ? 'beschermde merknaam' : 'soortnaam'}!\n\nUitleg: ${b.explanation}`,
-      };
-    }
+    case 'vandale':
+      return getVanDaleFeedback(item);
+    case 'brand':
+      return getBrandFeedback(item);
     default:
       return { title: 'FOUT! ❌', message: '' };
   }
+}
+
+const modeLabels: Record<string, string> = {
+  straattaal: 'Straattaal of AI?',
+  dunglish: 'Steenkolenengels',
+  spelling: 'Speed-Spelling',
+  dt: 'D/T Grammatica',
+  vandale: 'Dikke Van Dale',
+  brand: 'Merknaam of Soortnaam',
+};
+
+function getItemId(item: any): string {
+  if (item.id) return item.id.toString();
+  if (item.word) return item.word;
+  if (item.text) return item.text;
+  if (item.sentence) return item.sentence;
+  return Math.random().toString();
+}function speakWord(text: string, lang: string = 'nl-NL') {
+  Speech.stop();
+  Speech.speak(text, { language: lang, rate: 0.9 });
 }
 
 export function GameScreen({ navigation, route }: Readonly<Props>) {
@@ -268,14 +297,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const stopwatchRef = React.useRef<StopwatchRef>(null);
 
   const [data, setData] = useState<any[]>([]);
-
-  const getItemId = useCallback((item: any) => {
-    if (item.id) return item.id.toString();
-    if (item.word) return item.word;
-    if (item.text) return item.text;
-    if (item.sentence) return item.sentence;
-    return Math.random().toString();
-  }, []);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -295,14 +316,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const [activeHint, setActiveHint] = useState<'left' | 'right' | null>(null);
 
   const isSpelling = mode === 'spelling';
-  const modeLabels = {
-    straattaal: 'Straattaal of AI?',
-    dunglish: 'Steenkolenengels',
-    spelling: 'Speed-Spelling',
-    dt: 'D/T Grammatica',
-    vandale: 'Dikke Van Dale',
-    brand: 'Merknaam of Soortnaam',
-  };
+
 
   React.useEffect(() => {
     async function initGame() {
@@ -353,7 +367,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       s.sessionsPlayed = (s.sessionsPlayed ?? 0) + 1;
       statsStore.saveStats(s);
     });
-  }, [mode, speedrunMode, getItemId]);
+  }, [mode, speedrunMode]);
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0, wasCorrect?: boolean) => {
     const currentStats = await statsStore.getStats();
@@ -417,6 +431,71 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     // Game will wait for the user to press 'Continue' before advancing
   }, []);
 
+  const handleCorrectAnswer = useCallback(() => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    soundManager.playCorrect(combo);
+    setScore((s) => s + 1);
+    setCombo((c) => {
+      const newCombo = c + 1;
+      updateStats(newCombo, 10 + (newCombo * 2), true); // Earn XP!
+      
+      // Trigger confetti every 5 combo
+      if (newCombo > 0 && newCombo % 5 === 0) {
+        setShootConfetti(true);
+        setTimeout(() => setShootConfetti(false), 3000);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+      
+      return newCombo;
+    });
+    advanceGame(true);
+  }, [combo, advanceGame, updateStats]);
+
+  const handleIncorrectAnswer = useCallback((item: any) => {
+    if (stats && stats.shields > 0) {
+      const newStats = {
+        ...stats,
+        shields: stats.shields - 1,
+      };
+      statsStore.saveStats(newStats);
+      setStats(newStats);
+
+      setShowShieldAlert(true);
+      setTimeout(() => setShowShieldAlert(false), 2000);
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      soundManager.playCorrect(0); // safe chime
+      
+      advanceGame(true); // skip penalty, proceed
+      return;
+    }
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    soundManager.playIncorrect();
+    setCombo(0);
+    updateStats(0, 0, false);
+
+    if (survivalMode) {
+      timerRef.current?.subtractTime(3000); // 3 seconds penalty!
+      advanceGame(false);
+      return;
+    }
+    
+    // Show seamless feedback
+    const feedback = getFeedbackTitleAndMessage(item, mode);
+    showFeedback(feedback.title, feedback.message);
+
+    if (hardcoreMode) {
+      setLives((l) => {
+        const newLives = l - 1;
+        if (newLives <= 0) {
+          setGameOver(true);
+        }
+        return newLives;
+      });
+    }
+  }, [stats, advanceGame, survivalMode, mode, showFeedback, hardcoreMode, updateStats]);
+
   const handleAnswer = useCallback((swipedRight: boolean) => {
     if (gameOver) return;
     const item = data[currentIndex];
@@ -432,68 +511,11 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     statsStore.markAsSeen(mode, getItemId(item));
 
     if (correct) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      soundManager.playCorrect(combo);
-      setScore((s) => s + 1);
-      setCombo((c) => {
-        const newCombo = c + 1;
-        updateStats(newCombo, 10 + (newCombo * 2), true); // Earn XP!
-        
-        // Trigger confetti every 5 combo
-        if (newCombo > 0 && newCombo % 5 === 0) {
-          setShootConfetti(true);
-          setTimeout(() => setShootConfetti(false), 3000);
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        
-        return newCombo;
-      });
-      advanceGame(true);
+      handleCorrectAnswer();
     } else {
-      if (stats && stats.shields > 0) {
-        const newStats = {
-          ...stats,
-          shields: stats.shields - 1,
-        };
-        statsStore.saveStats(newStats);
-        setStats(newStats);
-
-        setShowShieldAlert(true);
-        setTimeout(() => setShowShieldAlert(false), 2000);
-
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-        soundManager.playCorrect(0); // safe chime
-        
-        advanceGame(true); // skip penalty, proceed
-        return;
-      }
-
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      soundManager.playIncorrect();
-      setCombo(0);
-      updateStats(0, 0, false);
-
-      if (survivalMode) {
-        timerRef.current?.subtractTime(3000); // 3 seconds penalty!
-        advanceGame(false);
-        return;
-      }
-      
-      // Show seamless feedback
-      const feedback = getFeedbackTitleAndMessage(item, mode);
-      showFeedback(feedback.title, feedback.message);
-
-      if (hardcoreMode) {
-        setLives((l) => {
-          const newLives = l - 1;
-          if (newLives <= 0) {
-            setGameOver(true);
-          }
-          return newLives;
-        });
-      }
+      handleIncorrectAnswer(item);
     }
-  }, [currentIndex, data, gameOver, mode, advanceGame, showFeedback, hardcoreMode, combo, stats, survivalMode, getItemId]);
+  }, [currentIndex, data, gameOver, mode, handleCorrectAnswer, handleIncorrectAnswer]);
 
   const handleSwipeRight = useCallback(() => handleAnswer(true), [handleAnswer]);
   const handleSwipeLeft = useCallback(() => handleAnswer(false), [handleAnswer]);
@@ -522,28 +544,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     if (!stats || stats.hints <= 0 || gameOver || isPaused || activeHint) return;
 
     const item = data[currentIndex];
-    let correctDirection: 'left' | 'right' = 'right';
-
-    switch (mode) {
-      case 'straattaal':
-        correctDirection = (item as StraattaalItem).isReal ? 'right' : 'left';
-        break;
-      case 'dunglish':
-        correctDirection = (item as DunglishItem).isRealProverb ? 'right' : 'left';
-        break;
-      case 'spelling':
-        correctDirection = (item as SpellingItem).isCorrect ? 'right' : 'left';
-        break;
-      case 'dt':
-        correctDirection = (item as any).isCorrect ? 'right' : 'left';
-        break;
-      case 'vandale':
-        correctDirection = (item as VanDaleItem).inVanDale ? 'right' : 'left';
-        break;
-      case 'brand':
-        correctDirection = (item as BrandItem).isBrand ? 'right' : 'left';
-        break;
-    }
+    const correctDirection: 'left' | 'right' = checkIsCorrect(item, mode, true) ? 'right' : 'left';
 
     const newStats = {
       ...stats,
@@ -615,7 +616,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   };
 
   React.useEffect(() => {
-    if (Platform.OS !== 'web' || typeof globalThis.window === 'undefined') return;
+    if (Platform.OS !== 'web' || globalThis.window === undefined) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.repeat || showTutorial || isPaused || gameOver || feedbackInfo) return;
@@ -637,11 +638,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     globalThis.window.addEventListener('keydown', handleKeyDown);
     return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
   }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial]);
-
-  const speakWord = useCallback((text: string, lang: string = 'nl-NL') => {
-    Speech.stop();
-    Speech.speak(text, { language: lang, rate: 0.9 });
-  }, []);
 
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
