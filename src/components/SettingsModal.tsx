@@ -4,7 +4,7 @@ import { BlurView } from 'expo-blur';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 import { statsStore } from '../store/statsStore';
 import { CustomAlertModal } from './CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
