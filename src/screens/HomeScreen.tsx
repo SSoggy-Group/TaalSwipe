@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
@@ -12,6 +12,7 @@ import { BouncyButton } from '../components/BouncyButton';
 import { Colors } from '../theme/colors';
 import { statsStore, AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type RootStackParamList = {
   Home: undefined;
@@ -22,7 +23,19 @@ type RootStackParamList = {
 
 type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Home'>>;
 
+const DESKTOP_HORIZONTAL_LINES = Array.from({ length: 18 }, (_, index) => ({
+  id: `line-h-${index}`,
+  top: `${index * 6}%` as any,
+}));
+
+const DESKTOP_VERTICAL_LINES = Array.from({ length: 24 }, (_, index) => ({
+  id: `line-v-${index}`,
+  left: `${index * 5}%` as any,
+}));
+
 export function HomeScreen({ navigation }: Props) {
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 900;
   const [statsVisible, setStatsVisible] = React.useState(false);
   const [statsInitialTab, setStatsInitialTab] = React.useState<'stats' | 'achievements' | 'leaderboard'>('stats');
   const [settingsVisible, setSettingsVisible] = React.useState(false);
@@ -59,9 +72,233 @@ export function HomeScreen({ navigation }: Props) {
     transform: [{ translateY: floatY.value }],
   }));
 
+  const modeCards = [
+    {
+      emoji: '⚔️',
+      title: 'Lokale Multiplayer',
+      description: 'Speel samen op één scherm! Wie is het snelst?',
+      color: '#A855F7',
+      delay: 200,
+      onPress: () => navigation.navigate('Multiplayer'),
+    },
+    {
+      emoji: '🗣️',
+      title: 'Straattaal of AI?',
+      description: 'Herken jij de echte straattaalwoorden tussen de AI-verzinsels?',
+      color: '#A78BFA',
+      delay: 350,
+      onPress: () => navigation.navigate('Game', { mode: 'straattaal' }),
+    },
+    {
+      emoji: '🇬🇧',
+      title: 'Steenkolenengels',
+      description: 'Make that the cat wise! Zijn deze letterlijke vertalingen echt?',
+      color: '#F472B6',
+      delay: 350,
+      onPress: () => navigation.navigate('Game', { mode: 'dunglish' }),
+    },
+    {
+      emoji: '⚡',
+      title: 'Speed-Spelling',
+      description: 'Snelheid is alles. Test je grammatica-kennis onder tijdsdruk.',
+      color: '#38BDF8',
+      delay: 500,
+      onPress: () => navigation.navigate('Game', { mode: 'spelling' }),
+    },
+    {
+      emoji: '🧠',
+      title: 'D/T Grammatica',
+      description: 'Wordt het met een d, t, of dt? Test je kennis van de werkwoordspelling!',
+      color: '#F59E0B',
+      delay: 650,
+      onPress: () => navigation.navigate('Game', { mode: 'dt' }),
+    },
+    {
+      emoji: '📖',
+      title: 'Dikke Van Dale',
+      description: 'Staat dit woord officieel in het woordenboek of maken we het je maar wat wijs?',
+      color: '#10B981',
+      delay: 800,
+      onPress: () => navigation.navigate('Game', { mode: 'vandale' }),
+    },
+    {
+      emoji: '🏷️',
+      title: 'Merknaam of Soortnaam',
+      description: 'Is dit een beschermd merk of inmiddels een algemeen woord geworden?',
+      color: '#EF4444',
+      delay: 950,
+      onPress: () => navigation.navigate('Game', { mode: 'brand' }),
+    },
+  ] as const;
+
+  const renderModeCards = (compact = false) => (
+    <>
+      {modeCards.map((mode) => (
+        <ModeCard
+          key={mode.title}
+          emoji={mode.emoji}
+          title={mode.title}
+          description={mode.description}
+          color={mode.color}
+          delay={mode.delay}
+          onPress={mode.onPress}
+          compact={compact}
+          wrapperStyle={compact ? styles.desktopModeItem : undefined}
+        />
+      ))}
+    </>
+  );
+
+  const accuracy = stats && stats.totalSwipes > 0
+    ? Math.round((stats.totalCorrect / stats.totalSwipes) * 100)
+    : 0;
+
   return (
     <GradientBackground>
       <SafeAreaView style={styles.safeArea}>
+        {isDesktop ? (
+          <>
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            <LinearGradient
+              colors={['rgba(8,13,32,0.82)', 'rgba(30, 64, 175, 0.24)', 'rgba(236, 72, 153, 0.14)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.desktopGridOverlay}>
+              {DESKTOP_HORIZONTAL_LINES.map((line) => (
+                <View key={line.id} style={[styles.gridLineHorizontal, { top: line.top }]} />
+              ))}
+              {DESKTOP_VERTICAL_LINES.map((line) => (
+                <View key={line.id} style={[styles.gridLineVertical, { left: line.left }]} />
+              ))}
+            </View>
+          </View>
+          <View style={styles.desktopShell}>
+            <View style={styles.desktopRail}>
+              <Text style={styles.railLogo}>TS</Text>
+              <BouncyButton 
+                onPress={() => {
+                  setStatsInitialTab('stats');
+                  setStatsVisible(true);
+                }} 
+                style={styles.railButton}
+                color="#38BDF8" borderColor="#0284C7" bottomBorderColor="#0369A1"
+              >
+                <Text style={styles.iconText}>📊</Text>
+              </BouncyButton>
+              <BouncyButton 
+                onPress={() => {
+                  setStatsInitialTab('leaderboard');
+                  setStatsVisible(true);
+                }} 
+                style={styles.railButton}
+                color="#F59E0B" borderColor="#D97706" bottomBorderColor="#B45309"
+              >
+                <Text style={styles.iconText}>🏆</Text>
+              </BouncyButton>
+              <BouncyButton 
+                onPress={() => setShopVisible(true)} 
+                style={styles.railButton}
+                color="#A78BFA" borderColor="#7C3AED" bottomBorderColor="#5B21B6"
+              >
+                <Text style={styles.iconText}>🛍️</Text>
+              </BouncyButton>
+              <BouncyButton 
+                onPress={() => setSettingsVisible(true)} 
+                style={styles.railButton}
+                color="#94A3B8" borderColor="#64748B" bottomBorderColor="#475569"
+              >
+                <Ionicons name="settings-sharp" size={20} color="#FFFFFF" />
+              </BouncyButton>
+            </View>
+
+            <ScrollView 
+              contentContainerStyle={styles.desktopMain}
+              showsVerticalScrollIndicator={false}
+            >
+              <Animated.View entering={FadeInDown.delay(100).duration(600).springify()} style={styles.desktopHero}>
+                <View style={styles.heroCopy}>
+                  <Animated.View style={[styles.desktopFlag, floatingStyle]}>
+                    <Text style={styles.titleEmoji}>🇳🇱</Text>
+                  </Animated.View>
+                  <Text style={styles.desktopTitle}>TaalSwipe</Text>
+                  <Text style={styles.desktopSubtitle}>Snelle swipe-rondes voor spelling, straattaal, merken en taalkennis.</Text>
+                  {stats && (
+                    <View style={styles.badgeRow}>
+                      <View style={styles.badge}>
+                        <Text style={styles.badgeText}>⭐ {getPlayerTitle(stats.xp)} · Lvl {Math.floor(stats.xp / 100) + 1}</Text>
+                      </View>
+                      {stats.currentStreak > 0 && (
+                        <View style={[styles.badge, { backgroundColor: 'rgba(255, 165, 0, 0.2)' }]}>
+                          <Text style={[styles.badgeText, { color: '#FFD700' }]}>🔥 {stats.currentStreak} dagen</Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                </View>
+                <View style={styles.heroStage}>
+                  <View style={styles.stageCard}>
+                    <View style={styles.stageTopRow}>
+                      <Text style={styles.stageLabel}>desktop ready</Text>
+                      <View style={styles.liveDot} />
+                    </View>
+                    <Text style={styles.stageTitle}>← swipe →</Text>
+                    <Text style={styles.stageBody}>Kies een modus en speel met muis, trackpad of toetsenbord.</Text>
+                    <View style={styles.stageMeter}>
+                      <View style={[styles.stageMeterFill, { width: '68%' }]} />
+                    </View>
+                  </View>
+                </View>
+              </Animated.View>
+
+              <View style={styles.desktopSectionHeader}>
+                <Text style={styles.sectionTitle}>Modi</Text>
+                <Text style={styles.sectionHint}>Klik een tegel om te starten</Text>
+              </View>
+              <View style={styles.desktopModeGrid}>
+                {renderModeCards(true)}
+              </View>
+            </ScrollView>
+
+            <View style={styles.desktopSidePanel}>
+              <View style={styles.panelCard}>
+                <Text style={styles.panelKicker}>Speler</Text>
+                <Text style={styles.panelValue}>{stats?.xp ?? 0} XP</Text>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricLabel}>Accuracy</Text>
+                  <Text style={styles.metricValue}>{accuracy}%</Text>
+                </View>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricLabel}>Combo record</Text>
+                  <Text style={styles.metricValue}>{stats?.highestCombo ?? 0}</Text>
+                </View>
+                <View style={styles.metricRow}>
+                  <Text style={styles.metricLabel}>Sessies</Text>
+                  <Text style={styles.metricValue}>{stats?.sessionsPlayed ?? 0}</Text>
+                </View>
+              </View>
+
+              <View style={styles.panelCard}>
+                <Text style={styles.panelKicker}>Controls</Text>
+                <View style={styles.keyRow}>
+                  <Text style={styles.keyCap}>←</Text>
+                  <Text style={styles.keyText}>links / nep / fout</Text>
+                </View>
+                <View style={styles.keyRow}>
+                  <Text style={styles.keyCap}>→</Text>
+                  <Text style={styles.keyText}>rechts / echt / goed</Text>
+                </View>
+                <View style={styles.keyRow}>
+                  <Text style={styles.keyCap}>Esc</Text>
+                  <Text style={styles.keyText}>pauze</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          </>
+        ) : (
+          <>
         <View style={styles.header}>
           <BouncyButton 
             onPress={() => {
@@ -126,68 +363,7 @@ export function HomeScreen({ navigation }: Props) {
 
           {/* Game Modes List */}
           <View style={styles.buttonsContainer}>
-            <ModeCard
-              emoji="⚔️"
-              title="Lokale Multiplayer"
-              description="Speel samen op één scherm! Wie is het snelst?"
-              color="#A855F7"
-              delay={200}
-              onPress={() => navigation.navigate('Multiplayer')}
-            />
-
-            <ModeCard
-              emoji="🗣️"
-              title="Straattaal of AI?"
-              description="Herken jij de echte straattaalwoorden tussen de AI-verzinsels?"
-              color="#A78BFA"
-              delay={350}
-              onPress={() => navigation.navigate('Game', { mode: 'straattaal' })}
-            />
-
-            <ModeCard
-              emoji="🇬🇧"
-              title="Steenkolenengels"
-              description="Make that the cat wise! Zijn deze letterlijke vertalingen echt?"
-              color="#F472B6"
-              delay={350}
-              onPress={() => navigation.navigate('Game', { mode: 'dunglish' })}
-            />
-
-            <ModeCard
-              emoji="⚡"
-              title="Speed-Spelling"
-              description="Snelheid is alles. Test je grammatica-kennis onder tijdsdruk."
-              color="#38BDF8"
-              delay={500}
-              onPress={() => navigation.navigate('Game', { mode: 'spelling' })}
-            />
-
-            <ModeCard
-              emoji="🧠"
-              title="D/T Grammatica"
-              description="Wordt het met een d, t, of dt? Test je kennis van de werkwoordspelling!"
-              color="#F59E0B"
-              delay={650}
-              onPress={() => navigation.navigate('Game', { mode: 'dt' })}
-            />
-
-            <ModeCard
-              emoji="📖"
-              title="Dikke Van Dale"
-              description="Staat dit woord officieel in het woordenboek of maken we het je maar wat wijs?"
-              color="#10B981"
-              delay={800}
-              onPress={() => navigation.navigate('Game', { mode: 'vandale' })}
-            />
-
-            <ModeCard
-              emoji="🏷️"
-              title="Merknaam of Soortnaam"
-              description="Is dit een beschermd merk of inmiddels een algemeen woord geworden?"
-              color="#EF4444"
-              delay={950}
-              onPress={() => navigation.navigate('Game', { mode: 'brand' })}
-            />
+            {renderModeCards()}
           </View>
 
           {/* Footer */}
@@ -198,6 +374,8 @@ export function HomeScreen({ navigation }: Props) {
             <Text style={styles.footerText}>Swipe rechts = Echt • Swipe links = Nep</Text>
           </Animated.View>
         </ScrollView>
+          </>
+        )}
       </SafeAreaView>
 
       <StatsModal
@@ -224,6 +402,266 @@ export function HomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+  },
+  desktopGridOverlay: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    opacity: 0.16,
+  },
+  gridLineHorizontal: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  gridLineVertical: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  desktopShell: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 22,
+    padding: 28,
+    maxWidth: 1440,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  desktopRail: {
+    width: 76,
+    borderRadius: 24,
+    padding: 12,
+    alignItems: 'center',
+    gap: 14,
+    backgroundColor: 'rgba(8, 13, 28, 0.7)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+  },
+  railLogo: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 18,
+    color: '#FFFFFF',
+    marginBottom: 8,
+    letterSpacing: 0,
+  },
+  railButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 18,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  desktopMain: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
+  desktopHero: {
+    flexDirection: 'row',
+    minHeight: 260,
+    borderRadius: 28,
+    padding: 28,
+    marginBottom: 22,
+    backgroundColor: 'rgba(9, 14, 32, 0.52)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.22,
+    shadowRadius: 32,
+    overflow: 'hidden',
+  },
+  heroCopy: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingRight: 24,
+  },
+  desktopFlag: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  desktopTitle: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 58,
+    color: Colors.textPrimary,
+    letterSpacing: 0,
+  },
+  desktopSubtitle: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 18,
+    color: Colors.textSecondary,
+    lineHeight: 28,
+    maxWidth: 560,
+    marginTop: 8,
+    marginBottom: 18,
+  },
+  heroStage: {
+    width: 290,
+    justifyContent: 'center',
+  },
+  stageCard: {
+    minHeight: 216,
+    borderRadius: 24,
+    padding: 22,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(9, 14, 32, 0.82)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    borderBottomWidth: 8,
+    borderBottomColor: 'rgba(0,0,0,0.42)',
+  },
+  stageTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  stageLabel: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 12,
+    color: '#67E8F9',
+    textTransform: 'uppercase',
+    letterSpacing: 1.4,
+  },
+  liveDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#34D399',
+    shadowColor: '#34D399',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+  },
+  stageTitle: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 30,
+    color: '#FFFFFF',
+    letterSpacing: 0,
+    marginBottom: 10,
+  },
+  stageBody: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.72)',
+    lineHeight: 20,
+  },
+  stageMeter: {
+    height: 10,
+    marginTop: 20,
+    borderRadius: 999,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  stageMeterFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#67E8F9',
+  },
+  desktopSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 26,
+    color: '#FFFFFF',
+    letterSpacing: 0,
+  },
+  sectionHint: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 13,
+    color: Colors.textMuted,
+  },
+  desktopModeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 14,
+  },
+  desktopModeItem: {
+    width: '31.8%',
+    minWidth: 250,
+    flexGrow: 1,
+  },
+  desktopSidePanel: {
+    width: 280,
+    gap: 16,
+  },
+  panelCard: {
+    borderRadius: 24,
+    padding: 20,
+    backgroundColor: 'rgba(8, 13, 28, 0.72)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+  },
+  panelKicker: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 12,
+    color: '#A5B4FC',
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginBottom: 10,
+  },
+  panelValue: {
+    fontFamily: 'Inter_900Black',
+    fontSize: 34,
+    color: '#FFFFFF',
+    letterSpacing: 0,
+    marginBottom: 14,
+  },
+  metricRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 9,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+  },
+  metricLabel: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.62)',
+  },
+  metricValue: {
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 13,
+    color: '#FFFFFF',
+  },
+  keyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 10,
+  },
+  keyCap: {
+    minWidth: 42,
+    textAlign: 'center',
+    overflow: 'hidden',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    color: '#FFFFFF',
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 13,
+  },
+  keyText: {
+    flex: 1,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.7)',
   },
   header: {
     paddingHorizontal: 24,
@@ -268,7 +706,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_800ExtraBold',
     fontSize: 44,
     color: Colors.textPrimary,
-    letterSpacing: -1.5,
+    letterSpacing: 0,
     textAlign: 'center',
     marginBottom: 8,
   },
