@@ -58,13 +58,18 @@ class SoundManager {
     }
   }
 
-  private play(key: string, rate: number = 1.0) {
+  private play(key: string, rate: number = 1) {
     if (!useSettingsStore.getState().isSoundEnabled) return;
     let player = this.players[key];
     if (!player) {
-      const fallbackKey = key.startsWith('swoosh') ? 'swoosh' : 
-                          key.startsWith('incorrect') ? 'incorrect' :
-                          key.startsWith('gameover') ? 'gameover' : '';
+      let fallbackKey = '';
+      if (key.startsWith('swoosh')) {
+        fallbackKey = 'swoosh';
+      } else if (key.startsWith('incorrect')) {
+        fallbackKey = 'incorrect';
+      } else if (key.startsWith('gameover')) {
+        fallbackKey = 'gameover';
+      }
       player = this.players[fallbackKey];
     }
     if (!player) {
@@ -87,7 +92,7 @@ class SoundManager {
   }
   
   playCorrect(combo: number = 0) {
-    const rate = Math.min(1.0 + (combo * 0.05), 1.6);
+    const rate = Math.min(1 + (combo * 0.05), 1.6);
     this.play('correct', rate);
   }
 
@@ -125,7 +130,9 @@ class SoundManager {
     for (const key of Object.keys(this.players)) {
       try {
         this.players[key]?.remove();
-      } catch (_) {}
+      } catch (error) {
+        // Player removal error can be safely ignored
+      }
     }
     this.players = {};
     this.initialized = false;
