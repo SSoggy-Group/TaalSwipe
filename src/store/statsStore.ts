@@ -119,7 +119,6 @@ export const statsStore = {
     }
 
     if (stats.lastPlayedDate) {
-      const lastPlayed = new Date(stats.lastPlayedDate);
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayStr = yesterday.toISOString().split('T')[0];
