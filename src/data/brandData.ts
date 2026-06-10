@@ -1,4 +1,5 @@
 export interface BrandItem {
+  id?: string | number;
   word: string;
   isBrand: boolean;
   explanation: string;
