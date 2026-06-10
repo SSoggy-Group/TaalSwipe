@@ -28,13 +28,9 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
       explanation = 'Is dit een echt Engels spreekwoord, of is het letterlijk vertaald "Steenkolenengels" (Dunglish)?';
       break;
     case 'spelling':
-      leftText = 'FOUT';
-      rightText = 'GOED';
       explanation = 'Beoordeel zo snel mogelijk of het woord of de zin 100% correct gespeld is.';
       break;
     case 'dt':
-      leftText = 'FOUT';
-      rightText = 'GOED';
       explanation = 'Klopt de werkwoordspelling? Let vooral goed op de d, t, en dt!';
       break;
     case 'vandale':
