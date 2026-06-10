@@ -2,7 +2,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, View, StyleProp } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 
 interface Props {
   readonly onPress: () => void;
