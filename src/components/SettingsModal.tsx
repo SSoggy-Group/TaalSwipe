@@ -128,6 +128,7 @@ export function SettingsModal({ visible, onClose }: Props) {
       transparent
       animationType="slide"
       onRequestClose={onClose}
+      statusBarTranslucent={true}
     >
       <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
         <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
