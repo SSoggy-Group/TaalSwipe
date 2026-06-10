@@ -8,6 +8,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold,
   Inter_800ExtraBold,
+  Inter_900Black,
 } from '@expo-google-fonts/inter';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
@@ -25,6 +26,7 @@ function App() {
     Inter_600SemiBold,
     Inter_700Bold,
     Inter_800ExtraBold,
+    Inter_900Black,
   });
 
   React.useEffect(() => {
