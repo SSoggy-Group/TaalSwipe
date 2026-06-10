@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_800ExtraBold',
     fontSize: 32,
     color: Colors.textPrimary,
-    letterSpacing: -0.5,
+    letterSpacing: 0,
     textAlign: 'center',
     marginBottom: 8,
   },
