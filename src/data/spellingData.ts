@@ -1,5 +1,5 @@
 export interface SpellingItem {
-  id: number;
+  id: string | number;
   text: string;
   isCorrect: boolean;
   correction?: string;
