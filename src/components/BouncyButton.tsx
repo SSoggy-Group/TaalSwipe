@@ -62,6 +62,7 @@ export const BouncyButton = React.memo(function BouncyButton({
       style={[styles.button, dynamicStyles, style, animatedStyle]}
       android_ripple={{ color: 'rgba(255,255,255,0.2)' }}
       accessible={true}
+      focusable={false}
       accessibilityRole="button"
       accessibilityLabel={title || 'Knop'}
     >
