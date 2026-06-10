@@ -41,10 +41,8 @@ class SoundManager {
     if (this.initialized) return;
     try {
       await setAudioModeAsync({
-        playsInSilentModeIOS: true,
-        shouldDuckAndroid: true,
-        interruptionModeIOS: 'mixWithOthers',
-        interruptionModeAndroid: 'doNotMix',
+        playsInSilentMode: true,
+        interruptionMode: 'mixWithOthers',
       });
 
       for (const key of Object.keys(SOUND_FILES)) {
