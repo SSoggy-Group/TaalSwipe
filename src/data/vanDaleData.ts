@@ -1,4 +1,5 @@
 export interface VanDaleItem {
+  id?: string | number;
   word: string;
   inVanDale: boolean;
   definition: string;
