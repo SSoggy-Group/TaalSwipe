@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Colors, useAppTheme } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '../platform/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -52,94 +52,93 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
     );
   }
 
+const CARD_SKIN_STYLES: Record<string, (theme: any) => any> = {
+  card_gold: (theme) => ({
+    backgroundColor: theme.glass.background,
+    borderColor: '#CA8A04',
+    borderBottomColor: '#854D0E',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderBottomWidth: 8,
+  }),
+  card_neon: () => ({
+    backgroundColor: '#0B0F19',
+    borderColor: '#06B6D4',
+    borderBottomColor: '#0891B2',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderBottomWidth: 8,
+    shadowColor: '#06B6D4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 8,
+  }),
+  card_retro: (theme) => ({
+    backgroundColor: theme.glass.background,
+    borderColor: '#000000',
+    borderBottomColor: '#000000',
+    borderRadius: 4,
+    borderWidth: 4,
+    borderBottomWidth: 10,
+    shadowColor: '#000000',
+    shadowOffset: { width: 6, height: 6 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+  }),
+  card_holo: () => ({
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderColor: '#EC4899',
+    borderBottomColor: '#BE185D',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderBottomWidth: 8,
+    shadowColor: '#D946EF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+  }),
+  card_shadow: () => ({
+    backgroundColor: '#090D16',
+    borderColor: '#E11D48',
+    borderBottomColor: '#9F1239',
+    borderRadius: 24,
+    borderWidth: 2,
+    borderBottomWidth: 8,
+    shadowColor: '#E11D48',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  }),
+  card_pastel: () => ({
+    backgroundColor: '#ECFDF5',
+    borderColor: '#34D399',
+    borderBottomColor: '#047857',
+    borderRadius: 32,
+    borderWidth: 2,
+    borderBottomWidth: 6,
+  }),
+};
+
   const getCardStyle = () => {
-    switch (equippedCard) {
-      case 'card_gold':
-        return {
-          backgroundColor: theme.glass.background,
-          borderColor: '#CA8A04',
-          borderBottomColor: '#854D0E',
-          borderRadius: 24,
-          borderWidth: 2,
-          borderBottomWidth: 8,
-        };
-      case 'card_neon':
-        return {
-          backgroundColor: '#0B0F19',
-          borderColor: '#06B6D4',
-          borderBottomColor: '#0891B2',
-          borderRadius: 24,
-          borderWidth: 2,
-          borderBottomWidth: 8,
-          shadowColor: '#06B6D4',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.35,
-          shadowRadius: 8,
-          elevation: 8,
-        };
-      case 'card_retro':
-        return {
-          backgroundColor: theme.glass.background,
-          borderColor: '#000000',
-          borderBottomColor: '#000000',
-          borderRadius: 4,
-          borderWidth: 4,
-          borderBottomWidth: 10,
-          shadowColor: '#000000',
-          shadowOffset: { width: 6, height: 6 },
-          shadowOpacity: 1,
-          shadowRadius: 0,
-        };
-      case 'card_holo':
-        return {
-          backgroundColor: 'rgba(255, 255, 255, 0.85)',
-          borderColor: '#EC4899',
-          borderBottomColor: '#BE185D',
-          borderRadius: 24,
-          borderWidth: 2,
-          borderBottomWidth: 8,
-          shadowColor: '#D946EF',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 8,
-        };
-      case 'card_shadow':
-        return {
-          backgroundColor: '#090D16',
-          borderColor: '#E11D48',
-          borderBottomColor: '#9F1239',
-          borderRadius: 24,
-          borderWidth: 2,
-          borderBottomWidth: 8,
-          shadowColor: '#E11D48',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.15,
-          shadowRadius: 10,
-        };
-      case 'card_pastel':
-        return {
-          backgroundColor: '#ECFDF5',
-          borderColor: '#34D399',
-          borderBottomColor: '#047857',
-          borderRadius: 32,
-          borderWidth: 2,
-          borderBottomWidth: 6,
-        };
-      default:
-        return {
-          backgroundColor: theme.glass.background,
-          borderColor: (combo && combo >= 3) ? '#FF9600' : theme.glass.border,
-          borderBottomColor: (combo && combo >= 3) ? '#CC7800' : theme.glass.highlight,
-          borderRadius: 24,
-          borderWidth: (combo && combo >= 3) ? 4 : 2,
-          borderBottomWidth: 8,
-          shadowColor: (combo && combo >= 3) ? '#FF9600' : undefined,
-          shadowOffset: (combo && combo >= 3) ? { width: 0, height: 0 } : undefined,
-          shadowOpacity: (combo && combo >= 3) ? 0.8 : undefined,
-          shadowRadius: (combo && combo >= 3) ? 16 : undefined,
-          elevation: (combo && combo >= 3) ? 12 : undefined,
-        };
+    const styleGetter = CARD_SKIN_STYLES[equippedCard];
+    if (styleGetter) {
+      return styleGetter(theme);
     }
+    const comboActive = typeof combo === 'number' && combo >= 3;
+    return {
+      backgroundColor: theme.glass.background,
+      borderColor: comboActive ? '#FF9600' : theme.glass.border,
+      borderBottomColor: comboActive ? '#CC7800' : theme.glass.highlight,
+      borderRadius: 24,
+      borderWidth: comboActive ? 4 : 2,
+      borderBottomWidth: 8,
+      shadowColor: comboActive ? '#FF9600' : undefined,
+      shadowOffset: comboActive ? { width: 0, height: 0 } : undefined,
+      shadowOpacity: comboActive ? 0.8 : undefined,
+      shadowRadius: comboActive ? 16 : undefined,
+      elevation: comboActive ? 12 : undefined,
+    };
   };
 
   return (
