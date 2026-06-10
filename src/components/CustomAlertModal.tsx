@@ -18,7 +18,7 @@ interface CustomAlertModalProps {
   onClose?: () => void;
 }
 
-export function CustomAlertModal({ visible, title, message, buttons, onClose }: CustomAlertModalProps) {
+export function CustomAlertModal({ visible, title, message, buttons, onClose }: Readonly<CustomAlertModalProps>) {
   if (!visible) return null;
 
   const handleClose = () => {
@@ -45,7 +45,7 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
                 const isCancel = btn.style === 'cancel';
                 return (
                   <BouncyButton
-                    key={idx}
+                    key={btn.text}
                     onPress={() => {
                       btn.onPress();
                       handleClose();
