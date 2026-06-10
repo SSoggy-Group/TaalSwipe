@@ -32,7 +32,7 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
   const renderButtons = buttons || defaultButtons;
 
   return (
-    <Modal transparent visible={visible} animationType="none" onRequestClose={handleClose}>
+    <Modal transparent visible={visible} animationType="none" onRequestClose={handleClose} statusBarTranslucent={true}>
       <BlurView intensity={20} style={StyleSheet.absoluteFill}>
         <Animated.View entering={FadeIn.duration(200)} style={styles.overlay}>
           <Animated.View entering={SlideInUp.springify()} style={styles.alertContainer}>
