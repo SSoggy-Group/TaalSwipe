@@ -11,19 +11,56 @@ Een snelle, swipe-based game (denk aan Tinder) om je Nederlandse spelling en taa
 - **Straattaal**: Betekenissen van woorden als *waggie* of *fissa*.
 - **Dikke Van Dale**: Bestaat het woord *snackslaaf* echt?
 
-## Features
+## Architectuur & Mappenstructuur
 
-- **Thema's**: Spaar muntjes tijdens het spelen om nieuwe kleurenthema's te unlocken (zoals Cyber Neon of Retro Arcade).
-- **Offline first**: Werkt volledig zonder internetverbinding.
-- **Statistieken**: Houdt je highscores en win-ratio per categorie bij.
-- **Glassmorphism UI**: Semi-transparante kaarten met vloeiende swipe-animaties.
+Het project is opgezet met een duidelijke scheiding tussen data, state en UI:
 
-## Tech stack
+- **`src/screens/`**: Bevat de belangrijkste schermen van de app, waaronder `HomeScreen`, `GameScreen` (waar de swipe-logica leeft), `ResultScreen`, `ShopScreen`, `StatsScreen` en `SettingsScreen`.
+- **`src/components/`**: Herbruikbare UI-componenten zoals `SwipeCard`, `ThemeCard` en custom buttons.
+- **`src/store/`**: Bevat Zustand-stores voor globale state:
+  - `settingsStore.ts`: Beheert sound effects, haptische feedback, muntjes en ontgrendelde/geactiveerde thema's.
+  - `statsStore.ts`: Houdt de highscores, ervaringspunten (XP) en beantwoorde vragen per categorie bij.
+- **`src/data/`**: De datasets met woorden en stellingen per categorie.
+- **`src/theme/`**: Dynamische kleurschema's (`colors.ts`) die reageren op systeeminstellingen (dark/light) en de shop-items.
+- **`src-tauri/`**: De Tauri-wrapper waarmee de app als native desktop applicatie gebouwd kan worden.
 
-De app is gebouwd met React Native (Expo) en TypeScript:
-- **State management**: Zustand (voor muntjes, thema's en statistieken).
-- **Animaties**: React Native Reanimated & Gesture Handler voor de swipe-mechanics.
-- **Multiplatform**: Draait op iOS, Android, web, en heeft een Tauri-wrapper voor desktop.
+## Vragen toevoegen of bewerken
+
+De data per spelmodus bevindt zich in `src/data/`. Elke dataset exporteert een array van objecten die voldoen aan dit type:
+
+```typescript
+export interface SpellingItem {
+  id: string | number;     // Unieke identifier
+  text: string;            // Het getoonde woord of de zin
+  isCorrect: boolean;      // Swipe rechts = true (goed), swipe links = false (fout)
+  correction?: string;     // Optionele uitleg of correctie als de speler het fout heeft
+}
+```
+
+### Voorbeeld
+
+Wil je een nieuwe vraag toevoegen aan de spellingmodus? Open `src/data/spellingData.ts` en voeg een object toe aan de array:
+
+```typescript
+{
+  id: "nieuw-woord-1",
+  text: "Gezamenlijk",
+  isCorrect: true,
+  correction: "Goed gespeld!"
+},
+{
+  id: "nieuw-woord-2",
+  text: "Gezamelijk",
+  isCorrect: false,
+  correction: "Fout! Het is 'Gezamenlijk' met een tussen-n."
+}
+```
+
+## Thema's & Shop
+
+Gebruikers verdienen muntjes door games te spelen. Met deze muntjes kunnen ze in de shop nieuwe achtergronden (`equippedBackground`) en kaartstijlen (`equippedCard`) kopen. 
+
+Deze thema's zijn gedefinieerd in `src/theme/colors.ts`. De hook `useAppTheme` leest de actieve selectie uit de `settingsStore` en vertaalt dit naar de juiste kleurcodes (zoals gradient layers en transparantieniveaus voor de glassmorphism UI).
 
 ## Ontwikkeling
 
@@ -37,7 +74,7 @@ De app is gebouwd met React Native (Expo) en TypeScript:
    ```bash
    npx expo start
    ```
-3. Scan de QR-code met de Expo Go app op je telefoon, of druk op `i` / `a` voor de simulator.
+3. Scan de QR-code met de Expo Go app op je telefoon, of druk op `i` / `a` voor de iOS of Android simulator.
 
 ### Web & Desktop
 
@@ -46,5 +83,6 @@ De app is gebouwd met React Native (Expo) en TypeScript:
 - Desktop dev (Tauri): `npm run desktop:dev`
 - Desktop build (Tauri): `npm run desktop:build`
 
-*Opmerking voor desktop builds: zorg dat je Rust en Cargo hebt geïnstalleerd via [rustup.rs](https://rustup.rs/).*
+*Opmerking voor desktop builds: zorg dat je Rust en Cargo hebt geïnstalleerd via [rustup.rs](https://rustup.rs/). De desktop-app draait op Tauri en laadt een geoptimaliseerde web build van de Expo-app.*
+
 
