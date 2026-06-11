@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Platform, StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from '../platform/haptics';
@@ -615,6 +616,9 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     }
   };
 
+  const currentItem = data[currentIndex];
+  const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
+
   React.useEffect(() => {
     if (Platform.OS !== 'web' || globalThis.window === undefined) return;
 
@@ -633,14 +637,57 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         event.preventDefault();
         handleClose();
       }
+      if (event.key === 'Enter' || event.key === ' ') {
+        // If feedback is showing, space/enter goes to next
+        if (feedbackInfo) {
+          event.preventDefault();
+          setFeedbackInfo(null);
+        }
+      }
+    };
+
+    const handleContextMenu = async (event: MouseEvent) => {
+      if (gameOver || isPaused || !currentItem) return;
+      event.preventDefault();
+      
+      const { wordText, explanationText } = getItemDetails(currentItem, mode);
+      if (!wordText) return;
+
+      if (globalThis.__TAURI_INTERNALS__) {
+        try {
+          const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
+          
+          const copyItem = await MenuItem.new({
+            text: `Kopieer: "${wordText}"`,
+            action: () => {
+              Clipboard.setStringAsync(wordText);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
+          });
+          
+          const searchItem = await MenuItem.new({
+            text: 'Zoek op Google',
+            action: () => {
+              const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
+              globalThis.window.open(url, '_blank');
+            }
+          });
+          
+          const menu = await Menu.new({ items: [copyItem, searchItem] });
+          await menu.popup();
+        } catch (err) {
+          console.warn('Failed to show Tauri context menu', err);
+        }
+      }
     };
 
     globalThis.window.addEventListener('keydown', handleKeyDown);
-    return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
-  }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial]);
-
-  const currentItem = data[currentIndex];
-  const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
+    globalThis.window.addEventListener('contextmenu', handleContextMenu);
+    return () => {
+      globalThis.window.removeEventListener('keydown', handleKeyDown);
+      globalThis.window.removeEventListener('contextmenu', handleContextMenu);
+    };
+  }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial, currentItem, mode]);
 
   let leftLabel = 'FOUT ✗';
   let rightLabel = 'GOED ✓';
@@ -934,7 +981,7 @@ const styles = StyleSheet.create({
   },
   desktopGameShell: {
     width: '100%',
-    maxWidth: 900,
+    maxWidth: 600,
     alignSelf: 'center',
     paddingHorizontal: 24,
   },
@@ -1001,11 +1048,13 @@ const styles = StyleSheet.create({
   previewCard: {
     position: 'absolute',
     width: '100%',
+    maxWidth: 420,
     alignItems: 'center',
     opacity: 0.6,
   },
   cardPlaceholder: {
-    width: '85%',
+    width: '100%',
+    maxWidth: 420,
     minHeight: 300,
     borderRadius: 24,
     backgroundColor: '#F8FAFC',
