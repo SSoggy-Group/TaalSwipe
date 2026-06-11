@@ -1,18 +1,18 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, Switch, ScrollView, useWindowDimensions } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { StyleSheet, Text, View, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from '../platform/haptics';
 import { statsStore } from '../store/statsStore';
-import { CustomAlertModal } from './CustomAlertModal';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
+import { GradientBackground } from '../components/GradientBackground';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
-interface Props {
-  readonly visible: boolean;
-  readonly onClose: () => void;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 
 const INCORRECT_SOUNDS = [
   { id: 'default', name: 'Standaard' },
@@ -40,7 +40,7 @@ const SWOOSH_SOUNDS = [
   { id: '1153', name: 'Wind' },
 ];
 
-export function SettingsModal({ visible, onClose }: Props) {
+export function SettingsScreen({ navigation }: Props) {
   const {
     isSoundEnabled,
     toggleSound,
@@ -61,13 +61,9 @@ export function SettingsModal({ visible, onClose }: Props) {
   } = useSettingsStore();
   
   const theme = useAppTheme();
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 900;
   
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [alertConfig, setAlertConfig] = React.useState({ title: '', message: '' });
-
-  if (!visible) return null;
 
   const handleToggleSound = () => {
     toggleSound();
@@ -125,25 +121,20 @@ export function SettingsModal({ visible, onClose }: Props) {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
-      <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={[styles.container, isDesktop && styles.desktopContainer]}>
-        <View style={[styles.content, isDesktop && styles.desktopContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+    <GradientBackground>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>⚙️ Instellingen</Text>
-            <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="close" size={24} color={theme.cardTextPrimary} />
+            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
+              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
             </TouchableOpacity>
+            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>⚙️ Instellingen</Text>
+            <View style={{ width: 40 }} /> {/* Spacer to center title */}
           </View>
 
-          {/* Settings list (Scrollable to prevent overflow) */}
+          {/* Settings list */}
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsList}>
             
             {/* Setting: Theme Preference */}
@@ -213,7 +204,7 @@ export function SettingsModal({ visible, onClose }: Props) {
               />
             </View>
 
-            {/* SOUND CUSTOMIZATION PANEL (Shows only if SFX is enabled) */}
+            {/* SOUND CUSTOMIZATION PANEL */}
             {isSoundEnabled && (
               <View style={[styles.soundSection, { borderColor: theme.glass.border }]}>
                 <Text style={[styles.sectionTitle, { color: theme.cardTextPrimary }]}>🎵 Soundboard (Kies Geluiden)</Text>
@@ -379,7 +370,7 @@ export function SettingsModal({ visible, onClose }: Props) {
             </TouchableOpacity>
           </ScrollView>
         </View>
-      </BlurView>
+      </SafeAreaView>
       
       <CustomAlertModal
         visible={alertVisible}
@@ -387,37 +378,24 @@ export function SettingsModal({ visible, onClose }: Props) {
         message={alertConfig.message}
         onClose={() => setAlertVisible(false)}
       />
-    </Modal>
+    </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'flex-end',
   },
   content: {
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    padding: 32,
+    flex: 1,
+    padding: 24,
     width: '100%',
-    borderWidth: 1,
-    maxHeight: '85%',
-  },
-  desktopContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  desktopContent: {
-    width: 640,
-    minHeight: 'auto',
-    maxHeight: '90%',
+    maxWidth: 600,
+    alignSelf: 'center',
     borderRadius: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 24 },
-    shadowOpacity: 0.3,
-    shadowRadius: 40,
+    borderWidth: 1,
+    marginTop: 24,
+    marginBottom: 24,
   },
   header: {
     flexDirection: 'row',
@@ -427,9 +405,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Inter_900Black',
-    fontSize: 28,
+    fontSize: 24,
   },
-  closeButton: {
+  backButton: {
     padding: 8,
     borderRadius: 20,
   },

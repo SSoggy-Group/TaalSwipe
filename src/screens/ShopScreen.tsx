@@ -1,23 +1,20 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAppTheme } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from '../platform/haptics';
 import { ConfettiBurst } from '../platform/ConfettiBurst';
-import { BouncyButton } from './BouncyButton';
-import { CustomAlertModal } from './CustomAlertModal';
+import { BouncyButton } from '../components/BouncyButton';
+import { CustomAlertModal } from '../components/CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
+import { GradientBackground } from '../components/GradientBackground';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
-interface Props {
-  readonly visible: boolean;
-  readonly onClose: () => void;
-  readonly stats: AppStats | null;
-  readonly onUpdateStats: (newStats: AppStats) => void;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'Shop'>;
 
 const SHOP_ITEMS = [
   // THEMES - BACKGROUNDS
@@ -64,10 +61,9 @@ const SHOP_ITEMS = [
   { id: 'card_ice', name: 'Ice Crystal', type: 'card', price: 2800, icon: '🧊', description: 'Ijskristallen met blauwe glasranden' },
 ];
 
-export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
+export function ShopScreen({ navigation }: Props) {
   const theme = useAppTheme();
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 900;
+  const [stats, setStats] = React.useState<AppStats | null>(null);
   const [activeTab, setActiveTab] = React.useState<'themes' | 'powerups' | 'upgrades'>('themes');
   const [shootConfetti, setShootConfetti] = React.useState(false);
   const [alertVisible, setAlertVisible] = React.useState(false);
@@ -80,10 +76,17 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
     setEquippedCard 
   } = useSettingsStore();
 
-  if (!visible || !stats) return null;
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const currentStats = await statsStore.getStats();
+      setStats(currentStats);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleAction = async (item: typeof SHOP_ITEMS[0]) => {
+    if (!stats) return;
     const isTheme = item.type === 'background' || item.type === 'card';
     
     if (isTheme) {
@@ -113,7 +116,7 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       };
       
       await statsStore.saveStats(newStats);
-      onUpdateStats(newStats);
+      setStats(newStats);
       
       if (item.type === 'background') {
         setEquippedBackground(item.id);
@@ -145,7 +148,7 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       };
       
       await statsStore.saveStats(newStats);
-      onUpdateStats(newStats);
+      setStats(newStats);
       
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setShootConfetti(true);
@@ -175,7 +178,7 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
       };
       
       await statsStore.saveStats(newStats);
-      onUpdateStats(newStats);
+      setStats(newStats);
       
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setShootConfetti(true);
@@ -197,162 +200,155 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
   });
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
-      <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={[styles.container, isDesktop && styles.desktopContainer]}>
-        <SafeAreaView style={[styles.safeArea, isDesktop && { alignItems: 'center' }]}>
-          <View style={[styles.content, isDesktop && styles.desktopContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+    <GradientBackground>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+          
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
+              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
+            </TouchableOpacity>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
+              <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats?.xp ?? 0} XP</Text></Text>
+            </View>
+            <View style={{ width: 40 }} />
+          </View>
+
+          {/* Tab Bar */}
+          <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
+            <TouchableOpacity 
+              onPress={() => setActiveTab('themes')} 
+              style={[
+                styles.tabButton, 
+                activeTab === 'themes' && { backgroundColor: theme.glass.background }
+              ]}
+            >
+              <Text style={[
+                styles.tabText, 
+                { color: activeTab === 'themes' ? theme.cardTextPrimary : theme.cardTextSecondary }
+              ]}>🎨 Thema's</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={() => setActiveTab('powerups')} 
+              style={[
+                styles.tabButton, 
+                activeTab === 'powerups' && { backgroundColor: theme.glass.background }
+              ]}
+            >
+              <Text style={[
+                styles.tabText, 
+                { color: activeTab === 'powerups' ? theme.cardTextPrimary : theme.cardTextSecondary }
+              ]}>🛡️ Power-ups</Text>
+            </TouchableOpacity>
             
-            {/* Header */}
-            <View style={styles.header}>
-              <View>
-                <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
-                <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats.xp} XP</Text></Text>
-              </View>
-              <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: theme.glass.highlight }]}>
-                <Ionicons name="close" size={24} color={theme.cardTextPrimary} />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity 
+              onPress={() => setActiveTab('upgrades')} 
+              style={[
+                styles.tabButton, 
+                activeTab === 'upgrades' && { backgroundColor: theme.glass.background }
+              ]}
+            >
+              <Text style={[
+                styles.tabText, 
+                { color: activeTab === 'upgrades' ? theme.cardTextPrimary : theme.cardTextSecondary }
+              ]}>⚡ Upgrades</Text>
+            </TouchableOpacity>
+          </View>
 
-            {/* Tab Bar */}
-            <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
-              <TouchableOpacity 
-                onPress={() => setActiveTab('themes')} 
-                style={[
-                  styles.tabButton, 
-                  activeTab === 'themes' && { backgroundColor: theme.glass.background }
-                ]}
-              >
-                <Text style={[
-                  styles.tabText, 
-                  { color: activeTab === 'themes' ? theme.cardTextPrimary : theme.cardTextSecondary }
-                ]}>🎨 Thema's</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                onPress={() => setActiveTab('powerups')} 
-                style={[
-                  styles.tabButton, 
-                  activeTab === 'powerups' && { backgroundColor: theme.glass.background }
-                ]}
-              >
-                <Text style={[
-                  styles.tabText, 
-                  { color: activeTab === 'powerups' ? theme.cardTextPrimary : theme.cardTextSecondary }
-                ]}>🛡️ Power-ups</Text>
-              </TouchableOpacity>
+          {/* Shop List */}
+          <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+            {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
+            {stats && filteredItems.map((item) => {
+              const isTheme = item.type === 'background' || item.type === 'card';
+              const isPowerup = item.type === 'powerup';
+              const isUpgrade = item.type === 'upgrade';
               
-              <TouchableOpacity 
-                onPress={() => setActiveTab('upgrades')} 
-                style={[
-                  styles.tabButton, 
-                  activeTab === 'upgrades' && { backgroundColor: theme.glass.background }
-                ]}
-              >
-                <Text style={[
-                  styles.tabText, 
-                  { color: activeTab === 'upgrades' ? theme.cardTextPrimary : theme.cardTextSecondary }
-                ]}>⚡ Upgrades</Text>
-              </TouchableOpacity>
-            </View>
+              let buttonTitle = `Koop voor ${item.price} XP`;
+              let buttonColor = theme.accent;
+              let itemBadgeText = '';
 
-            {/* Shop List */}
-            <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-              {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
-              {filteredItems.map((item) => {
-                const isTheme = item.type === 'background' || item.type === 'card';
-                const isPowerup = item.type === 'powerup';
-                const isUpgrade = item.type === 'upgrade';
-                
-                let buttonTitle = `Koop voor ${item.price} XP`;
-                let buttonColor = theme.accent;
-                let itemBadgeText = '';
+              if (isTheme) {
+                const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
+                const isEquipped = item.type === 'background' 
+                  ? equippedBackground === item.id 
+                  : equippedCard === item.id;
 
-                if (isTheme) {
-                  const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
-                  const isEquipped = item.type === 'background' 
-                    ? equippedBackground === item.id 
-                    : equippedCard === item.id;
+                itemBadgeText = item.type === 'background' ? 'Achtergrond' : 'Kaartstijl';
 
-                  itemBadgeText = item.type === 'background' ? 'Achtergrond' : 'Kaartstijl';
-
-                  if (isUnlocked) {
-                    if (isEquipped) {
-                      buttonTitle = 'Uitgerust ✓';
-                      buttonColor = theme.glass.border;
-                    } else {
-                      buttonTitle = 'Uitrusten';
-                      buttonColor = '#58CC02';
-                    }
-                  }
-                } else if (isPowerup) {
-                  const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
-                  const count = stats[statsKey] || 0;
-                  itemBadgeText = `In bezit: ${count}`;
-                  buttonColor = '#58CC02';
-                } else if (isUpgrade) {
-                  const targetMultiplier = item.multiplier || 1;
-                  const isOwned = stats.xpMultiplier >= targetMultiplier;
-                  itemBadgeText = 'Permanente boost';
-                  
-                  if (isOwned) {
-                    buttonTitle = 'Gekocht ✓';
+                if (isUnlocked) {
+                  if (isEquipped) {
+                    buttonTitle = 'Uitgerust ✓';
                     buttonColor = theme.glass.border;
                   } else {
-                    buttonColor = '#F59E0B'; // Orange for upgrade
+                    buttonTitle = 'Uitrusten';
+                    buttonColor = '#58CC02';
                   }
                 }
+              } else if (isPowerup) {
+                const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
+                const count = stats[statsKey] || 0;
+                itemBadgeText = `In bezit: ${count}`;
+                buttonColor = '#58CC02';
+              } else if (isUpgrade) {
+                const targetMultiplier = item.multiplier || 1;
+                const isOwned = stats.xpMultiplier >= targetMultiplier;
+                itemBadgeText = 'Permanente boost';
+                
+                if (isOwned) {
+                  buttonTitle = 'Gekocht ✓';
+                  buttonColor = theme.glass.border;
+                } else {
+                  buttonColor = '#F59E0B'; // Orange for upgrade
+                }
+              }
 
-                return (
-                  <View 
-                    key={item.id} 
-                    style={[
-                      styles.shopItem, 
-                      { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                      (isTheme && (equippedBackground === item.id || equippedCard === item.id)) && { borderColor: theme.accent, borderBottomColor: theme.accent }
-                    ]}
-                  >
-                    <View style={styles.itemInfo}>
-                      <View style={[styles.iconWrapper, { backgroundColor: theme.glass.background }]}>
-                        <Text style={styles.itemIcon}>{item.icon}</Text>
-                      </View>
-                      <View style={styles.textWrapper}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Text style={[styles.itemName, { color: theme.cardTextPrimary }]}>{item.name}</Text>
-                          {itemBadgeText ? (
-                            <Text style={[styles.badgeText, { color: theme.accent, backgroundColor: theme.glass.background }]}>
-                              {itemBadgeText}
-                            </Text>
-                          ) : null}
-                        </View>
-                        <Text style={[styles.itemDescription, { color: theme.cardTextSecondary }]}>
-                          {item.description}
-                        </Text>
-                      </View>
+              return (
+                <View 
+                  key={item.id} 
+                  style={[
+                    styles.shopItem, 
+                    { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
+                    (isTheme && (equippedBackground === item.id || equippedCard === item.id)) && { borderColor: theme.accent, borderBottomColor: theme.accent }
+                  ]}
+                >
+                  <View style={styles.itemInfo}>
+                    <View style={[styles.iconWrapper, { backgroundColor: theme.glass.background }]}>
+                      <Text style={styles.itemIcon}>{item.icon}</Text>
                     </View>
-
-                    <BouncyButton 
-                      title={buttonTitle}
-                      color={buttonColor}
-                      borderColor={buttonColor === '#58CC02' ? '#46A302' : buttonColor}
-                      bottomBorderColor={buttonColor === '#58CC02' ? '#2D6A01' : buttonColor}
-                      disabled={buttonTitle.includes('✓')}
-                      textStyle={{ fontSize: 15, color: buttonTitle.includes('✓') ? theme.cardTextSecondary : '#FFF' }}
-                      style={{ paddingVertical: 12, borderRadius: 16, width: '100%' }}
-                      onPress={() => handleAction(item)}
-                    />
+                    <View style={styles.textWrapper}>
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={[styles.itemName, { color: theme.cardTextPrimary }]}>{item.name}</Text>
+                        {itemBadgeText ? (
+                          <Text style={[styles.badgeText, { color: theme.accent, backgroundColor: theme.glass.background }]}>
+                            {itemBadgeText}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <Text style={[styles.itemDescription, { color: theme.cardTextSecondary }]}>
+                        {item.description}
+                      </Text>
+                    </View>
                   </View>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </SafeAreaView>
-      </BlurView>
+
+                  <BouncyButton 
+                    title={buttonTitle}
+                    color={buttonColor}
+                    borderColor={buttonColor === '#58CC02' ? '#46A302' : buttonColor}
+                    bottomBorderColor={buttonColor === '#58CC02' ? '#2D6A01' : buttonColor}
+                    disabled={buttonTitle.includes('✓')}
+                    textStyle={{ fontSize: 15, color: buttonTitle.includes('✓') ? theme.cardTextSecondary : '#FFF' }}
+                    style={{ paddingVertical: 12, borderRadius: 16, width: '100%' }}
+                    onPress={() => handleAction(item)}
+                  />
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
 
       <CustomAlertModal
         visible={alertVisible}
@@ -379,40 +375,24 @@ export function ShopModal({ visible, onClose, stats, onUpdateStats }: Props) {
           />
         </View>
       )}
-    </Modal>
+    </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
   safeArea: {
-    width: '100%',
+    flex: 1,
   },
   content: {
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    flex: 1,
     padding: 24,
     width: '100%',
-    borderWidth: 1,
-    minHeight: '85%',
-  },
-  desktopContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  desktopContent: {
-    width: 640,
-    minHeight: 'auto',
-    maxHeight: '90%',
+    maxWidth: 600,
+    alignSelf: 'center',
     borderRadius: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 24 },
-    shadowOpacity: 0.3,
-    shadowRadius: 40,
+    borderWidth: 1,
+    marginTop: 24,
+    marginBottom: 24,
   },
   header: {
     flexDirection: 'row',
@@ -422,14 +402,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Inter_900Black',
-    fontSize: 28,
+    fontSize: 24,
   },
   xpText: {
     fontFamily: 'Inter_700Bold',
-    fontSize: 16,
+    fontSize: 14,
     marginTop: 4,
   },
-  closeButton: {
+  backButton: {
     padding: 8,
     borderRadius: 20,
   },

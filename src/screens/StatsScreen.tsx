@@ -1,18 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
-import { BlurView } from 'expo-blur';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Colors, useAppTheme } from '../theme/colors';
-import { AppStats, getPlayerTitle } from '../store/statsStore';
+import { AppStats, getPlayerTitle, statsStore } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
-import { CustomAlertModal } from './CustomAlertModal';
+import { CustomAlertModal } from '../components/CustomAlertModal';
+import { GradientBackground } from '../components/GradientBackground';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
-interface Props {
-  readonly visible: boolean;
-  readonly onClose: () => void;
-  readonly onReset: () => void;
-  readonly stats: AppStats | null;
-  readonly initialTab?: 'stats' | 'achievements' | 'leaderboard';
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'Stats'>;
 
 type TabType = 'stats' | 'achievements' | 'leaderboard';
 
@@ -60,22 +57,26 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'correct_500',   name: 'Taal-Perfectionist',    description: 'Geef 500 keer een juist antwoord', emoji: '🎯', target: 500,  currentValue: (s) => s.totalCorrect ?? 0 },
 ];
 
-export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'stats' }: Props) {
+export function StatsScreen({ navigation, route }: Props) {
   const theme = useAppTheme();
-  const { width } = useWindowDimensions();
-  const isDesktop = width >= 900;
+  
+  // Default tab is 'stats' unless passed via route params
+  const initialTab = route.params?.tab ?? 'stats';
   const [activeTab, setActiveTab] = React.useState<TabType>(initialTab);
   
+  const [stats, setStats] = React.useState<AppStats | null>(null);
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [alertConfig, setAlertConfig] = React.useState<{ title: string; message: string; buttons?: any[] }>({ title: '', message: '' });
 
   React.useEffect(() => {
-    if (visible) {
-      setActiveTab(initialTab);
-    }
-  }, [visible, initialTab]);
+    const unsubscribe = navigation.addListener('focus', async () => {
+      const currentStats = await statsStore.getStats();
+      setStats(currentStats);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
-  if (!visible || !stats) return null;
+  if (!stats) return null;
 
   const currentLevel = Math.floor(stats.xp / 100) + 1;
   const xpInCurrentLevel = stats.xp % 100;
@@ -91,9 +92,9 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
         { 
           text: 'Wissen', 
           style: 'destructive',
-          onPress: () => {
-            onReset();
-            onClose();
+          onPress: async () => {
+            await statsStore.resetStats();
+            setStats(await statsStore.getStats());
           }
         }
       ]
@@ -354,22 +355,17 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      onRequestClose={onClose}
-      statusBarTranslucent={true}
-    >
-      <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={[styles.container, isDesktop && styles.desktopContainer]}>
-        <View style={[styles.content, isDesktop && styles.desktopContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+    <GradientBackground>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
           <View style={styles.header}>
-            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>{getHeaderTitle()}</Text>
-            <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="close" size={24} color={theme.cardTextPrimary} />
+            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
+              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
             </TouchableOpacity>
+            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>{getHeaderTitle()}</Text>
+            <View style={{ width: 40 }} />
           </View>
 
           {/* Custom 3D Tab Bar */}
@@ -414,7 +410,7 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
             </TouchableOpacity>
           </View>
 
-          {/* Modal scroll contents */}
+          {/* Screen scroll contents */}
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
             {activeTab === 'stats' && renderStatsTab()}
             {activeTab === 'achievements' && renderAchievementsTab()}
@@ -422,7 +418,7 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
           </ScrollView>
 
         </View>
-      </BlurView>
+      </SafeAreaView>
       
       <CustomAlertModal
         visible={alertVisible}
@@ -431,37 +427,24 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
         buttons={alertConfig.buttons}
         onClose={() => setAlertVisible(false)}
       />
-    </Modal>
+    </GradientBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'flex-end',
   },
   content: {
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    flex: 1,
     padding: 24,
     width: '100%',
-    borderWidth: 1,
-    minHeight: '85%',
-  },
-  desktopContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  desktopContent: {
-    width: 640,
-    minHeight: 'auto',
-    maxHeight: '90%',
+    maxWidth: 600,
+    alignSelf: 'center',
     borderRadius: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 24 },
-    shadowOpacity: 0.3,
-    shadowRadius: 40,
+    borderWidth: 1,
+    marginTop: 24,
+    marginBottom: 24,
   },
   header: {
     flexDirection: 'row',
@@ -471,9 +454,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Inter_900Black',
-    fontSize: 28,
+    fontSize: 24,
   },
-  closeButton: {
+  backButton: {
     padding: 8,
     borderRadius: 20,
   },

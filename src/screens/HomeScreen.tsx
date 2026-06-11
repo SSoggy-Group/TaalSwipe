@@ -5,9 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { ModeCard } from '../components/ModeCard';
-import { StatsModal } from '../components/StatsModal';
-import { SettingsModal } from '../components/SettingsModal';
-import { ShopModal } from '../components/ShopModal';
+
 import { BouncyButton } from '../components/BouncyButton';
 import { Colors } from '../theme/colors';
 import { statsStore, AppStats, getPlayerTitle } from '../store/statsStore';
@@ -19,6 +17,9 @@ type RootStackParamList = {
   Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
   Result: { score: number; total: number; mode: string };
   Multiplayer: undefined;
+  Settings: undefined;
+  Shop: undefined;
+  Stats: { tab?: 'stats' | 'achievements' | 'leaderboard' };
 };
 
 type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Home'>>;
@@ -36,10 +37,6 @@ const DESKTOP_VERTICAL_LINES = Array.from({ length: 24 }, (_, index) => ({
 export function HomeScreen({ navigation }: Props) {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
-  const [statsVisible, setStatsVisible] = React.useState(false);
-  const [statsInitialTab, setStatsInitialTab] = React.useState<'stats' | 'achievements' | 'leaderboard'>('stats');
-  const [settingsVisible, setSettingsVisible] = React.useState(false);
-  const [shopVisible, setShopVisible] = React.useState(false);
   const [stats, setStats] = React.useState<AppStats | null>(null);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
 
@@ -137,14 +134,7 @@ export function HomeScreen({ navigation }: Props) {
   React.useEffect(() => {
     if (globalThis.window === undefined) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (statsVisible || settingsVisible || shopVisible) {
-        if (e.key === 'Escape') {
-          setStatsVisible(false);
-          setSettingsVisible(false);
-          setShopVisible(false);
-        }
-        return;
-      }
+
 
       if (e.key === 'ArrowRight') {
         e.preventDefault();
@@ -167,7 +157,7 @@ export function HomeScreen({ navigation }: Props) {
     };
     globalThis.window.addEventListener('keydown', handleKeyDown);
     return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
-  }, [statsVisible, settingsVisible, shopVisible, selectedIndex, modeCards]);
+  }, [selectedIndex, modeCards]);
 
   const renderModeCards = (compact = false) => (
     <>
@@ -217,34 +207,28 @@ export function HomeScreen({ navigation }: Props) {
             <View style={styles.desktopRail}>
               <Text style={styles.railLogo}>TS</Text>
               <BouncyButton 
-                onPress={() => {
-                  setStatsInitialTab('stats');
-                  setStatsVisible(true);
-                }} 
+                onPress={() => navigation.navigate('Stats', { tab: 'stats' })} 
                 style={styles.railButton}
                 color="#38BDF8" borderColor="#0284C7" bottomBorderColor="#0369A1"
               >
                 <Text style={styles.iconText}>📊</Text>
               </BouncyButton>
               <BouncyButton 
-                onPress={() => {
-                  setStatsInitialTab('leaderboard');
-                  setStatsVisible(true);
-                }} 
+                onPress={() => navigation.navigate('Stats', { tab: 'leaderboard' })} 
                 style={styles.railButton}
                 color="#F59E0B" borderColor="#D97706" bottomBorderColor="#B45309"
               >
                 <Text style={styles.iconText}>🏆</Text>
               </BouncyButton>
               <BouncyButton 
-                onPress={() => setShopVisible(true)} 
+                onPress={() => navigation.navigate('Shop')} 
                 style={styles.railButton}
                 color="#A78BFA" borderColor="#7C3AED" bottomBorderColor="#5B21B6"
               >
                 <Text style={styles.iconText}>🛍️</Text>
               </BouncyButton>
               <BouncyButton 
-                onPress={() => setSettingsVisible(true)} 
+                onPress={() => navigation.navigate('Settings')} 
                 style={styles.railButton}
                 color="#94A3B8" borderColor="#64748B" bottomBorderColor="#475569"
               >
@@ -340,34 +324,28 @@ export function HomeScreen({ navigation }: Props) {
           <>
         <View style={styles.header}>
           <BouncyButton 
-            onPress={() => {
-              setStatsInitialTab('stats');
-              setStatsVisible(true);
-            }} 
+            onPress={() => navigation.navigate('Stats', { tab: 'stats' })} 
             style={styles.iconButton}
             color="#38BDF8" borderColor="#0284C7" bottomBorderColor="#0369A1"
           >
             <Text style={styles.iconText}>📊</Text>
           </BouncyButton>
           <BouncyButton 
-            onPress={() => {
-              setStatsInitialTab('leaderboard');
-              setStatsVisible(true);
-            }} 
+            onPress={() => navigation.navigate('Stats', { tab: 'leaderboard' })} 
             style={styles.iconButton}
             color="#F59E0B" borderColor="#D97706" bottomBorderColor="#B45309"
           >
             <Text style={styles.iconText}>🏆</Text>
           </BouncyButton>
           <BouncyButton 
-            onPress={() => setShopVisible(true)} 
+            onPress={() => navigation.navigate('Shop')} 
             style={styles.iconButton}
             color="#A78BFA" borderColor="#7C3AED" bottomBorderColor="#5B21B6"
           >
             <Text style={styles.iconText}>🛍️</Text>
           </BouncyButton>
           <BouncyButton 
-            onPress={() => setSettingsVisible(true)} 
+            onPress={() => navigation.navigate('Settings')} 
             style={styles.iconButton}
             color="#94A3B8" borderColor="#64748B" bottomBorderColor="#475569"
           >
@@ -417,23 +395,7 @@ export function HomeScreen({ navigation }: Props) {
         )}
       </SafeAreaView>
 
-      <StatsModal
-        visible={statsVisible}
-        onClose={() => setStatsVisible(false)}
-        onReset={handleReset}
-        stats={stats}
-        initialTab={statsInitialTab}
-      />
-      <SettingsModal
-        visible={settingsVisible}
-        onClose={() => setSettingsVisible(false)}
-      />
-      <ShopModal
-        visible={shopVisible}
-        onClose={() => setShopVisible(false)}
-        stats={stats}
-        onUpdateStats={setStats}
-      />
+
     </GradientBackground>
   );
 }
