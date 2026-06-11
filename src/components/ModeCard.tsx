@@ -14,11 +14,12 @@ interface Props {
   delay?: number;
   color?: string;
   compact?: boolean;
+  isSelected?: boolean;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color = Colors.accent, compact = false }: Props) {
+export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color = Colors.accent, compact = false, isSelected = false }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
 
@@ -45,6 +46,7 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
           animatedStyle,
           { backgroundColor: theme.glass.background, borderColor: theme.glass.border },
           compact && styles.desktopCardSurface,
+          isSelected && styles.selectedCardSurface,
         ]} 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -91,6 +93,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.18,
     shadowRadius: 18,
+  },
+  selectedCardSurface: {
+    borderColor: '#38BDF8',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
   },
   iconContainer: {
     width: 64,
