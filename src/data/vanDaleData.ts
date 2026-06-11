@@ -37,7 +37,7 @@ export const vanDaleData: VanDaleItem[] = [
   { word: "Spambot", inVanDale: true, definition: "Geautomatiseerd programma dat spam verstuurt." },
   { word: "Twerken", inVanDale: true, definition: "Op een provocerende manier dansen." },
   { word: "Dagobertducktaks", inVanDale: true, definition: "Extra belasting voor de allerrijksten." },
-  { word: "Prutsio", inVanDale: false, definition: "Verzonnen variant op prutser." },
+  { word: "Prutsio", inVanDale: false, definition: "Een komische variant op prutser." },
   { word: "Ontvrienden", inVanDale: true, definition: "Iemand verwijderen uit je lijst met contacten op sociale media." },
   { word: "Plofkippen", inVanDale: true, definition: "Kip die in korte tijd is vetgemest." },
   { word: "Hangoudere", inVanDale: true, definition: "Ouderen die hun tijd voornamelijk op straat doorbrengen." },
@@ -68,34 +68,34 @@ export const vanDaleData: VanDaleItem[] = [
   { word: "Bofkont", inVanDale: true, definition: "Iemand met veel geluk." },
   { word: "Snurkfiets", inVanDale: false, definition: "Geen bestaand woord, wellicht bedoelt men snorfiets." },
   { word: "Knettergek", inVanDale: true, definition: "Volkomen gek." },
-  { word: "Mierefluiter", inVanDale: false, definition: "Verzonnen scheldwoord." },
+  { word: "Mierefluiter", inVanDale: false, definition: "Een ongebruikelijk scheldwoord voor een muggenzifter." },
   { word: "Jeukwoord", inVanDale: true, definition: "Woord dat veel irritatie opwekt." },
   { word: "Zonnedeler", inVanDale: true, definition: "Iemand die investeert in zonnepanelen op andermans dak." },
   { word: "Oudewijvenzomer", inVanDale: true, definition: "Periode met nazomerweer." },
   { word: "Sjoemelsoftware", inVanDale: true, definition: "Software in auto's ontworpen om emissietesten te manipuleren." },
   { word: "Weesfiets", inVanDale: true, definition: "Een achtergelaten of vergeten fiets in de openbare ruimte." },
   { word: "Appongeluk", inVanDale: true, definition: "Verkeersongeval veroorzaakt door smartphonegebruik." },
-  { word: "Raamwapper", inVanDale: false, definition: "Verzonnen woord. Misschien een wapperend gordijn?" },
+  { word: "Raamwapper", inVanDale: false, definition: "Iemand die onnodig met de ramen klappert of wappert." },
   { word: "Plofkraak", inVanDale: true, definition: "Kraak waarbij een pinautomaat met explosieven wordt opengebroken." },
-  { word: "Breinblik", inVanDale: false, definition: "Verzonnen. Klinkt als een MRI-scan, maar het woord bestaat niet." },
+  { word: "Breinblik", inVanDale: false, definition: "Een denkbeeldige snelle scan van de hersenen." },
   { word: "Prikspijt", inVanDale: true, definition: "Spijt die iemand heeft van het feit dat hij zich heeft laten vaccineren." },
-  { word: "Zwamkater", inVanDale: false, definition: "Verzonnen woord voor de nasleep van hallucinogene paddenstoelen." },
+  { word: "Zwamkater", inVanDale: false, definition: "De nasleep van het eten van hallucinogene paddenstoelen." },
   { word: "Wappie", inVanDale: true, definition: "Benaming voor iemand met maffe, niet op feiten gebaseerde opvattingen." },
-  { word: "Flodderfiets", inVanDale: false, definition: "Verzonnen woord voor een gammele fiets." },
+  { word: "Flodderfiets", inVanDale: false, definition: "Een hele oude en gammele fiets." },
   { word: "Moordstrookje", inVanDale: true, definition: "Gevaarlijk smal fietspad langs een drukke weg." },
-  { word: "Kletsbotje", inVanDale: false, definition: "Verzonnen vertaling voor een chatbot." },
+  { word: "Kletsbotje", inVanDale: false, definition: "Een Nederlandse vertaling voor een chatbot." },
   { word: "Knuffelcontact", inVanDale: true, definition: "Persoon buiten je gezin met wie je nauw fysiek contact mag hebben tijdens een lockdown." },
-  { word: "Plakpauze", inVanDale: false, definition: "Verzonnen. Misschien pauze nemen om stickers te plakken?" },
+  { word: "Plakpauze", inVanDale: false, definition: "Pauze nemen om stickers te plakken." },
   { word: "Blockchain", inVanDale: true, definition: "Systeem van aaneengeschakelde datablokken voor cryptomunten." },
-  { word: "Schermslurp", inVanDale: false, definition: "Verzonnen woord voor schermtijdverslaving." },
+  { word: "Schermslurp", inVanDale: false, definition: "Verslaafd zijn aan schermtijd en social media." },
   { word: "Sluipsuiker", inVanDale: true, definition: "Suiker die ongemerkt is verwerkt in levensmiddelen." },
-  { word: "Muisvrees", inVanDale: false, definition: "Verzonnen fobie voor de computermuis." },
+  { word: "Muisvrees", inVanDale: false, definition: "Een onverklaarbare fobie voor de computermuis." },
   { word: "Sjoelbak", inVanDale: true, definition: "Houten bak voor het sjoelen." },
-  { word: "Snurkspook", inVanDale: false, definition: "Verzonnen benaming voor een luid snurkende bedpartner." },
+  { word: "Snurkspook", inVanDale: false, definition: "Een luid snurkende bedpartner." },
   { word: "Hitteplan", inVanDale: true, definition: "Plan met maatregelen om gezondheidsproblemen bij extreme hitte te voorkomen." },
-  { word: "Koffiekluns", inVanDale: false, definition: "Verzonnen woord voor iemand die koffie morst." },
+  { word: "Koffiekluns", inVanDale: false, definition: "Iemand die altijd koffie morst." },
   { word: "Swipen", inVanDale: true, definition: "Met de vinger over een touchscreen vegen." },
-  { word: "Slaapzucht", inVanDale: false, definition: "Verzonnen, al klinkt het logisch. Slaapzucht staat niet officieel geregistreerd als zodanig." },
+  { word: "Slaapzucht", inVanDale: false, definition: "Een onweerstaanbare drang om te slapen." },
   { word: "Dagobertducktaks", inVanDale: true, definition: "Extra belastingheffing voor de allerrijksten." },
   { word: "Flitsbezorger", inVanDale: true, definition: "Koerier die boodschappen direct na bestelling bezorgt." },
   { word: "Fietssnelweg", inVanDale: true, definition: "Lange, brede en asfalteerde weg exclusief voor fietsers." },
@@ -106,7 +106,7 @@ export const vanDaleData: VanDaleItem[] = [
   { word: "Ontspullen", inVanDale: true, definition: "Zich ontdoen van overbodige bezittingen." },
   { word: "Flitsmarathon", inVanDale: true, definition: "Politieactie waarbij gedurende een bepaalde periode intensief op snelheid gecontroleerd wordt." },
   { word: "Slaapapneu", inVanDale: true, definition: "Tijdelijke ademstilstand tijdens de slaap." },
-  { word: "Selfieclown", inVanDale: false, definition: "Verzonnen woord voor iemand die constant overal ongepaste selfies maakt." },
+  { word: "Selfieclown", inVanDale: false, definition: "Iemand die constant overal ongepaste selfies maakt." },
   { word: "Kantoortuin", inVanDale: true, definition: "Grote kantoorruimte zonder tussenmuren waarin tientallen mensen werken." },
   { word: "Zuurstofschuld", inVanDale: true, definition: "Zuurstoftekort dat in de weefsels ontstaat bij zware lichamelijke inspanning." },
   { word: "Koffiecorner", inVanDale: true, definition: "Hoek in een kantoor of winkel waar men koffie kan drinken." },
@@ -115,32 +115,32 @@ export const vanDaleData: VanDaleItem[] = [
   { word: "Balkonscène", inVanDale: true, definition: "Optreden van koninklijke personen of pasgetrouwden op een balkon voor het publiek." },
   { word: "Plofklas", inVanDale: true, definition: "Schoolklas met veel te veel leerlingen." },
   { word: "Weggooisamenleving", inVanDale: true, definition: "Samenleving waarin producten na gebruik snel worden weggegooid." },
-  { word: "Koffieklas", inVanDale: false, definition: "Verzonnen woord voor een gezellige, informele les." },
+  { word: "Koffieklas", inVanDale: false, definition: "Een gezellige, informele les onder het genot van koffie." },
   { word: "Katvanger", inVanDale: true, definition: "Iemand die als stroman fungeert om de werkelijke dader van een misdrijf uit de wind te houden." },
   { word: "Stroomvreter", inVanDale: true, definition: "Apparaat dat heel veel elektriciteit verbruikt." },
   { word: "Internettrol", inVanDale: true, definition: "Iemand die op internet bewust reacties uitlokt om ruzie of frustratie te zaaien." },
   { word: "Toetsenbordridder", inVanDale: false, definition: "Veelgebruikt op internet, maar nog geen officieel lemma in de Dikke Van Dale." },
-  { word: "Pretparkmoeder", inVanDale: false, definition: "Verzonnen term voor een moeder die haar kinderen alleen in pretparken verwent." },
+  { word: "Pretparkmoeder", inVanDale: false, definition: "Een moeder die haar kinderen alleen in pretparken verwent." },
   { word: "Thuiswerkdag", inVanDale: true, definition: "Dag waarop men thuiswerkt in plaats van op kantoor." },
-  { word: "Schermstaarder", inVanDale: false, definition: "Verzonnen woord voor iemand die doelloos naar schermen kijkt." },
+  { word: "Schermstaarder", inVanDale: false, definition: "Iemand die urenlang doelloos naar een scherm kijkt." },
   { word: "Duimworstelen", inVanDale: true, definition: "Spel waarbij twee personen elkaars duim proberen te onderwerpen." },
   { word: "Klimaatdoel", inVanDale: true, definition: "Doelstelling op het gebied van het tegengaan van klimaatverandering." },
-  { word: "Snackslaaf", inVanDale: false, definition: "Verzonnen term voor iemand die niet kan stoppen met snacken." },
+  { word: "Snackslaaf", inVanDale: false, definition: "Iemand die niet kan stoppen met het eten van snacks." },
   { word: "Ontpolderen", inVanDale: true, definition: "Een polder weer onder water zetten." },
   { word: "Zweefteef", inVanDale: true, definition: "Vrouw met zweverige ideeën." },
-  { word: "Papierdief", inVanDale: false, definition: "Verzonnen woord voor iemand die op kantoor papier steelt." },
+  { word: "Papierdief", inVanDale: false, definition: "Iemand die pennen en papier op kantoor meeneemt." },
   { word: "Pannenkoekenplant", inVanDale: true, definition: "Kamerplant met ronde bladeren." },
   { word: "Muggenziften", inVanDale: true, definition: "Zeuren over kleinigheden." },
   { word: "Gedachtesprong", inVanDale: true, definition: "Plotselinge overgang op een ander onderwerp in het denken." },
-  { word: "Wolkensluier", inVanDale: false, definition: "Verzonnen poëtisch woord voor bewolking." },
+  { word: "Wolkensluier", inVanDale: false, definition: "Een poëtische omschrijving voor lichte bewolking." },
   { word: "Schijnheilig", inVanDale: true, definition: "Zich vromer of braver voordoend dan men is." },
   { word: "Kippenvel", inVanDale: true, definition: "Toestand waarbij de haartjes op de huid rechtop gaan staan." },
   { word: "Vogelvlucht", inVanDale: true, definition: "Vlucht van een vogel / Overzicht of samenvatting." },
-  { word: "Kaasvanger", inVanDale: false, definition: "Verzonnen woord voor iemand die kaas steelt." },
-  { word: "Broodjesvloer", inVanDale: false, definition: "Verzonnen woord voor een vloer vol kruimels." },
-  { word: "Regenwapper", inVanDale: false, definition: "Verzonnen woord voor een kapotte paraplu." },
-  { word: "Koffieplons", inVanDale: false, definition: "Verzonnen woord voor het morsen van koffie." },
-  { word: "Zonnezweter", inVanDale: false, definition: "Verzonnen woord voor iemand die snel zweet in de zon." },
+  { word: "Kaasvanger", inVanDale: false, definition: "Iemand die ongemerkt blokjes kaas wegpakt." },
+  { word: "Broodjesvloer", inVanDale: false, definition: "Een vloer die helemaal vol ligt met broodkruimels." },
+  { word: "Regenwapper", inVanDale: false, definition: "Een kapotte paraplu die door de wind is omgeklapt." },
+  { word: "Koffieplons", inVanDale: false, definition: "Het per ongeluk morsen van koffie op tafel." },
+  { word: "Zonnezweter", inVanDale: false, definition: "Iemand die extreem snel zweet zodra de zon schijnt." },
   { word: "Windvanger", inVanDale: true, definition: "Iets dat veel wind opvangt." },
   { word: "Sneeuwballengevecht", inVanDale: true, definition: "Gevecht met sneeuwballen." },
   { word: "Boekenkast", inVanDale: true, definition: "Kast om boeken in te zetten." },
@@ -148,33 +148,33 @@ export const vanDaleData: VanDaleItem[] = [
   { word: "Koekenpan", inVanDale: true, definition: "Platte pan met een steel om in te bakken." },
   { word: "Kattenkwaad", inVanDale: true, definition: "Ondeugend gedrag, vooral van kinderen." },
   { word: "Luchtfietsen", inVanDale: true, definition: "Doelloos fantaseren zonder iets te bereiken." },
-  { word: "Stoplichtdanser", inVanDale: false, definition: "Verzonnen woord voor iemand die bij stoplichten danst." },
+  { word: "Stoplichtdanser", inVanDale: false, definition: "Iemand die uit verveling gaat dansen bij een rood stoplicht." },
   { word: "Ziekenhuisarts", inVanDale: true, definition: "Arts die in een ziekenhuis werkt." },
-  { word: "Buiksprekerbeurt", inVanDale: false, definition: "Verzonnen woord voor een spreekbeurt als buikspreker." },
+  { word: "Buiksprekerbeurt", inVanDale: false, definition: "Een spreekbeurt die wordt gehouden door middel van buikspreken." },
   { word: "Melkmuil", inVanDale: true, definition: "Jong, onervaren persoon." },
   { word: "Patatoorlog", inVanDale: true, definition: "Patat met mayonaise, pindasaus en uitjes." },
-  { word: "Fluisterstorm", inVanDale: false, definition: "Verzonnen woord voor een storm van geruchten." },
+  { word: "Fluisterstorm", inVanDale: false, definition: "Een grote hoeveelheid geruchten die snel de ronde doen." },
   { word: "Kaassoufflé", inVanDale: true, definition: "Gefrituurde snack met kaas." },
   { word: "Borrelnoot", inVanDale: true, definition: "Gekruide noot die bij de borrel wordt gegeten." },
-  { word: "Frikandelsandaal", inVanDale: false, definition: "Verzonnen woord voor een schandaal rondom snacks." },
+  { word: "Frikandelsandaal", inVanDale: false, definition: "Een landelijk schandaal omtrent de kwaliteit van snacks." },
   { word: "Dropveter", inVanDale: true, definition: "Lang, dun snoepje van drop." },
   { word: "Stoepkrijt", inVanDale: true, definition: "Krijt waarmee op de stoep getekend wordt." },
   { word: "Regenbroek", inVanDale: true, definition: "Waterafstotende broek voor regenachtig weer." },
   { word: "Broodjeszaak", inVanDale: true, definition: "Zaak waar broodjes worden verkocht." },
   { word: "Slagroomtaart", inVanDale: true, definition: "Taart met slagroom." },
-  { word: "Frietlucht", inVanDale: false, definition: "Verzonnen woord voor de geur van patat." },
+  { word: "Frietlucht", inVanDale: false, definition: "De herkenbare geur van een frituur of patatzaak." },
   { word: "Tompoes", inVanDale: true, definition: "Gebakje van twee lagen bladerdeeg met banketbakkersroom." },
-  { word: "Oliebollenschepnet", inVanDale: false, definition: "Verzonnen woord voor een schepnet voor oliebollen." },
+  { word: "Oliebollenschepnet", inVanDale: false, definition: "Een groot net om verse oliebollen uit het vet te scheppen." },
   { word: "Hagelslag", inVanDale: true, definition: "Kleine chocoladestukjes die op brood worden gestrooid." },
   { word: "Koekhappen", inVanDale: true, definition: "Spelletje waarbij men met de handen op de rug naar een hangend koekje hapt." },
-  { word: "Spijkerbroekenwinkel", inVanDale: false, definition: "Verzonnen woord voor een winkel die alleen spijkerbroeken verkoopt." },
+  { word: "Spijkerbroekenwinkel", inVanDale: false, definition: "Een winkel die uitsluitend spijkerbroeken verkoopt." },
   { word: "Oerwoud", inVanDale: true, definition: "Zeer dicht, tropisch bos." },
-  { word: "Klapstoelenconcert", inVanDale: false, definition: "Verzonnen woord voor een concertje met klapstoelen." },
+  { word: "Klapstoelenconcert", inVanDale: false, definition: "Een laagdrempelig openluchtconcert met klapstoelen." },
   { word: "Wafelijzer", inVanDale: true, definition: "Ijzer/apparaat om wafels mee te bakken." },
   { word: "Krokettenautomaat", inVanDale: false, definition: "Niet officieel in Van Dale, maar wel een bekend fenomeen." },
   { word: "Stamppot", inVanDale: true, definition: "Gerecht van aardappelen gemengd met groente." },
   { word: "Pepernoot", inVanDale: true, definition: "Klein koekje met specerijen, vooral rond Sinterklaas." },
-  { word: "Snertdag", inVanDale: false, definition: "Verzonnen woord voor een waardeloze dag." },
+  { word: "Snertdag", inVanDale: false, definition: "Een compleet waardeloze en regenachtige dag." },
   { word: "Fietspad", inVanDale: true, definition: "Pad dat bestemd is voor fietsers." }
 ,
   {
@@ -613,78 +613,78 @@ export const vanDaleData: VanDaleItem[] = [
     "id": "71dd75f6-21fe-4c79-802d-ca3c312eb04b",
     "word": "Babbel72",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "e2fd7d8a-aa17-4433-89df-25463ac3916f",
     "word": "Babbel73",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "b3db4573-bbb1-40e0-b4c9-56fa1c5564cc",
     "word": "Babbel74",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "0f932969-2241-45c6-a1cd-7d9019805eca",
     "word": "Babbel75",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "95f216da-5da0-4b63-80cd-8489d25ff692",
     "word": "Babbel76",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "77a92c88-c485-449b-9085-d5d41ad33797",
     "word": "Babbel77",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "0ac99e48-1bd7-43ce-a782-858827661ac2",
     "word": "Babbel78",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "4cbbeb79-eea6-4f47-abb8-7253d88c57e8",
     "word": "Babbel79",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "62ef4dae-0959-456e-a0d2-1f34ab59b97a",
     "word": "Babbel80",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "657a3b2e-f690-47b0-8939-dfa49d2411e5",
     "word": "Babbel81",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "e9f67462-26ce-4f13-b591-af9c69891cf4",
     "word": "Babbel82",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "79a31f95-041c-4084-af8a-f7961531de37",
     "word": "Babbel83",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   },
   {
     "id": "17e0bb9c-5f2c-4c4d-96fe-e0133e0b0aa3",
     "word": "Babbel84",
     "inVanDale": false,
-    "definition": "Verzonnen woord om te checken of je goed oplet."
+    "definition": "Een informeel woord voor een specifieke situatie."
   }
 ];
