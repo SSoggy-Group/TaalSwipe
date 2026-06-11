@@ -116,7 +116,7 @@ export const straattaalData: StraattaalItem[] = [
   { id: 154, word: 'Drip', definition: 'Een toffe stijl qua kleding', isReal: true },
   { id: 155, word: 'Scotoe', definition: 'De politie', isReal: true },
   { id: 156, word: 'Kloezoe', definition: 'Iets geheim houden', isReal: false },
-  { id: 157, word: 'Sloef', definition: 'Verzonnen woord voor iets saais', isReal: false },
+  { id: 157, word: 'Sloef', definition: 'Iets heel saais', isReal: false },
   { id: 158, word: 'Ewa', definition: 'Hoi / wat is er?', isReal: true },
   { id: 159, word: 'Drerrie', definition: 'Jongen / vriend / gast', isReal: true },
   { id: 160, word: 'Flous', definition: 'Geld', isReal: true },
@@ -130,16 +130,16 @@ export const straattaalData: StraattaalItem[] = [
   { id: 168, word: 'Hosselen', definition: 'Werken om geld te verdienen / handelen', isReal: true },
   { id: 169, word: 'Vato', definition: 'Gast / kerel', isReal: true },
   { id: 170, word: 'Sannie', definition: 'Dingen / spullen / drugs', isReal: true },
-  { id: 171, word: 'Brizzo', definition: 'Verzonnen woord voor een erg dure fiets', isReal: false },
-  { id: 172, word: 'Dlengen', definition: 'Verzonnen woord voor buiten in de regen wachten', isReal: false },
-  { id: 173, word: 'Floeska', definition: 'Verzonnen woord voor een leugenaar', isReal: false },
-  { id: 174, word: 'Krompie', definition: 'Verzonnen woord voor iets dat scheef staat', isReal: false },
-  { id: 175, word: 'Ploeso', definition: 'Verzonnen woord voor een zacht kussen', isReal: false },
-  { id: 176, word: 'Snoebie', definition: 'Verzonnen woord voor een schattig hondje', isReal: false },
-  { id: 177, word: 'Tjokkel', definition: 'Verzonnen woord voor een heel klein snoepje', isReal: false },
-  { id: 178, word: 'Wanko', definition: 'Verzonnen woord voor iemand die te veel slaapt', isReal: false },
-  { id: 179, word: 'Zwoepie', definition: 'Verzonnen woord voor een snel voorbijrijdende scooter', isReal: false },
-  { id: 180, word: 'Grolik', definition: 'Verzonnen woord voor een chagrijnig persoon', isReal: false },
+  { id: 171, word: 'Brizzo', definition: 'Een erg dure of snelle fiets', isReal: false },
+  { id: 172, word: 'Dlengen', definition: 'Buiten in de regen wachten', isReal: false },
+  { id: 173, word: 'Floeska', definition: 'Een leugenaar of bedrieger', isReal: false },
+  { id: 174, word: 'Krompie', definition: 'Iets dat helemaal scheef staat', isReal: false },
+  { id: 175, word: 'Ploeso', definition: 'Een heel zacht kussen', isReal: false },
+  { id: 176, word: 'Snoebie', definition: 'Een schattig hondje', isReal: false },
+  { id: 177, word: 'Tjokkel', definition: 'Een heel klein snoepje', isReal: false },
+  { id: 178, word: 'Wanko', definition: 'Iemand die altijd te veel slaapt', isReal: false },
+  { id: 179, word: 'Zwoepie', definition: 'Een snel voorbijrijdende scooter', isReal: false },
+  { id: 180, word: 'Grolik', definition: 'Een heel chagrijnig persoon', isReal: false },
   { id: 181, word: 'Agga', definition: 'Den Haag', isReal: true },
   { id: 182, word: 'Damsko', definition: 'Amsterdam', isReal: true },
   { id: 183, word: 'Roffa', definition: 'Rotterdam', isReal: true },
@@ -151,15 +151,15 @@ export const straattaalData: StraattaalItem[] = [
   { id: 189, word: 'Toko', definition: 'Winkel / zaak', isReal: true },
   { id: 190, word: 'Torie', definition: 'Verhaal / gebeurtenis', isReal: true },
   { id: 191, word: 'Waggie', definition: 'Auto', isReal: true },
-  { id: 192, word: 'Kluis', definition: 'Verzonnen woord voor een zakkenroller', isReal: false },
-  { id: 193, word: 'Matoe', definition: 'Verzonnen woord voor een nep-vriend', isReal: false },
-  { id: 194, word: 'Zwiep', definition: 'Verzonnen woord voor iemand die te hard rijdt', isReal: false },
+  { id: 192, word: 'Kluis', definition: 'Een zakkenroller of dief', isReal: false },
+  { id: 193, word: 'Matoe', definition: 'Een nep-vriend of verrader', isReal: false },
+  { id: 194, word: 'Zwiep', definition: 'Iemand die veel te hard rijdt', isReal: false },
   { id: 195, word: 'Trinna', definition: 'Trein', isReal: true },
-  { id: 196, word: 'Winkelwaggie', definition: 'Verzonnen woord voor een winkelwagentje', isReal: false },
-  { id: 197, word: 'Sloebie', definition: 'Verzonnen woord voor een gierig persoon', isReal: false },
-  { id: 198, word: 'Flesko', definition: 'Verzonnen woord voor een lege fles', isReal: false },
-  { id: 199, word: 'Ploentje', definition: 'Verzonnen woord voor een klein probleempje', isReal: false },
-  { id: 200, word: 'Kraagie', definition: 'Verzonnen woord voor een poloshirt', isReal: false },
+  { id: 196, word: 'Winkelwaggie', definition: 'Een winkelwagentje', isReal: false },
+  { id: 197, word: 'Sloebie', definition: 'Een heel gierig persoon', isReal: false },
+  { id: 198, word: 'Flesko', definition: 'Een lege fles of blikje', isReal: false },
+  { id: 199, word: 'Ploentje', definition: 'Een klein, irritant probleempje', isReal: false },
+  { id: 200, word: 'Kraagie', definition: 'Een net poloshirt met kraag', isReal: false },
   { id: 201, word: 'Bansen', definition: 'Hard werken / grinden', isReal: true },
   { id: 202, word: 'Drilli', definition: 'Drill / agressief / hard', isReal: true },
   { id: 203, word: 'Faka', definition: 'Hoe gaat het? / Begroeting', isReal: true },
@@ -167,29 +167,29 @@ export const straattaalData: StraattaalItem[] = [
   { id: 205, word: 'Habsi', definition: 'Bajes / gevangenis', isReal: true },
   { id: 206, word: 'Jalla', definition: 'Schiet op / kom op', isReal: true },
   { id: 207, word: 'Kansen', definition: 'Proberen te versieren', isReal: true },
-  { id: 208, word: 'Mansen', definition: 'Verzonnen woord voor hard feesten', isReal: false },
-  { id: 209, word: 'Blokko', definition: 'Verzonnen woord voor een betonblok', isReal: false },
+  { id: 208, word: 'Mansen', definition: 'Heel hard feesten of uitgaan', isReal: false },
+  { id: 209, word: 'Blokko', definition: 'Een zwaar betonblok', isReal: false },
   { id: 210, word: 'Patta', definition: 'Schoenen / sneakers', isReal: true },
-  { id: 211, word: 'Ransen', definition: 'Verzonnen woord voor snel praten', isReal: false },
+  { id: 211, word: 'Ransen', definition: 'Heel snel en onduidelijk praten', isReal: false },
   { id: 212, word: 'Sjansen', definition: 'Flirten / versieren', isReal: true },
   { id: 213, word: 'Tokkie', definition: 'Asociaal persoon / proleet', isReal: true },
-  { id: 214, word: 'Vansen', definition: 'Verzonnen woord voor doelloos rondlopen', isReal: false },
-  { id: 215, word: 'Wappen', definition: 'Verzonnen woord voor vechten', isReal: false },
-  { id: 216, word: 'Yansen', definition: 'Verzonnen woord voor zeuren', isReal: false },
+  { id: 214, word: 'Vansen', definition: 'Doelloos op straat rondhangen', isReal: false },
+  { id: 215, word: 'Wappen', definition: 'Vechten of ruzie maken', isReal: false },
+  { id: 216, word: 'Yansen', definition: 'De hele tijd klagen en zeuren', isReal: false },
   { id: 217, word: 'Zooi', definition: 'Spullen / rommel / groep mensen', isReal: true },
   { id: 218, word: 'Aight', definition: 'Oké / alright', isReal: true },
   { id: 219, word: 'Broeki', definition: 'Broer / vriend (informeel)', isReal: true },
   { id: 220, word: 'Chill', definition: 'Lekker / relaxed', isReal: true },
   { id: 221, word: 'Doekoe', definition: 'Geld', isReal: true },
-  { id: 222, word: 'Eansen', definition: 'Verzonnen woord voor eten bestellen', isReal: false },
+  { id: 222, word: 'Eansen', definition: 'Veel eten bestellen of halen', isReal: false },
   { id: 223, word: 'Flippen', definition: 'Gek worden / door het lint gaan', isReal: true },
   { id: 224, word: 'Ghetto', definition: 'Wijk / buurt (niet per se negatief in straattaal)', isReal: true },
   { id: 225, word: 'Habibi', definition: 'Lieverd / schatje (uit het Arabisch)', isReal: true },
-  { id: 226, word: 'Isse', definition: 'Verzonnen woord voor een grapje', isReal: false },
+  { id: 226, word: 'Isse', definition: 'Een klein grapje of prank', isReal: false },
   { id: 227, word: 'Kansen', definition: 'Proberen te versieren / kans proberen', isReal: true },
-  { id: 228, word: 'Mansen', definition: 'Verzonnen woord voor aankleden', isReal: false },
+  { id: 228, word: 'Mansen', definition: 'Jezelf heel mooi aankleden', isReal: false },
   { id: 229, word: 'Nepp', definition: 'Nep / niet echt', isReal: true },
-  { id: 230, word: 'Plaskie', definition: 'Verzonnen woord voor een plastic tasje', isReal: false }
+  { id: 230, word: 'Plaskie', definition: 'Een klein plastic tasje', isReal: false }
 ,
   {
     "id": "1138aba0-3558-443e-86c0-de9ca9f521eb",
@@ -213,7 +213,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "496cdf81-e69b-4f29-b0c4-715bd61e2c5c",
     "word": "Zjoez",
     "isReal": false,
-    "definition": "AI-verzonnen: Klinkt als iets snels of een auto, maar betekent niks."
+    "definition": "Een snelle auto of scooter."
   },
   {
     "id": "a7dbb16f-2525-4b0b-9990-895fa779112c",
@@ -267,7 +267,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "61bd06c6-1341-4e3c-81f3-bc92ca1a17c5",
     "word": "Kliti",
     "isReal": false,
-    "definition": "AI-verzonnen woord voor sleutel."
+    "definition": "Sleutel."
   },
   {
     "id": "ef7a4371-6955-4e76-9278-6c202b446f53",
@@ -285,7 +285,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "809aabfd-a1ee-4c78-984b-9c817c1ddd9b",
     "word": "Tjoeper",
     "isReal": false,
-    "definition": "AI-verzonnen woord voor een dikke auto."
+    "definition": "Een dikke auto."
   },
   {
     "id": "0208fbf8-c071-4c76-a833-dc9f443feb87",
@@ -303,7 +303,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "2635fbb1-4532-4967-b5f5-56fb7227496c",
     "word": "Wiggel",
     "isReal": false,
-    "definition": "AI-verzonnen: een nep-versie van Waggi."
+    "definition": "Een luxe auto."
   },
   {
     "id": "e03ee438-6dde-4a1e-bfc7-20036ce1d1ff",
@@ -315,7 +315,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "58aaf383-7df2-4105-9a21-1daef2e7b58f",
     "word": "Pikket",
     "isReal": false,
-    "definition": "AI-verzonnen: Zogenaamd een klein bedrag."
+    "definition": "Een heel klein geldbedrag."
   },
   {
     "id": "76adaab6-c546-4ed5-b45b-995027630d0d",
@@ -375,7 +375,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "b522fd3a-825f-4750-a0ef-81b067dd46b3",
     "word": "Patoe",
     "isReal": false,
-    "definition": "AI-verzonnen: zogenaamd een grote jas."
+    "definition": "Een dikke winterjas."
   },
   {
     "id": "753b8117-0c6e-4fa7-b6d8-e5f013a07062",
@@ -417,7 +417,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "6e0a7f75-ce20-4c5b-b6b3-9ab35eab5f36",
     "word": "Bami",
     "isReal": false,
-    "definition": "AI-verzonnen: als scheldwoord, maar bami is gewoon eten."
+    "definition": "Scheldwoord voor iemand die dom doet."
   },
   {
     "id": "36de479a-734a-4fcc-8456-8ccbffef8a58",
@@ -429,7 +429,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "2acc910d-8604-4dbc-aff5-34b87abf90be",
     "word": "Plakka",
     "isReal": false,
-    "definition": "AI-verzonnen: zogenaamd een bankbiljet."
+    "definition": "Een groot bankbiljet."
   },
   {
     "id": "5828be7b-444c-4f3b-adbd-253cecd3a3e5",
@@ -447,7 +447,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "d884c4c9-61a4-451f-94c9-172849266710",
     "word": "Faf",
     "isReal": false,
-    "definition": "AI-verzonnen: zogenaamd een saai feestje."
+    "definition": "Een heel saai of suf feestje."
   },
   {
     "id": "3f1d329e-1c1a-4e6b-85a1-bf95c42fe142",
@@ -471,7 +471,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "e2e237f3-2cdb-48e1-9397-f2a14bde4a15",
     "word": "Poko",
     "isReal": false,
-    "definition": "AI-verzonnen: klinkt als pokoe (muziek), maar fout."
+    "definition": "Een muziekinstrument of beat."
   },
   {
     "id": "d4c30d62-10a3-46a7-9d9d-24846c4de808",
@@ -507,7 +507,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "11824331-c733-4a70-bf45-cdf7d2c29078",
     "word": "Zemmerman",
     "isReal": false,
-    "definition": "AI-verzonnen samenvoeging van zemmel en timmerman."
+    "definition": "Iemand die alles kapot maakt tijdens het klussen."
   },
   {
     "id": "83b1e7a5-cdf6-4ca6-b578-029e0d87f2fb",
@@ -531,7 +531,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "08143a8f-9976-453f-a01b-151271c05bad",
     "word": "Smikkelbeer",
     "isReal": false,
-    "definition": "AI-verzonnen als straattaal."
+    "definition": "Iemand die heel veel en snel eet."
   },
   {
     "id": "c367488b-add8-4272-9e63-0e723affd6a8",
@@ -555,7 +555,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "7150cd2a-4b2b-42d9-8158-02063f2e303e",
     "word": "Wastie",
     "isReal": false,
-    "definition": "AI-verzonnen: zogenaamd een wasmachine of badkamer."
+    "definition": "Een wasmachine of badkamer."
   },
   {
     "id": "b0659023-c019-4920-ba96-f094262b1778",
@@ -567,7 +567,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "e16daf70-9883-4ec2-b691-de63361bbd43",
     "word": "Trek",
     "isReal": false,
-    "definition": "AI-verzonnen in deze context, betekent gewoon honger."
+    "definition": "Grote trek of honger hebben."
   },
   {
     "id": "27065855-bb2c-4b3c-9731-57c2a2c21d93",
@@ -609,13 +609,13 @@ export const straattaalData: StraattaalItem[] = [
     "id": "3b46a7b0-21e0-4b13-81b5-383b604f66a4",
     "word": "Peers",
     "isReal": false,
-    "definition": "AI-verzonnen: nep-woord voor ogen."
+    "definition": "Ogen."
   },
   {
     "id": "4f048b1b-243f-4739-8418-1888b1bc9320",
     "word": "Dopen",
     "isReal": false,
-    "definition": "AI-verzonnen: nep-straatwoord voor chillen."
+    "definition": "Rondhangen of chillen op straat."
   },
   {
     "id": "134527f3-bf2b-415e-ac86-1180981e6a79",
@@ -627,7 +627,7 @@ export const straattaalData: StraattaalItem[] = [
     "id": "cacf5954-c17c-4ea2-b7f9-2be9ec6b58a2",
     "word": "Gloeika",
     "isReal": false,
-    "definition": "AI-verzonnen vuurwapen."
+    "definition": "Een vuurwapen of pistool."
   },
   {
     "id": "1859b932-1dc9-44ee-80fa-90ac7bffb81c",
