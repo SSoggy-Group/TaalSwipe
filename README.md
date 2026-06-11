@@ -1,88 +1,103 @@
 # TaalSwipe
 
-Een snelle, swipe-based game (denk aan Tinder) om je Nederlandse spelling en taalweetjes te testen. Je krijgt woorden, zinnen of stellingen te zien en swipet naar links of rechts om te bepalen of het klopt of niet.
+TaalSwipe is een snelle swipe-game (net als Tinder) waarmee je kunt testen hoe goed je bent in Nederlandse spelling en gekke taalweetjes. Je krijgt kaarten te zien met woorden, zinnen of stellingen. Je moet snel beslissen en swipet naar links of naar rechts!
 
-## Spelmodi
+## Hoe speel je het?
 
-- **Merken of soortnaam?**: Is *pindakaas* een merk, of is *chocomel* een soortnaam?
-- **D/T spelling**: De klassieke d/t-fouten, plus twijfelgevallen zoals *geüpdatet* vs. *geüpdate*.
-- **Dunglish**: Bestaan uitspraken als *"It rains pipe stems"* echt, of is het onzin?
-- **Algemene spelling**: Van *pannenkoek* tot *onmiddellijk*.
-- **Straattaal**: Betekenissen van woorden als *waggie* of *fissa*.
-- **Dikke Van Dale**: Bestaat het woord *snackslaaf* echt?
+- **Swipe naar rechts**: als het woord of de zin op de kaart **klopt** (of als het antwoord 'ja' is).
+- **Swipe naar links**: als de kaart **fout** is (of als het antwoord 'nee' is).
+- **Wees snel**: je hebt maar een paar seconden per kaart om te swipen. Als de tijdbalk leeg is, ben je af!
+- **Maak streaks**: hoe meer goede antwoorden je achter elkaar geeft, hoe hoger je score en hoe meer munten je verdient.
 
-## Architectuur & Mappenstructuur
+## De Categorieën
 
-Het project is opgezet met een duidelijke scheiding tussen data, state en UI:
+Je kunt kiezen uit verschillende categorieën om te spelen:
 
-- **`src/screens/`**: Bevat de belangrijkste schermen van de app, waaronder `HomeScreen`, `GameScreen` (waar de swipe-logica leeft), `ResultScreen`, `ShopScreen`, `StatsScreen` en `SettingsScreen`.
-- **`src/components/`**: Herbruikbare UI-componenten zoals `SwipeCard`, `ThemeCard` en custom buttons.
-- **`src/store/`**: Bevat Zustand-stores voor globale state:
-  - `settingsStore.ts`: Beheert sound effects, haptische feedback, muntjes en ontgrendelde/geactiveerde thema's.
-  - `statsStore.ts`: Houdt de highscores, ervaringspunten (XP) en beantwoorde vragen per categorie bij.
-- **`src/data/`**: De datasets met woorden en stellingen per categorie.
-- **`src/theme/`**: Dynamische kleurschema's (`colors.ts`) die reageren op systeeminstellingen (dark/light) en de shop-items.
-- **`src-tauri/`**: De Tauri-wrapper waarmee de app als native desktop applicatie gebouwd kan worden.
+- **Merken of soortnaam?**: Is *pindakaas* een merknaam, of is *chocomel* stiekem een soortnaam? Swipe links of rechts!
+- **D/T spelling**: De ultieme test voor d/t-fouten en irritante woorden zoals *geüpdatet* vs. *geüpdate*.
+- **Dunglish**: Klopt de Engelse zin, of is het letterlijk vertaald Nederlands (steenkolenengels)? Zoals *"It rains pipe stems"*.
+- **Algemene spelling**: Van *pannenkoek* tot *onmiddellijk*. Handig als oefening voor je volgende dictee.
+- **Straattaal**: Weet jij wat *waggie* of *fissa* betekent, of hebben we het ter plekke verzonnen?
+- **Dikke Van Dale**: Bestaat het woord *snackslaaf* echt in het woordenboek, of is het onzin?
 
-## Vragen toevoegen of bewerken
+## Munten verdienen en de Shop
 
-De data per spelmodus bevindt zich in `src/data/`. Elke dataset exporteert een array van objecten die voldoen aan dit type:
+Tijdens het spelen verdien je munten. Die munten kun je uitgeven in de **Shop**:
+- **Achtergronden**: Verander de look van je game met thema's zoals *Cyber Neon*, *Sunset* of *Matrix*.
+- **Kaarten**: Koop nieuwe designs voor de swipe-kaarten, zoals een gouden kaart of een retro pixel-kaart.
+
+Op het stats-scherm kun je precies zien hoeveel XP je al hebt en wat je highscore per categorie is.
+
+---
+
+## Voor Developers (Tech Info)
+
+### Projectstructuur
+
+De code is opgedeeld in een paar duidelijke mappen:
+
+- **`src/screens/`**: De schermen van de app (Home, Game, Result, Shop, Stats, Settings).
+- **`src/components/`**: Losse onderdelen zoals de swipe-kaarten (`SwipeCard`) en knoppen.
+- **`src/store/`**: Zustand-stores voor de app-data:
+  - `settingsStore.ts`: Beheert je munten, geluiden, haptische feedback en gekochte thema's.
+  - `statsStore.ts`: Slaat je highscores en XP op.
+- **`src/data/`**: Hier staan alle vragen per categorie.
+- **`src/theme/`**: De kleuren en thema's (`colors.ts`).
+- **`src-tauri/`**: Tauri-configuratie om de app als desktop-app te bouwen.
+
+### Vragen toevoegen of aanpassen
+
+De vragen staan in de bestanden in `src/data/`. Elk vraag-object gebruikt dit type:
 
 ```typescript
 export interface SpellingItem {
-  id: string | number;     // Unieke identifier
-  text: string;            // Het getoonde woord of de zin
-  isCorrect: boolean;      // Swipe rechts = true (goed), swipe links = false (fout)
-  correction?: string;     // Optionele uitleg of correctie als de speler het fout heeft
+  id: string | number;     // Uniek ID (nummer of tekst)
+  text: string;            // Het woord of de zin op de kaart
+  isCorrect: boolean;      // true = swipe rechts (goed), false = swipe links (fout)
+  correction?: string;     // Uitleg die je ziet als je het fout hebt gedaan
 }
 ```
 
-### Voorbeeld
-
-Wil je een nieuwe vraag toevoegen aan de spellingmodus? Open `src/data/spellingData.ts` en voeg een object toe aan de array:
+#### Voorbeeld
+Als je een nieuwe vraag wilt toevoegen aan de spellingcategorie, open dan `src/data/spellingData.ts` en zet dit in de lijst:
 
 ```typescript
 {
-  id: "nieuw-woord-1",
+  id: "gezamenlijk-goed",
   text: "Gezamenlijk",
   isCorrect: true,
   correction: "Goed gespeld!"
 },
 {
-  id: "nieuw-woord-2",
+  id: "gezamenlijk-fout",
   text: "Gezamelijk",
   isCorrect: false,
   correction: "Fout! Het is 'Gezamenlijk' met een tussen-n."
 }
 ```
 
-## Thema's & Shop
+### Ontwikkeling
 
-Gebruikers verdienen muntjes door games te spelen. Met deze muntjes kunnen ze in de shop nieuwe achtergronden (`equippedBackground`) en kaartstijlen (`equippedCard`) kopen. 
+#### Mobiel (Expo)
 
-Deze thema's zijn gedefinieerd in `src/theme/colors.ts`. De hook `useAppTheme` leest de actieve selectie uit de `settingsStore` en vertaalt dit naar de juiste kleurcodes (zoals gradient layers en transparantieniveaus voor de glassmorphism UI).
-
-## Ontwikkeling
-
-### Mobiel (Expo)
-
-1. Installeer dependencies:
+1. Dependencies installeren:
    ```bash
    npm install
    ```
-2. Start Expo:
+2. Dev server starten:
    ```bash
    npx expo start
    ```
-3. Scan de QR-code met de Expo Go app op je telefoon, of druk op `i` / `a` voor de iOS of Android simulator.
+3. Scan de QR-code met Expo Go op je telefoon, of druk op `i` (iOS) / `a` (Android) voor een simulator.
 
-### Web & Desktop
+#### Web & Desktop
 
 - Web dev server: `npm run web`
-- Web export: `npm run web:export`
+- Web build exporteren: `npm run web:export`
 - Desktop dev (Tauri): `npm run desktop:dev`
 - Desktop build (Tauri): `npm run desktop:build`
 
-*Opmerking voor desktop builds: zorg dat je Rust en Cargo hebt geïnstalleerd via [rustup.rs](https://rustup.rs/). De desktop-app draait op Tauri en laadt een geoptimaliseerde web build van de Expo-app.*
+*Voor de desktop-build moet je Rust en Cargo geïnstalleerd hebben via [rustup.rs](https://rustup.rs/).*
+
 
 
