@@ -41,6 +41,7 @@ export function HomeScreen({ navigation }: Props) {
   const [settingsVisible, setSettingsVisible] = React.useState(false);
   const [shopVisible, setShopVisible] = React.useState(false);
   const [stats, setStats] = React.useState<AppStats | null>(null);
+  const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -54,6 +55,8 @@ export function HomeScreen({ navigation }: Props) {
     await statsStore.resetStats();
     setStats(await statsStore.getStats());
   };
+
+  // Keyboard navigation moved below modeCards
 
   const floatY = useSharedValue(0);
 
@@ -131,9 +134,44 @@ export function HomeScreen({ navigation }: Props) {
     },
   ] as const;
 
+  React.useEffect(() => {
+    if (globalThis.window === undefined) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (statsVisible || settingsVisible || shopVisible) {
+        if (e.key === 'Escape') {
+          setStatsVisible(false);
+          setSettingsVisible(false);
+          setShopVisible(false);
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 1, modeCards.length - 1));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 1, 0));
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 3, modeCards.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 3, 0));
+      } else if (e.key === 'Enter') {
+        if (selectedIndex !== null) {
+          e.preventDefault();
+          modeCards[selectedIndex].onPress();
+        }
+      }
+    };
+    globalThis.window.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
+  }, [statsVisible, settingsVisible, shopVisible, selectedIndex, modeCards]);
+
   const renderModeCards = (compact = false) => (
     <>
-      {modeCards.map((mode) => (
+      {modeCards.map((mode, idx) => (
         <ModeCard
           key={mode.title}
           emoji={mode.emoji}
@@ -143,6 +181,7 @@ export function HomeScreen({ navigation }: Props) {
           delay={mode.delay}
           onPress={mode.onPress}
           compact={compact}
+          isSelected={selectedIndex === idx}
           wrapperStyle={compact ? styles.desktopModeItem : undefined}
         />
       ))}
@@ -690,6 +729,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 40,
+    width: '100%',
+    maxWidth: 600,
+    alignSelf: 'center',
   },
   titleContainer: {
     alignItems: 'center',
