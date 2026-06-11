@@ -653,7 +653,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       const { wordText, explanationText } = getItemDetails(currentItem, mode);
       if (!wordText) return;
 
-      if (globalThis.__TAURI_INTERNALS__) {
+      if ((globalThis as any).__TAURI_INTERNALS__) {
         try {
           const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
           
