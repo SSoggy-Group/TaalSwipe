@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Modal, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors, useAppTheme } from '../theme/colors';
 import { AppStats, getPlayerTitle } from '../store/statsStore';
@@ -62,6 +62,8 @@ const ACHIEVEMENTS: Achievement[] = [
 
 export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'stats' }: Props) {
   const theme = useAppTheme();
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 900;
   const [activeTab, setActiveTab] = React.useState<TabType>(initialTab);
   
   const [alertVisible, setAlertVisible] = React.useState(false);
@@ -359,8 +361,8 @@ export function StatsModal({ visible, onClose, onReset, stats, initialTab = 'sta
       onRequestClose={onClose}
       statusBarTranslucent={true}
     >
-      <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
-        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+      <BlurView intensity={90} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={[styles.container, isDesktop && styles.desktopContainer]}>
+        <View style={[styles.content, isDesktop && styles.desktopContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
           <View style={styles.header}>
@@ -445,6 +447,21 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 1,
     minHeight: '85%',
+  },
+  desktopContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  desktopContent: {
+    width: 640,
+    minHeight: 'auto',
+    maxHeight: '90%',
+    borderRadius: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 24 },
+    shadowOpacity: 0.3,
+    shadowRadius: 40,
   },
   header: {
     flexDirection: 'row',
