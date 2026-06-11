@@ -16,7 +16,6 @@ import * as Haptics from '../platform/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSettingsStore } from '../store/settingsStore';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 120;
 
 const SPRING_CONFIG = {
@@ -169,9 +168,10 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
       translateY.value = event.translationY * 0.4; // Dampen vertical movement
     })
     .onEnd((event) => {
+      const currentWidth = Dimensions.get('window').width;
       if (event.translationX > SWIPE_THRESHOLD) {
         // Swipe right
-        translateX.value = withTiming(SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+        translateX.value = withTiming(currentWidth * 1.5, { duration: 300 }, (finished) => {
           if (finished) {
             runOnJS(onSwipeRight)();
           }
@@ -181,7 +181,7 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
         runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       } else if (event.translationX < -SWIPE_THRESHOLD) {
         // Swipe left
-        translateX.value = withTiming(-SCREEN_WIDTH * 1.5, { duration: 300 }, (finished) => {
+        translateX.value = withTiming(-currentWidth * 1.5, { duration: 300 }, (finished) => {
           if (finished) {
             runOnJS(onSwipeLeft)();
           }
@@ -198,9 +198,10 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
     });
 
   const cardStyle = useAnimatedStyle(() => {
+    const currentWidth = Dimensions.get('window').width;
     const rotate = interpolate(
       translateX.value,
-      [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
+      [-currentWidth, 0, currentWidth],
       [-15, 0, 15],
       Extrapolation.CLAMP,
     );
@@ -257,7 +258,8 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
 const styles = StyleSheet.create({
   cardContainer: {
     position: 'absolute',
-    width: SCREEN_WIDTH - 40,
+    width: '100%',
+    maxWidth: 420,
     borderRadius: 24,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
