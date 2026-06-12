@@ -6,7 +6,7 @@ type SoundKey = 'swoosh' | 'correct' | 'incorrect' | 'gameover' | 'win' | 'purch
 const SOUND_FILES: Record<string, any> = {
   swoosh: require('../../assets/sounds/swoosh.wav'),
   correct: require('../../assets/sounds/correct.wav'),
-  incorrect: require('../../assets/sounds/incorrect.wav'),
+  incorrect: require('../../assets/sounds/candidates/incorrect_240.wav'),
   gameover: require('../../assets/sounds/gameover.wav'),
   win: require('../../assets/sounds/win.wav'),
   purchase: require('../../assets/sounds/purchase.wav'),
