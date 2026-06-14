@@ -84,7 +84,6 @@ export function ShopScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleAction = async (item: typeof SHOP_ITEMS[0]) => {
     if (!stats) return;
     const isTheme = item.type === 'background' || item.type === 'card';
@@ -260,7 +259,6 @@ export function ShopScreen({ navigation }: Props) {
 
           {/* Shop List */}
           <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-            {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
             {stats && filteredItems.map((item) => {
               const isTheme = item.type === 'background' || item.type === 'card';
               const isPowerup = item.type === 'powerup';

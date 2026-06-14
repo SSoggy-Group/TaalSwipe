@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
