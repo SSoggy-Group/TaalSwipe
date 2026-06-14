@@ -21,7 +21,7 @@ Sentry.init({
 });
 
 function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
@@ -52,10 +52,9 @@ function App() {
     };
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError) {
     return (
-      <View style={{ flex: 1, backgroundColor: 'red', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: 'white' }}>LOADING FONTS...</Text>
+      <View style={{ flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center' }}>
       </View>
     );
   }
