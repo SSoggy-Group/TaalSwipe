@@ -1,65 +1,51 @@
 # TaalSwipe
 
-TaalSwipe is een snelle swipe-game (net als Tinder) waarmee je kunt testen hoe goed je bent in Nederlandse spelling en gekke taalweetjes. Je krijgt kaarten te zien met woorden, zinnen of stellingen. Je moet snel beslissen en swipet naar links of naar rechts!
+<p align="center">
+  <img src="assets/thumbnail.png" alt="TaalSwipe Banner" width="100%" />
+</p>
 
-## Hoe speel je het?
+# TaalSwipe
 
-- **Swipe naar rechts**: als het woord of de zin op de kaart **klopt** (of als het antwoord 'ja' is).
-- **Swipe naar links**: als de kaart **fout** is (of als het antwoord 'nee' is).
-- **Wees snel**: je hebt maar een paar seconden per kaart om te swipen. Als de tijdbalk leeg is, ben je af!
-- **Maak streaks**: hoe meer goede antwoorden je achter elkaar geeft, hoe hoger je score en hoe meer munten je verdient.
+<p align="center">
+  <img src="assets/thumbnail.png" alt="TaalSwipe Banner" width="100%" />
+</p>
 
-## De Categorieën
+TaalSwipe is a Tinder-like swipe game I built for a school project. Basically, it tests your knowledge of Dutch spelling, slang, and weird language facts. You get a card with a word or sentence, and you have to swipe left or right before the timer runs out. 
 
-Je kunt kiezen uit verschillende categorieën om te spelen:
+It's super fast, a little stressful, and surprisingly addictive.
 
-- **Merken of soortnaam?**: Is *pindakaas* een merknaam, of is *chocomel* stiekem een soortnaam? Swipe links of rechts!
-- **D/T spelling**: De ultieme test voor d/t-fouten en irritante woorden zoals *geüpdatet* vs. *geüpdate*.
-- **Dunglish**: Klopt de Engelse zin, of is het letterlijk vertaald Nederlands (steenkolenengels)? Zoals *"It rains pipe stems"*.
-- **Algemene spelling**: Van *pannenkoek* tot *onmiddellijk*. Handig als oefening voor je volgende dictee.
-- **Straattaal**: Weet jij wat *waggie* of *fissa* betekent, of hebben we het ter plekke verzonnen?
-- **Dikke Van Dale**: Bestaat het woord *snackslaaf* echt in het woordenboek, of is het onzin?
+## How to play
+- **Swipe Right (Yes/True):** The word is spelled correctly, the sentence makes sense, or the statement is true.
+- **Swipe Left (No/False):** The spelling is completely botched, it's fake slang, or it's just wrong.
+- **Don't take too long:** You have a ticking progress bar. If you freeze up, you're dead.
+- **Keep the streak alive:** The more you get right in a row, the higher your score and the more coins you rack up.
 
-## Munten verdienen en de Shop
+## What's actually in it?
+I added a bunch of different categories so it's not just boring dictation practice:
+- **D/T Spelling:** The classic Dutch struggle. Is it *geüpdatet* or *geüpdate*? 
+- **Dunglish:** Literal translations that sound hilarious in English (like "It rains pipe stems").
+- **Street Slang:** Do you actually know what *waggie* or *fissa* means, or are you just guessing?
+- **Brands vs Nouns:** Is *pindakaas* a brand, or is *Chocomel* actually just a generic noun? 
+- **Dictionary Check:** Fake words vs real words that somehow made it into the Van Dale dictionary (like *snackslaaf*).
 
-Tijdens het spelen verdien je munten. Die munten kun je uitgeven in de **Shop**:
-- **Achtergronden**: Verander de look van je game met thema's zoals *Cyber Neon*, *Sunset* of *Matrix*.
-- **Kaarten**: Koop nieuwe designs voor de swipe-kaarten, zoals een gouden kaart of een retro pixel-kaart.
-
-Op het stats-scherm kun je precies zien hoeveel XP je al hebt en wat je highscore per categorie is.
+## The Shop & Stats
+You earn coins just by playing. You can drop those coins in the Shop to unlock cool backgrounds (like Cyber Neon or Sunset) and new card designs (like a pixel-art card or a gold foil one). There's also a stats page tracking your highest combo and total XP so you can flex your accuracy.
 
 ---
 
-## Voor Developers (Tech Info)
+## Nerd Stuff (How to run it)
 
-### Projectstructuur
+This project is built using React Native, Expo, Zustand for state management, and Tauri for the desktop app version. It's meant to run everywhere: web, iOS, Android, and Mac/Windows.
 
-De code is opgedeeld in een paar duidelijke mappen:
+### Project Layout
+- `src/screens/` - All the main pages (Home, Game, Shop, etc.)
+- `src/components/` - The UI parts like the swipable cards and buttons
+- `src/store/` - Zustand stores holding your coins, stats, and settings
+- `src/data/` - The actual questions for each category. Easy to add more!
+- `src-tauri/` - The Rust backend stuff for the desktop build
 
-- **`src/screens/`**: De schermen van de app (Home, Game, Result, Shop, Stats, Settings).
-- **`src/components/`**: Losse onderdelen zoals de swipe-kaarten (`SwipeCard`) en knoppen.
-- **`src/store/`**: Zustand-stores voor de app-data:
-  - `settingsStore.ts`: Beheert je munten, geluiden, haptische feedback en gekochte thema's.
-  - `statsStore.ts`: Slaat je highscores en XP op.
-- **`src/data/`**: Hier staan alle vragen per categorie.
-- **`src/theme/`**: De kleuren en thema's (`colors.ts`).
-- **`src-tauri/`**: Tauri-configuratie om de app als desktop-app te bouwen.
-
-### Vragen toevoegen of aanpassen
-
-De vragen staan in de bestanden in `src/data/`. Elk vraag-object gebruikt dit type:
-
-```typescript
-export interface SpellingItem {
-  id: string | number;     // Uniek ID (nummer of tekst)
-  text: string;            // Het woord of de zin op de kaart
-  isCorrect: boolean;      // true = swipe rechts (goed), false = swipe links (fout)
-  correction?: string;     // Uitleg die je ziet als je het fout hebt gedaan
-}
-```
-
-#### Voorbeeld
-Als je een nieuwe vraag wilt toevoegen aan de spellingcategorie, open dan `src/data/spellingData.ts` en zet dit in de lijst:
+### Adding your own questions
+Want to add more words? Just open up one of the files in `src/data/` (like `spellingData.ts`) and drop a new object in the array:
 
 ```typescript
 {
@@ -67,37 +53,28 @@ Als je een nieuwe vraag wilt toevoegen aan de spellingcategorie, open dan `src/d
   text: "Gezamenlijk",
   isCorrect: true,
   correction: "Goed gespeld!"
-},
-{
-  id: "gezamenlijk-fout",
-  text: "Gezamelijk",
-  isCorrect: false,
-  correction: "Fout! Het is 'Gezamenlijk' met een tussen-n."
 }
 ```
 
-### Ontwikkeling
+### Running the dev server
 
-#### Mobiel (Expo)
+**For mobile (Expo):**
+```bash
+npm install
+npx expo start
+```
+Then just scan the QR code with the Expo Go app on your phone, or hit `i` to open the iOS simulator.
 
-1. Dependencies installeren:
-   ```bash
-   npm install
-   ```
-2. Dev server starten:
-   ```bash
-   npx expo start
-   ```
-3. Scan de QR-code met Expo Go op je telefoon, of druk op `i` (iOS) / `a` (Android) voor een simulator.
+**For web:**
+```bash
+npm run web
+```
 
-#### Web & Desktop
-
-- Web dev server: `npm run web`
-- Web build exporteren: `npm run web:export`
-- Desktop dev (Tauri): `npm run desktop:dev`
-- Desktop build (Tauri): `npm run desktop:build`
-
-*Voor de desktop-build moet je Rust en Cargo geïnstalleerd hebben via [rustup.rs](https://rustup.rs/).*
+**For desktop (Mac/Windows):**
+You'll need Rust installed for this to work (get it from rustup.rs).
+```bash
+npm run desktop:dev
+```
 
 
 
