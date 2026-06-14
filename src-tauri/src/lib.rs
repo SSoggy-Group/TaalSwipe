@@ -12,13 +12,7 @@ pub fn run() {
         )?;
       }
       
-      #[cfg(not(target_os = "macos"))]
-      {
-        use tauri::Manager;
-        if let Some(window) = app.get_webview_window("main") {
-          let _ = window.set_decorations(false);
-        }
-      }
+      // Window decorations for all platforms are now handled perfectly by tauri.conf.json
       
       Ok(())
     })
