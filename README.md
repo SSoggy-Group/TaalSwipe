@@ -7,7 +7,9 @@
 TaalSwipe is a Tinder-like swipe game I built for a school project. Basically, it tests your knowledge of Dutch spelling, slang, and weird language facts. You get a flashcard with a word or sentence, and you have to swipe left or right before the panic timer runs out. 
 
 It's super fast, a little stressful, and surprisingly addictive once you get the hang of it. I wanted to make something that actually feels like a modern mobile app rather than just another boring multiple-choice quiz.
-[![Build and Release App](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml)
+
+[![Build and Release App](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml) 
+[![Deploy to GitHub Pages](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml)
 ## How to play
 - **Swipe Right (Yes/True):** The word is spelled correctly, the sentence makes sense, or the statement is true.
 - **Swipe Left (No/False):** The spelling is completely botched, it's fake slang, or it's just factually wrong.
