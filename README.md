@@ -81,3 +81,10 @@ You'll need Rust installed for this to work (get it from rustup.rs). Once instal
 npm run desktop:dev
 ```
 This builds and launches a native desktop window using Tauri.
+
+### Bypassing macOS "Damaged App" Warning
+If you downloaded the pre-built Mac `.dmg` from the internet, macOS Gatekeeper might block it and say the app is "damaged" because it's an unsigned student project. 
+To bypass this without using the terminal:
+1. Open the `.dmg` and drag the app to your Applications folder.
+2. **Do not double-click the app.** Instead, **Right-Click (or Control-Click)** the app and select **Open**.
+3. A popup will appear—just click **Open** again and the game will launch normally!
