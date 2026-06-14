@@ -11,6 +11,7 @@ import { Colors } from '../theme/colors';
 import { statsStore, AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image } from 'react-native';
 
 type RootStackParamList = {
   Home: undefined;
@@ -24,15 +25,6 @@ type RootStackParamList = {
 
 type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Home'>>;
 
-const DESKTOP_HORIZONTAL_LINES = Array.from({ length: 18 }, (_, index) => ({
-  id: `line-h-${index}`,
-  top: `${index * 6}%` as any,
-}));
-
-const DESKTOP_VERTICAL_LINES = Array.from({ length: 24 }, (_, index) => ({
-  id: `line-v-${index}`,
-  left: `${index * 5}%` as any,
-}));
 
 export function HomeScreen({ navigation }: Props) {
   const { width } = useWindowDimensions();
@@ -194,14 +186,6 @@ export function HomeScreen({ navigation }: Props) {
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFill}
             />
-            <View style={styles.desktopGridOverlay}>
-              {DESKTOP_HORIZONTAL_LINES.map((line) => (
-                <View key={line.id} style={[styles.gridLineHorizontal, { top: line.top }]} />
-              ))}
-              {DESKTOP_VERTICAL_LINES.map((line) => (
-                <View key={line.id} style={[styles.gridLineVertical, { left: line.left }]} />
-              ))}
-            </View>
           </View>
           <View style={styles.desktopShell}>
             <View style={styles.desktopRail}>
@@ -245,6 +229,9 @@ export function HomeScreen({ navigation }: Props) {
                   <Animated.View style={[styles.desktopFlag, floatingStyle]}>
                     <Text style={styles.titleEmoji}>🇳🇱</Text>
                   </Animated.View>
+                  <View style={{ marginBottom: 12 }}>
+                    <Image source={require('../../assets/logo.png')} style={{ width: 72, height: 72, resizeMode: 'contain' }} />
+                  </View>
                   <Text style={styles.desktopTitle}>TaalSwipe</Text>
                   <Text style={styles.desktopSubtitle}>Snelle swipe-rondes voor spelling, straattaal, merken en taalkennis.</Text>
                   {stats && (
@@ -262,15 +249,8 @@ export function HomeScreen({ navigation }: Props) {
                 </View>
                 <View style={styles.heroStage}>
                   <View style={styles.stageCard}>
-                    <View style={styles.stageTopRow}>
-                      <Text style={styles.stageLabel}>desktop ready</Text>
-                      <View style={styles.liveDot} />
-                    </View>
                     <Text style={styles.stageTitle}>← swipe →</Text>
                     <Text style={styles.stageBody}>Kies een modus en speel met muis, trackpad of toetsenbord.</Text>
-                    <View style={styles.stageMeter}>
-                      <View style={[styles.stageMeterFill, { width: '68%' }]} />
-                    </View>
                   </View>
                 </View>
               </Animated.View>
@@ -360,6 +340,9 @@ export function HomeScreen({ navigation }: Props) {
           {/* Title */}
           <Animated.View entering={FadeInDown.delay(100).duration(600).springify()} style={styles.titleContainer}>
             <Animated.View style={[styles.titleInner, floatingStyle]}>
+              <View style={{ marginBottom: 16 }}>
+                <Image source={require('../../assets/logo.png')} style={{ width: 100, height: 100, resizeMode: 'contain' }} />
+              </View>
               <Text style={styles.titleEmoji}>🇳🇱</Text>
               <Text style={styles.title}>TaalSwipe</Text>
             {stats && (
@@ -404,28 +387,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  desktopGridOverlay: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    opacity: 0.16,
-  },
-  gridLineHorizontal: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-  },
-  gridLineVertical: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    width: 1,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-  },
+
   desktopShell: {
     flex: 1,
     flexDirection: 'row',
@@ -522,29 +484,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 8,
     borderBottomColor: 'rgba(0,0,0,0.42)',
   },
-  stageTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 14,
-  },
-  stageLabel: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 12,
-    color: '#67E8F9',
-    textTransform: 'uppercase',
-    letterSpacing: 1.4,
-  },
-  liveDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#34D399',
-    shadowColor: '#34D399',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,
-    shadowRadius: 10,
-  },
+
   stageTitle: {
     fontFamily: 'Inter_900Black',
     fontSize: 30,
@@ -558,18 +498,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.72)',
     lineHeight: 20,
   },
-  stageMeter: {
-    height: 10,
-    marginTop: 20,
-    borderRadius: 999,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-  },
-  stageMeterFill: {
-    height: '100%',
-    borderRadius: 999,
-    backgroundColor: '#67E8F9',
-  },
+
   desktopSectionHeader: {
     flexDirection: 'row',
     alignItems: 'flex-end',
