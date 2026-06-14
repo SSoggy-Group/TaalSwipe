@@ -6,7 +6,7 @@ export interface SpellingItem {
 }
 
 export const spellingData: SpellingItem[] = [
-  // ── Correct spellings ────────────────────────────────
+  // Correct spellings
   { id: 1, text: 'Hij wordt boos', isCorrect: true },
   { id: 2, text: 'Zij vindt het leuk', isCorrect: true },
   { id: 3, text: 'Pannenkoek', isCorrect: true },
@@ -54,7 +54,7 @@ export const spellingData: SpellingItem[] = [
   { id: 119, text: 'Commissaris', isCorrect: true },
   { id: 120, text: 'Bacteriëel', isCorrect: true },
 
-  // ── Incorrect spellings ──────────────────────────────
+  // Incorrect spellings
   { id: 27, text: 'Me fiets is kapot', isCorrect: false, correction: 'Mijn fiets is kapot' },
   { id: 28, text: 'Hij word boos', isCorrect: false, correction: 'Hij wordt boos' },
   { id: 29, text: 'Ik heb het geziend', isCorrect: false, correction: 'Ik heb het gezien' },

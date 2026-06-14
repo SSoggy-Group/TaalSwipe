@@ -6,7 +6,7 @@ export interface StraattaalItem {
 }
 
 export const straattaalData: StraattaalItem[] = [
-  // ── Real Dutch street slang ──────────────────────────
+  // Real Dutch street slang
   { id: 1, word: 'Fissa', definition: 'Een feestje / party', isReal: true },
   { id: 2, word: 'Mocro', definition: 'Iemand van Marokkaanse afkomst', isReal: true },
   { id: 3, word: 'Swaffelen', definition: 'Ergens tegenaan slaan met je piemel', isReal: true },
@@ -55,7 +55,7 @@ export const straattaalData: StraattaalItem[] = [
   { id: 119, word: 'Pokoe', definition: 'Liedje / muzieknummer', isReal: true },
   { id: 120, word: 'Afoe', definition: 'Een halfje (bijv. van een sigaret)', isReal: true },
 
-  // ── AI-generated fake slang ──────────────────────────
+  // Made up fake slang
   { id: 28, word: 'Grompen', definition: 'Snel weglopen zonder reden', isReal: false },
   { id: 29, word: 'Kleppie', definition: 'Iemand die altijd te laat komt', isReal: false },
   { id: 30, word: 'Snorrelen', definition: 'Stiekem iemands eten opeten', isReal: false },

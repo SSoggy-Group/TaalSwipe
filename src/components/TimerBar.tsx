@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React, { useImperativeHandle } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
