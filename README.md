@@ -84,7 +84,12 @@ This builds and launches a native desktop window using Tauri.
 
 ### Bypassing macOS "Damaged App" Warning
 If you downloaded the pre-built Mac `.dmg` from the internet, macOS Gatekeeper might block it and say the app is "damaged" because it's an unsigned student project. 
-To bypass this without using the terminal:
+To bypass this without using the terminal, you have two options:
+
+**Method 1: The Right-Click Trick (Recommended)**
 1. Open the `.dmg` and drag the app to your Applications folder.
 2. **Do not double-click the app.** Instead, **Right-Click (or Control-Click)** the app and select **Open**.
 3. A popup will appear—just click **Open** again and the game will launch normally!
+
+**Method 2: Using Sentinel**
+If you deal with a lot of indie apps on Mac, you can download a free GUI tool called [Sentinel](https://github.com/alienator88/Sentinel). It allows you to easily remove the Apple Quarantine flag from any app without having to use the terminal.
