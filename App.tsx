@@ -12,7 +12,6 @@ import {
 } from '@expo-google-fonts/inter';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
-import { Titlebar } from './src/components/Titlebar';
 import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
@@ -62,7 +61,6 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-      <Titlebar />
       <AppNavigator />
     </GestureHandlerRootView>
   );
