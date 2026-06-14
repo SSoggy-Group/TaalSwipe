@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from '../platform/haptics';
@@ -61,6 +61,8 @@ const PENALTY_MS = 1200; // 1.2 seconds lockout
 
 export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   const theme = useAppTheme();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
   
   const [gameStarted, setGameStarted] = useState(false);
   const [showDefinitions, setShowDefinitions] = useState(true); // Toggle displaying definitions/subtexts on cards
@@ -254,13 +256,21 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!gameStarted || winner !== null) return;
       
-      // Player 1 (Bottom): A = Left (False), D = Right (True)
-      if (e.key.toLowerCase() === 'a') handleSwipe(1, false);
-      if (e.key.toLowerCase() === 'd') handleSwipe(1, true);
+      const key = e.key.toLowerCase();
       
-      // Player 2 (Top, Rotated): ArrowRight = Their Left (False), ArrowLeft = Their Right (True)
-      if (e.key === 'ArrowRight') handleSwipe(2, false);
-      if (e.key === 'ArrowLeft') handleSwipe(2, true);
+      if (isLandscape) {
+        // Landscape: P2 is on Left (uses A/D), P1 is on Right (uses Arrows)
+        if (key === 'a') handleSwipe(2, false);
+        if (key === 'd') handleSwipe(2, true);
+        if (key === 'arrowleft') handleSwipe(1, false);
+        if (key === 'arrowright') handleSwipe(1, true);
+      } else {
+        // Portrait: P1 is Bottom (uses A/D), P2 is Top (rotated, uses Arrows)
+        if (key === 'a') handleSwipe(1, false);
+        if (key === 'd') handleSwipe(1, true);
+        if (key === 'arrowright') handleSwipe(2, false);
+        if (key === 'arrowleft') handleSwipe(2, true);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -269,6 +279,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
   const renderPlayerArea = (player: 1 | 2) => {
     const isP2 = player === 2;
+    const shouldRotate = isP2 && !isLandscape;
     const score = player === 1 ? p1Score : p2Score;
     const currentIndex = player === 1 ? p1Index : p2Index;
     const isPenalty = player === 1 ? p1Penalty : p2Penalty;
@@ -323,7 +334,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
     };
 
     return (
-      <View style={[styles.playerArea, isP2 && styles.rotated]}>
+      <View style={[styles.playerArea, shouldRotate && styles.rotated]}>
         <View style={styles.scoreHeader}>
           <Text style={styles.scoreText}>P{player}: {score}/{TARGET_SCORE}</Text>
         </View>
@@ -431,11 +442,11 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   return (
     <GradientBackground>
       {winner !== null && <ConfettiBurst count={150} origin={{x: -10, y: 0}} />}
-      <SafeAreaView style={styles.container}>
-        {/* Player 2 Area (Top) */}
+      <SafeAreaView style={[styles.container, isLandscape && styles.landscapeContainer]}>
+        {/* Player 2 Area (Top or Left) */}
         {renderPlayerArea(2)}
         
-        <View style={styles.divider}>
+        <View style={[styles.divider, isLandscape && styles.verticalDivider]}>
           {winner === null ? (
             <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => setGameStarted(false)}>
               <Text style={styles.quitText}>STOP</Text>
@@ -461,6 +472,9 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  landscapeContainer: {
+    flexDirection: 'row',
   },
   playerArea: {
     flex: 1,
@@ -570,10 +584,15 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 80,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
     backgroundColor: 'rgba(0,0,0,0.2)',
+  },
+  verticalDivider: {
+    width: 80,
+    height: '100%',
   },
   quitBtn: {
     backgroundColor: '#EF4444',
