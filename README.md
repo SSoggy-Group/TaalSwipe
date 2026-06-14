@@ -1,8 +1,3 @@
-# TaalSwipe
-
-<p align="center">
-  <img src="assets/thumbnail.png" alt="TaalSwipe Banner" width="100%" />
-</p>
 
 # TaalSwipe
 
