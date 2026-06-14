@@ -248,6 +248,25 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
     }
   }, [p1Data, p2Data, p1Index, p2Index, winner]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!gameStarted || winner !== null) return;
+      
+      // Player 1 (Bottom): A = Left (False), D = Right (True)
+      if (e.key.toLowerCase() === 'a') handleSwipe(1, false);
+      if (e.key.toLowerCase() === 'd') handleSwipe(1, true);
+      
+      // Player 2 (Top, Rotated): ArrowRight = Their Left (False), ArrowLeft = Their Right (True)
+      if (e.key === 'ArrowRight') handleSwipe(2, false);
+      if (e.key === 'ArrowLeft') handleSwipe(2, true);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameStarted, winner, handleSwipe]);
+
   const renderPlayerArea = (player: 1 | 2) => {
     const isP2 = player === 2;
     const score = player === 1 ? p1Score : p2Score;
