@@ -211,6 +211,8 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
   const handleSwipe = useCallback((player: 1 | 2, answerIsRight: boolean) => {
     if (winner !== null) return;
+    if (player === 1 && p1Penalty) return;
+    if (player === 2 && p2Penalty) return;
     
     const currentIndex = player === 1 ? p1Index : p2Index;
     const gameData = player === 1 ? p1Data : p2Data;
@@ -248,7 +250,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
         }, PENALTY_MS);
       }
     }
-  }, [p1Data, p2Data, p1Index, p2Index, winner]);
+  }, [p1Data, p2Data, p1Index, p2Index, winner, p1Penalty, p2Penalty]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
