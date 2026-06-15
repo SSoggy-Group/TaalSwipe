@@ -65,7 +65,7 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
         hasPanicked.value = false;
         if (onPanicChange) onPanicChange(false);
       }
-    }, [resetKey, running]);
+    }, [resetKey, running, duration]);
 
     useAnimatedReaction(
       () => progress.value,
