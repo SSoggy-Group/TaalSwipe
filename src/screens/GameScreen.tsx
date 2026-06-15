@@ -715,8 +715,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         const currentItem = data[currentIndex];
         if (currentItem) {
           const { wordText } = getItemDetails(currentItem, mode);
-          // Scale duration based on word length (min 2.5s, +150ms per letter)
-          spellingDuration = Math.max(2500, 1500 + (wordText?.length || 5) * 150);
+          // Scale duration based on word length (base 2.0s, +100ms per letter)
+          spellingDuration = 2000 + (wordText?.length || 5) * 100;
         }
       }
 
