@@ -681,13 +681,17 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       }
     };
 
-    if (typeof window !== 'undefined' && window.addEventListener) {
+    if (typeof window !== 'undefined' && (window as any).addEventListener) {
+      // @ts-ignore
       window.addEventListener('keydown', handleKeyDown);
+      // @ts-ignore
       window.addEventListener('contextmenu', handleContextMenu);
     }
     return () => {
-      if (typeof window !== 'undefined' && window.removeEventListener) {
+      if (typeof window !== 'undefined' && (window as any).removeEventListener) {
+        // @ts-ignore
         window.removeEventListener('keydown', handleKeyDown);
+        // @ts-ignore
         window.removeEventListener('contextmenu', handleContextMenu);
       }
     };
