@@ -562,11 +562,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     if (gameOver || isPaused) return;
     setGameOver(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    
-    if (history.length === 0) {
-      navigation.replace('Home');
-      return;
-    }
 
     navigation.replace('Result', {
       score,
@@ -585,11 +580,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const handleQuit = useCallback(() => {
     setGameOver(true);
     setIsPaused(false);
-    
-    if (history.length === 0) {
-      navigation.replace('Home');
-      return;
-    }
 
     navigation.replace('Result', {
       score,
@@ -720,10 +710,20 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       return <Stopwatch ref={stopwatchRef} running={isRunning} />;
     }
     if (isSpelling || survivalMode) {
+      let spellingDuration = 1500;
+      if (isSpelling) {
+        const currentItem = data[currentIndex];
+        if (currentItem) {
+          const { wordText } = getItemDetails(currentItem, mode);
+          // Scale duration based on word length (min 2.5s, +150ms per letter)
+          spellingDuration = Math.max(2500, 1500 + (wordText?.length || 5) * 150);
+        }
+      }
+
       return (
         <TimerBar
           ref={timerRef}
-          duration={survivalMode ? 15000 : 1500}
+          duration={survivalMode ? 15000 : spellingDuration}
           running={isRunning}
           onTimeUp={handleTimeUp}
           onPanicChange={setIsPanicking}
