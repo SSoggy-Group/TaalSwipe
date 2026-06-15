@@ -33,8 +33,22 @@ function App() {
   useEffect(() => {
     soundManager.init();
     
+    const disableContextMenu = (e: MouseEvent) => {
+      if (e.target instanceof HTMLElement && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        return;
+      }
+      e.preventDefault();
+    };
+
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('contextmenu', disableContextMenu);
+    }
+
     return () => {
       soundManager.unload();
+      if (typeof window !== 'undefined' && window.removeEventListener) {
+        window.removeEventListener('contextmenu', disableContextMenu);
+      }
     };
   }, []);
 
