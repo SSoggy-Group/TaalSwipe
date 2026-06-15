@@ -938,7 +938,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         score={score}
       />
       {shootConfetti && (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
           <ConfettiBurst 
             count={60} 
             origin={{x: -10, y: 0}} 
@@ -1145,10 +1145,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    boxShadow: '0px 6px 8px rgba(0,0,0,0.2)',
     elevation: 8,
     paddingVertical: 0,
     paddingHorizontal: 0,
@@ -1169,10 +1166,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40, // Account for safe area
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    boxShadow: '0px -4px 12px rgba(0,0,0,0.15)',
     elevation: 20,
     zIndex: 100,
   },
@@ -1273,10 +1267,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    boxShadow: '0px 4px 4px rgba(0,0,0,0.25)',
     elevation: 6,
   },
   toastText: {
