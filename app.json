@@ -2,16 +2,30 @@
   "expo": {
     "name": "TaalSwipe",
     "slug": "taalswipe",
+    "description": "Swipe through Dutch language challenges, build streaks, and improve spelling, grammar, slang, and brand-name knowledge.",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "scheme": "taalswipe",
     "userInterfaceStyle": "light",
     "ios": {
       "bundleIdentifier": "com.ssoggygroup.taalswipe",
-      "supportsTablet": true
+      "buildNumber": "1",
+      "supportsTablet": false
     },
     "android": {
       "package": "com.ssoggygroup.taalswipe",
+      "versionCode": 1,
+      "permissions": [],
+      "blockedPermissions": [
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -25,7 +39,6 @@
     },
     "plugins": [
       "expo-font",
-      "@sentry/react-native",
       "expo-audio",
       "expo-asset"
     ],
