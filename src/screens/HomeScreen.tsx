@@ -124,7 +124,7 @@ export function HomeScreen({ navigation }: Props) {
   ] as const;
 
   React.useEffect(() => {
-    if (typeof window === 'undefined' || !window.addEventListener) return;
+    if (typeof window === 'undefined' || !(window as any).addEventListener) return;
     const handleKeyDown = (e: KeyboardEvent) => {
 
 
@@ -147,7 +147,9 @@ export function HomeScreen({ navigation }: Props) {
         }
       }
     };
+    // @ts-ignore
     globalThis.window.addEventListener('keydown', handleKeyDown);
+    // @ts-ignore
     return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
   }, [selectedIndex, modeCards]);
 

@@ -275,11 +275,13 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
       }
     };
 
-    if (typeof window !== 'undefined' && window.addEventListener) {
+    if (typeof window !== 'undefined' && (window as any).addEventListener) {
+      // @ts-ignore
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => {
-      if (typeof window !== 'undefined' && window.removeEventListener) {
+      if (typeof window !== 'undefined' && (window as any).removeEventListener) {
+        // @ts-ignore
         window.removeEventListener('keydown', handleKeyDown);
       }
     };

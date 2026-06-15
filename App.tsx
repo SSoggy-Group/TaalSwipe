@@ -40,13 +40,15 @@ function App() {
       e.preventDefault();
     };
 
-    if (typeof window !== 'undefined' && window.addEventListener) {
+    if (typeof window !== 'undefined' && (window as any).addEventListener) {
+      // @ts-ignore
       window.addEventListener('contextmenu', disableContextMenu);
     }
 
     return () => {
       soundManager.unload();
-      if (typeof window !== 'undefined' && window.removeEventListener) {
+      if (typeof window !== 'undefined' && (window as any).removeEventListener) {
+        // @ts-ignore
         window.removeEventListener('contextmenu', disableContextMenu);
       }
     };
