@@ -89,10 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(15, 23, 42, 0.56)',
     borderColor: 'rgba(255,255,255,0.16)',
     borderBottomColor: 'rgba(0,0,0,0.3)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
+    boxShadow: '0px 12px 18px rgba(0,0,0,0.18)',
   },
   selectedCardSurface: {
     borderColor: '#38BDF8',
@@ -105,10 +102,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    boxShadow: '0px 4px 4px rgba(0,0,0,0.2)',
   },
   compactIconContainer: {
     width: 52,

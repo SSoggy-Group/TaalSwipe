@@ -175,10 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderBottomWidth: 4,
     borderColor: '#CC7800',
-    shadowColor: '#FF9600',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
+    boxShadow: '0px 4px 8px rgba(255,150,0,0.4)',
     elevation: 8,
   },
   comboText: {
