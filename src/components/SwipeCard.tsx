@@ -152,6 +152,7 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
   const equippedCard = useSettingsStore((state) => state.equippedCard);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const currentWidth = Dimensions.get('window').width;
 
   const playSwooshSound = () => {
     soundManager.playSwoosh();
@@ -168,7 +169,6 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
       translateY.value = event.translationY * 0.4; // Dampen vertical movement
     })
     .onEnd((event) => {
-      const currentWidth = Dimensions.get('window').width;
       if (event.translationX > SWIPE_THRESHOLD) {
         // Swipe right
         translateX.value = withTiming(currentWidth * 1.5, { duration: 300 }, (finished) => {
@@ -198,7 +198,6 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
     });
 
   const cardStyle = useAnimatedStyle(() => {
-    const currentWidth = Dimensions.get('window').width;
     const rotate = interpolate(
       translateX.value,
       [-currentWidth, 0, currentWidth],
