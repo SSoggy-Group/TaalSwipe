@@ -42,9 +42,9 @@ export default function TaalSwipeLogo({ size = 120 }: TaalSwipeLogoProps) {
         <Rect x="0" y="0" width="70" height="60" rx="8" fill="url(#cardGrad)" />
         
         {/* Simple flashcard lines */}
-        <Path d="M 10 24 L 60 24" stroke="#ff6b81" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
-        <Path d="M 10 34 L 60 34" stroke="#7bed9f" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
-        <Path d="M 10 44 L 45 44" stroke="#70a1ff" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+        <Path d="M 10 24 L 60 24" fill="none" stroke="#ff6b81" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+        <Path d="M 10 34 L 60 34" fill="none" stroke="#7bed9f" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+        <Path d="M 10 44 L 45 44" fill="none" stroke="#70a1ff" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
         
         {/* The text TAAL */}
         <Text x="35" y="14" fontSize="10" fontWeight="bold" fill="#2f3542" textAnchor="middle">
@@ -54,22 +54,22 @@ export default function TaalSwipeLogo({ size = 120 }: TaalSwipeLogoProps) {
 
       {/* Red X Shadow */}
       <G transform="translate(13, 57)">
-        <Path d="M 0 0 L 15 15 M 15 0 L 0 15" stroke="#000000" strokeWidth="5" strokeLinecap="round" opacity="0.4" />
+        <Path d="M 0 0 L 15 15 M 15 0 L 0 15" fill="none" stroke="#000000" strokeWidth="5" strokeLinecap="round" opacity="0.4" />
       </G>
 
       {/* Red X on the left */}
       <G transform="translate(12, 55)">
-        <Path d="M 0 0 L 15 15 M 15 0 L 0 15" stroke="#ff4757" strokeWidth="5" strokeLinecap="round" />
+        <Path d="M 0 0 L 15 15 M 15 0 L 0 15" fill="none" stroke="#ff4757" strokeWidth="5" strokeLinecap="round" />
       </G>
 
       {/* Green Check Shadow */}
       <G transform="translate(69, 57)">
-        <Path d="M 0 8 L 5 15 L 15 0" stroke="#000000" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+        <Path d="M 0 8 L 5 15 L 15 0" fill="none" stroke="#000000" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
       </G>
 
       {/* Green Check on the right */}
       <G transform="translate(68, 55)">
-        <Path d="M 0 8 L 5 15 L 15 0" stroke="#2ed573" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+        <Path d="M 0 8 L 5 15 L 15 0" fill="none" stroke="#2ed573" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
       </G>
 
     </Svg>
