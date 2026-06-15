@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
 import { Colors, useAppTheme } from '../theme/colors';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring, createAnimatedComponent } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
   isSelected?: boolean;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = createAnimatedComponent(Pressable);
 
 export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color = Colors.accent, compact = false, isSelected = false }: Props) {
   const theme = useAppTheme();

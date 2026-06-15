@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, View, StyleProp } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, createAnimatedComponent } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
   readonly bottomBorderColor?: string;
   readonly disabled?: boolean;
 }
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedPressable = createAnimatedComponent(Pressable);
 
 export const BouncyButton = React.memo(function BouncyButton({
   onPress,
