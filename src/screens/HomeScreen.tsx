@@ -187,7 +187,7 @@ export function HomeScreen({ navigation }: Props) {
       <SafeAreaView style={styles.safeArea}>
         {isDesktop ? (
           <>
-          <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
             <LinearGradient
               colors={['rgba(8,13,32,0.82)', 'rgba(30, 64, 175, 0.24)', 'rgba(236, 72, 153, 0.14)']}
               start={{ x: 0, y: 0 }}
@@ -238,7 +238,7 @@ export function HomeScreen({ navigation }: Props) {
                     <Text style={styles.titleEmoji}>🇳🇱</Text>
                   </Animated.View>
                   <View style={{ marginBottom: 12 }}>
-                    <Image source={require('../../assets/logo.png')} style={{ width: 72, height: 72 }} resizeMode="contain" />
+                    <Image source={require('../../assets/logo.png')} style={{ width: 72, height: 72, resizeMode: 'contain' }} />
                   </View>
                   <Text style={styles.desktopTitle}>TaalSwipe</Text>
                   <Text style={styles.desktopSubtitle}>Snelle swipe-rondes voor spelling, straattaal, merken en taalkennis.</Text>
@@ -349,7 +349,7 @@ export function HomeScreen({ navigation }: Props) {
           <Animated.View entering={FadeInDown.delay(100).duration(600).springify()} style={styles.titleContainer}>
             <Animated.View style={[styles.titleInner, floatingStyle]}>
               <View style={{ marginBottom: 16 }}>
-                <Image source={require('../../assets/logo.png')} style={{ width: 100, height: 100 }} resizeMode="contain" />
+                <Image source={require('../../assets/logo.png')} style={{ width: 100, height: 100, resizeMode: 'contain' }} />
               </View>
               <Text style={styles.titleEmoji}>🇳🇱</Text>
               <Text style={styles.title}>TaalSwipe</Text>
@@ -441,7 +441,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
-    boxShadow: '4px 0px 12px rgba(0,0,0,0.3)',
+    shadowColor: '#000',
+    shadowOffset: { width: 4, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
   },
   desktopHero: {
     flexDirection: 'row',
@@ -452,7 +455,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(9, 14, 32, 0.52)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.18)',
-    boxShadow: '0px 18px 32px rgba(0,0,0,0.22)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 18 },
+    shadowOpacity: 0.22,
+    shadowRadius: 32,
     overflow: 'hidden',
   },
   heroCopy: {

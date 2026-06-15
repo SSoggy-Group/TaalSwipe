@@ -356,7 +356,7 @@ export function ShopScreen({ navigation }: Props) {
       />
 
       {shootConfetti && (
-        <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
+        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           <ConfettiBurst 
             count={100} 
             origin={{x: -10, y: 0}} 

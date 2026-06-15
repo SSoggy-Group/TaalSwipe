@@ -93,7 +93,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
       />
 
       {/* Breathing overlay for dynamic gradient feel */}
-      <Animated.View style={[breatheStyle, { pointerEvents: 'none' }]}>
+      <Animated.View style={breatheStyle} pointerEvents="none">
         <LinearGradient
           colors={colors.gradient.layer2.colors as [string, string]}
           start={colors.gradient.layer2.start}
@@ -104,7 +104,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
 
       {/* Custom Theme Overlays */}
       {equippedBackground === 'bg_matrix' && (
-        <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }, { pointerEvents: 'none' }]}>
+        <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }]} pointerEvents="none">
           {/* Subtle matrix-like grid scanlines */}
           {Array.from({ length: 40 }).map((_, i) => (
 
@@ -114,7 +114,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
       )}
 
       {equippedBackground === 'bg_neon' && (
-        <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }, { pointerEvents: 'none' }]}>
+        <View style={[StyleSheet.absoluteFill, { opacity: 0.08 }]} pointerEvents="none">
           {/* Cyberpunk grid */}
           {Array.from({ length: 20 }).map((_, i) => (
 
@@ -128,7 +128,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
       )}
 
       {(equippedBackground === 'bg_nebula' || equippedBackground === 'bg_aurora') && (
-        <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
           {/* Star particles */}
           {Array.from({ length: 20 }).map((_, i) => {
             const seedX = Math.sin(i * 45.3) * 0.5 + 0.5;
@@ -154,7 +154,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
       )}
       
       {/* Intense Combo Overlay (Subtle Red Glow) */}
-      <Animated.View style={[overlayStyle, { pointerEvents: 'none' }]}>
+      <Animated.View style={overlayStyle} pointerEvents="none">
         <LinearGradient
           colors={['rgba(255, 60, 0, 0)', 'rgba(255, 60, 0, 0.15)']}
           style={StyleSheet.absoluteFill}
@@ -162,7 +162,7 @@ export function GradientBackground({ children, combo = 0, isPanicking = false }:
       </Animated.View>
 
       {/* Panic Overlay */}
-      <Animated.View style={[panicStyle, { pointerEvents: 'none' }]} />
+      <Animated.View style={panicStyle} pointerEvents="none" />
 
       {children}
     </View>
