@@ -124,7 +124,7 @@ export function HomeScreen({ navigation }: Props) {
   ] as const;
 
   React.useEffect(() => {
-    if (globalThis.window === undefined) return;
+    if (typeof window === 'undefined' || !window.addEventListener) return;
     const handleKeyDown = (e: KeyboardEvent) => {
 
 

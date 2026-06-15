@@ -681,11 +681,15 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       }
     };
 
-    globalThis.window.addEventListener('keydown', handleKeyDown);
-    globalThis.window.addEventListener('contextmenu', handleContextMenu);
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('contextmenu', handleContextMenu);
+    }
     return () => {
-      globalThis.window.removeEventListener('keydown', handleKeyDown);
-      globalThis.window.removeEventListener('contextmenu', handleContextMenu);
+      if (typeof window !== 'undefined' && window.removeEventListener) {
+        window.removeEventListener('keydown', handleKeyDown);
+        window.removeEventListener('contextmenu', handleContextMenu);
+      }
     };
   }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial, currentItem, mode]);
 

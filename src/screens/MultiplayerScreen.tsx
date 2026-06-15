@@ -275,8 +275,14 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      if (typeof window !== 'undefined' && window.removeEventListener) {
+        window.removeEventListener('keydown', handleKeyDown);
+      }
+    };
   }, [gameStarted, winner, handleSwipe]);
 
   const renderPlayerArea = (player: 1 | 2) => {
