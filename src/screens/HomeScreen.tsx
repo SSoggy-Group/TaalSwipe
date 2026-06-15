@@ -147,10 +147,16 @@ export function HomeScreen({ navigation }: Props) {
         }
       }
     };
-    // @ts-ignore
-    globalThis.window.addEventListener('keydown', handleKeyDown);
-    // @ts-ignore
-    return () => globalThis.window.removeEventListener('keydown', handleKeyDown);
+    if (typeof globalThis !== 'undefined' && globalThis.window && (globalThis.window as any).addEventListener) {
+      // @ts-ignore
+      globalThis.window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      if (typeof globalThis !== 'undefined' && globalThis.window && (globalThis.window as any).removeEventListener) {
+        // @ts-ignore
+        globalThis.window.removeEventListener('keydown', handleKeyDown);
+      }
+    };
   }, [selectedIndex, modeCards]);
 
   const renderModeCards = (compact = false) => (
