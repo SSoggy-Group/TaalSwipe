@@ -59,13 +59,3 @@ public/privacy-policy.html
 - Optional: Android tablet screenshots
 
 The app currently has `ios.supportsTablet` set to `false`, so iPad screenshots should not be required for iOS submission.
-
-## Teacher Apple Account Steps
-
-Teacher should invite your Apple ID in App Store Connect:
-
-- Role: App Manager or Admin
-- Access: Certificates, Identifiers & Profiles if available
-- No password sharing
-
-Teacher must also accept current Apple developer agreements before upload/submission works.
