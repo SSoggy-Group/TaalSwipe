@@ -6,6 +6,7 @@ import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { BouncyButton } from '../components/BouncyButton';
 import { Confetti } from '../components/Confetti';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { Colors, useAppTheme } from '../theme/colors';
 import { statsStore } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -106,6 +107,7 @@ export function ResultScreen({ route, navigation }: Props) {
     <GradientBackground>
       {showConfetti && <Confetti />}
       <SafeAreaView style={styles.safeArea}>
+        <PremiumTopBar title="🎉 Resultaten" style={{ marginTop: 12, marginBottom: 8 }} />
         <FlatList
           data={history}
           keyExtractor={(item, index) => `${item.word}-${index}`}
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingTop: 16,
     paddingBottom: 40,
     width: '100%',
     maxWidth: 600,
