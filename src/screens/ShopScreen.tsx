@@ -12,6 +12,7 @@ import { BouncyButton } from '../components/BouncyButton';
 import { CustomAlertModal } from '../components/CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
 import { GradientBackground } from '../components/GradientBackground';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Shop'>;
@@ -204,16 +205,15 @@ export function ShopScreen({ navigation }: Props) {
         <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
-            </TouchableOpacity>
-            <View style={{ alignItems: 'center' }}>
-              <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
-              <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats?.xp ?? 0} XP</Text></Text>
-            </View>
-            <View style={{ width: 40 }} />
-          </View>
+          <PremiumTopBar 
+            title="🛍️ XP Shop" 
+            rightNode={
+              <View style={styles.xpBadge}>
+                <Text style={styles.xpIcon}>💎</Text>
+                <Text style={[styles.xpText, { color: theme.accent }]}>{stats?.xp ?? 0}</Text>
+              </View>
+            }
+          />
 
           {/* Tab Bar */}
           <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
@@ -383,7 +383,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
     width: '100%',
     maxWidth: 600,
     alignSelf: 'center',
@@ -392,24 +393,21 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 24,
   },
-  header: {
+  xpBadge: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
   },
-  title: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
+  xpIcon: {
+    fontSize: 14,
   },
   xpText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
+    fontFamily: 'Inter_800ExtraBold',
+    fontSize: 15,
   },
   tabBar: {
     flexDirection: 'row',
@@ -417,6 +415,7 @@ const styles = StyleSheet.create({
     padding: 4,
     borderWidth: 1,
     marginBottom: 24,
+    marginHorizontal: 4,
   },
   tabButton: {
     flex: 1,

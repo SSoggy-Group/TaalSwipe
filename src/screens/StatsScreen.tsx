@@ -7,6 +7,7 @@ import { AppStats, getPlayerTitle, statsStore } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomAlertModal } from '../components/CustomAlertModal';
 import { GradientBackground } from '../components/GradientBackground';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Stats'>;
@@ -360,13 +361,7 @@ export function StatsScreen({ navigation, route }: Props) {
         <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
-            </TouchableOpacity>
-            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>{getHeaderTitle()}</Text>
-            <View style={{ width: 40 }} />
-          </View>
+          <PremiumTopBar title={getHeaderTitle()} />
 
           {/* Custom 3D Tab Bar */}
           <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
@@ -437,7 +432,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
     width: '100%',
     maxWidth: 600,
     alignSelf: 'center',
@@ -446,26 +442,13 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 24,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
-  },
   tabBar: {
     flexDirection: 'row',
     borderRadius: 20,
     padding: 4,
     borderWidth: 1,
     marginBottom: 24,
+    marginHorizontal: 4,
   },
   tabButton: {
     flex: 1,

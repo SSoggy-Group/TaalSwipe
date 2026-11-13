@@ -10,6 +10,7 @@ import { statsStore } from '../store/statsStore';
 import { CustomAlertModal } from '../components/CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
 import { GradientBackground } from '../components/GradientBackground';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
@@ -126,13 +127,7 @@ export function SettingsScreen({ navigation }: Props) {
         <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
           
           {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
-            </TouchableOpacity>
-            <Text style={[styles.title, { color: theme.cardTextPrimary }]}>⚙️ Instellingen</Text>
-            <View style={{ width: 40 }} /> {/* Spacer to center title */}
-          </View>
+          <PremiumTopBar title="⚙️ Instellingen" />
 
           {/* Settings list */}
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsList}>
@@ -388,7 +383,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
     width: '100%',
     maxWidth: 600,
     alignSelf: 'center',
@@ -397,23 +393,10 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 24,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  title: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
-  },
   settingsList: {
     gap: 16,
     paddingBottom: 24,
+    paddingHorizontal: 2,
   },
   settingCard3D: {
     flexDirection: 'row',

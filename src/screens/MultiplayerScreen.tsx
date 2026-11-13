@@ -6,10 +6,11 @@ import * as Haptics from '../platform/haptics';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { useAppTheme } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
-import { ConfettiBurst } from '../platform/ConfettiBurst';
+import { ConfettiBurst } from '../platform/ConfettiBurst'; 
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard } from '../components/SwipeCard';
 import { BouncyButton } from '../components/BouncyButton';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { Ionicons } from '@expo/vector-icons';
 
 // Import all 6 mode databases
@@ -360,17 +361,11 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   if (!gameStarted) {
     return (
       <GradientBackground>
-        <SafeAreaView style={styles.setupContainer}>
-          <TouchableOpacity 
-            style={[styles.floatingBackBtn, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]} 
-            onPress={() => navigation.goBack()}
-            focusable={false}
-          >
-            <Ionicons name="arrow-back" size={24} color="#FFF" />
-          </TouchableOpacity>
-
-          <View style={[styles.setupContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
-            <Text style={[styles.setupTitle, { color: theme.cardTextPrimary }]}>⚔️ Multiplayer Gevecht</Text>
+        <SafeAreaView style={{ flex: 1 }}>
+          <PremiumTopBar title="Multiplayer" />
+          <View style={styles.setupContainer}>
+            <View style={[styles.setupContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
+              <Text style={[styles.setupTitle, { color: theme.cardTextPrimary }]}>⚔️ Multiplayer Gevecht</Text>
             <Text style={styles.setupSubtitle}>Kies de categorieën voor de strijd:</Text>
             
             <View style={styles.setupList}>
@@ -442,6 +437,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
             >
               <Text style={styles.backBtnText}>Annuleren</Text>
             </TouchableOpacity>
+          </View>
           </View>
         </SafeAreaView>
       </GradientBackground>
@@ -616,18 +612,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   // SETUP STYLES
-  floatingBackBtn: {
-    position: 'absolute',
-    top: 20,
-    left: 24,
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
   setupContainer: {
     flex: 1,
     justifyContent: 'center',

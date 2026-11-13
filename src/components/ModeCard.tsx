@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
-import { Colors, useAppTheme } from '../theme/colors';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring, createAnimatedComponent } from 'react-native-reanimated';
+import { useAppTheme } from '../theme/colors';
+import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 
 interface Props {
@@ -17,19 +17,20 @@ interface Props {
   isSelected?: boolean;
 }
 
-const AnimatedPressable = createAnimatedComponent(Pressable);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color = Colors.accent, compact = false, isSelected = false }: Props) {
+export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color, compact = false, isSelected = false }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
+  const cardColor = color || theme.accent;
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 10, stiffness: 200 });
+    scale.value = withSpring(0.96, { damping: 12, stiffness: 300 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 10, stiffness: 200 });
+    scale.value = withSpring(1, { damping: 12, stiffness: 300 });
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -37,16 +38,20 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
   }));
 
   return (
-    <Animated.View entering={FadeInUp.delay(delay).duration(600).springify()} style={wrapperStyle}>
+    <Animated.View entering={FadeInUp.delay(delay).duration(500).springify()} style={wrapperStyle}>
       <AnimatedPressable 
         style={[
           styles.card, 
           compact && styles.compactCard,
+          { 
+            backgroundColor: isSelected ? 'rgba(56, 189, 248, 0.15)' : theme.glass.background, 
+            borderColor: isSelected ? '#38BDF8' : theme.glass.border,
+            borderBottomColor: isSelected ? '#38BDF8' : theme.glass.highlight,
+            shadowColor: theme.cardTextPrimary,
+          },
           style, 
           animatedStyle,
-          { backgroundColor: theme.glass.background, borderColor: theme.glass.border },
           compact && styles.desktopCardSurface,
-          isSelected && styles.selectedCardSurface,
         ]} 
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -56,12 +61,12 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${description}`}
       >
-        <View style={[styles.iconContainer, compact && styles.compactIconContainer, { backgroundColor: color, borderBottomColor: 'rgba(0,0,0,0.2)' }]}>
+        <View style={[styles.iconContainer, compact && styles.compactIconContainer, { backgroundColor: cardColor, borderBottomColor: 'rgba(0,0,0,0.15)' }]}>
           <Text style={[styles.emoji, compact && styles.compactEmoji]}>{emoji}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={[styles.title, compact && styles.compactTitle, { color: compact ? '#FFFFFF' : theme.cardTextPrimary }]}>{title}</Text>
-          <Text style={[styles.description, compact && styles.compactDescription, { color: compact ? 'rgba(255,255,255,0.68)' : theme.cardTextSecondary }]}>{description}</Text>
+          <Text style={[styles.title, compact && styles.compactTitle, { color: theme.cardTextPrimary }]}>{title}</Text>
+          <Text style={[styles.description, compact && styles.compactDescription, { color: theme.cardTextSecondary }]}>{description}</Text>
         </View>
       </AnimatedPressable>
     </Animated.View>
@@ -74,53 +79,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 24,
     padding: 16,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderBottomWidth: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderBottomWidth: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
   compactCard: {
-    minHeight: 132,
+    minHeight: 120,
     padding: 14,
     marginBottom: 0,
-    borderRadius: 18,
-    borderBottomWidth: 6,
+    borderRadius: 20,
+    borderBottomWidth: 3,
   },
   desktopCardSurface: {
-    backgroundColor: 'rgba(15, 23, 42, 0.56)',
-    borderColor: 'rgba(255,255,255,0.16)',
-    borderBottomColor: 'rgba(0,0,0,0.3)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-  },
-  selectedCardSurface: {
-    borderColor: '#38BDF8',
-    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
   },
   iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    borderBottomWidth: 2,
   },
   compactIconContainer: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 14,
     marginRight: 12,
   },
   emoji: {
-    fontSize: 32,
+    fontSize: 28,
   },
   compactEmoji: {
-    fontSize: 26,
+    fontSize: 24,
   },
   textContainer: {
     flex: 1,
@@ -129,22 +127,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_800ExtraBold',
     fontSize: 18,
     marginBottom: 4,
+    letterSpacing: 0.2,
   },
   compactTitle: {
     fontSize: 16,
   },
   description: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
   },
   compactDescription: {
-    fontSize: 12,
-    lineHeight: 16,
-  },
-  chevron: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 32,
-    marginLeft: 8,
+    fontSize: 13,
+    lineHeight: 18,
   },
 });
