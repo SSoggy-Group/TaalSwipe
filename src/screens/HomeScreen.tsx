@@ -12,6 +12,7 @@ import { statsStore, AppStats, getPlayerTitle } from '../store/statsStore';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image } from 'react-native';
+import { useKeyboardNavigation } from '../hooks/usePlatform';
 
 type RootStackParamList = {
   Home: undefined;
@@ -48,6 +49,9 @@ export function HomeScreen({ navigation }: Props) {
   // Keyboard navigation moved below modeCards
 
   const floatY = useSharedValue(0);
+
+  // Enable keyboard navigation for web
+  useKeyboardNavigation(true);
 
   React.useEffect(() => {
     floatY.value = withRepeat(

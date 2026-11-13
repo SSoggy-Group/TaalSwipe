@@ -1,0 +1,215 @@
+/* TaalSwipe Web Native Styles
+ * Improves the web experience to feel more like a native app
+ */
+
+/* Prevent text selection on game elements */
+.game-card,
+.swipe-card,
+.action-button,
+.mode-card,
+.powerup-button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Better focus styles for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid #38BDF8;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove outline for mouse users, keep for keyboard */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Smooth scrolling for web */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .fade-in-down,
+  .slide-in-down {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Improve touch targets for mobile web */
+@media (pointer: coarse) {
+  .action-button {
+    min-width: 80px;
+    min-height: 80px;
+  }
+  
+  .mode-card {
+    min-height: 120px;
+  }
+  
+  .powerup-button {
+    min-width: 52px;
+    min-height: 52px;
+  }
+}
+
+/* Better hover states for desktop */
+@media (pointer: fine) {
+  .mode-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .action-button:hover {
+    transform: scale(1.05);
+  }
+  
+  .bouncy-button:hover {
+    transform: translateY(-2px);
+  }
+  
+  .powerup-button:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Active/tap states */
+.action-button:active,
+.bouncy-button:active {
+  transform: scale(0.95);
+}
+
+/* Custom scrollbar for web */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 4px;
+  border: 2px solid rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Better text rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Prevent pull-to-refresh on mobile web */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-width: 3px;
+  }
+  
+  .card {
+    border-width: 3px !important;
+  }
+}
+
+/* Print styles - hide game UI */
+@media print {
+  .game-ui,
+  .action-row,
+  .powerup-row,
+  .timer-bar,
+  .header {
+    display: none !important;
+  }
+}
+
+/* Landscape orientation hint for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .rotate-hint {
+    display: flex !important;
+  }
+}
+
+/* Disable text selection on game elements during gameplay */
+.swipe-active * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth card transitions for web */
+.swipe-card {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+/* Loading state for web fonts */
+.fonts-loading {
+  visibility: hidden;
+}
+
+.fonts-loaded {
+  visibility: visible;
+}
+
+/* PWA install prompt styling */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
