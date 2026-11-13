@@ -3,10 +3,11 @@
 
 const CACHE_NAME = 'taalswipe-v1';
 const STATIC_ASSETS = [
-  './index.html',
-  './manifest.json',
-  './assets/icon-192.png',
-  './assets/icon-512.png',
+  '/index.html',
+  '/manifest.json',
+  '/assets/icon-192.png',
+  '/assets/icon-512.png',
+  '/web-native.css',
 ];
 
 // Install: cache static assets
@@ -57,7 +58,7 @@ self.addEventListener('fetch', (event) => {
       if (cached) return cached;
 
       return fetch(request).then((response) => {
-        // Cache successful GET responses
+        // Cache successful GET responses (including JS/CSS bundles)
         if (response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));

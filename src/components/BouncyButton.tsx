@@ -64,6 +64,8 @@ export const BouncyButton = React.memo(function BouncyButton({
       focusable={false}
       accessibilityRole="button"
       accessibilityLabel={title || 'Knop'}
+      // @ts-ignore
+      className="bouncy-button"
     >
       {/* Shine overlay for bubbly look */}
       <View style={styles.shine} />

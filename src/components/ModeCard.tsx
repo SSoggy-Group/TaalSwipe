@@ -60,6 +60,8 @@ export const ModeCard = React.memo(function ModeCard({ emoji, title, description
         focusable={false}
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${description}`}
+        // @ts-ignore
+        className="mode-card"
       >
         <View style={[styles.iconContainer, compact && styles.compactIconContainer, { backgroundColor: cardColor, borderBottomColor: 'rgba(0,0,0,0.15)' }]}>
           <Text style={[styles.emoji, compact && styles.compactEmoji]}>{emoji}</Text>

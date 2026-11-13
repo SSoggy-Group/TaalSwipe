@@ -49,9 +49,11 @@ for (const file of walk(dist)) {
 
   // Inject PWA meta tags and web-native CSS into index.html
   if (file.endsWith('index.html')) {
-    patched = patched.replace(
-      '<link rel="icon" href="./favicon.ico" />',
-      `<link rel="icon" href="./favicon.ico" />
+    // More robust replacement - find the closing </head> or the favicon link
+    if (patched.includes('<link rel="icon" href="./favicon.ico" />')) {
+      patched = patched.replace(
+        '<link rel="icon" href="./favicon.ico" />',
+        `<link rel="icon" href="./favicon.ico" />
     <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#0F172A" />
     <meta name="description" content="Swipe through Dutch language challenges, build streaks, and improve spelling, grammar, slang, and brand-name knowledge." />
@@ -60,7 +62,22 @@ for (const file of walk(dist)) {
     <meta name="apple-mobile-web-app-title" content="TaalSwipe" />
     <link rel="apple-touch-icon" href="./assets/icon-192.png" />
     <link rel="stylesheet" href="./web-native.css" />`
-    );
+      );
+    } else if (patched.includes('</head>')) {
+      // Fallback: inject before </head>
+      patched = patched.replace(
+        '</head>',
+        `    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0F172A" />
+    <meta name="description" content="Swipe through Dutch language challenges, build streaks, and improve spelling, grammar, slang, and brand-name knowledge." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TaalSwipe" />
+    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="stylesheet" href="./web-native.css" />
+  </head>`
+      );
+    }
   }
 
   if (patched !== original) {

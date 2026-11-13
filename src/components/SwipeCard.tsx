@@ -234,7 +234,8 @@ export const SwipeCard = React.memo(function SwipeCard({ children, onSwipeLeft, 
 
   return (
     <GestureDetector gesture={gesture}>
-      <Animated.View style={[styles.cardContainer, cardStyle]} accessible={true} accessibilityRole="adjustable" accessibilityHint="Swipe links of rechts">
+      <Animated.View style={[styles.cardContainer, cardStyle]} accessible={true} accessibilityRole="adjustable" accessibilityHint="Swipe links of rechts" // @ts-ignore
+        className="swipe-card">
         <CardSkinWrapper equippedCard={equippedCard} theme={theme} compact={compact} combo={combo}>
           {/* Goed overlay */}
           <Animated.View style={[styles.overlay, styles.goedOverlay, goedOpacity]}>

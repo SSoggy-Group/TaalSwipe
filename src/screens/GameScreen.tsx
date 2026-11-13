@@ -320,8 +320,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const isSpelling = mode === 'spelling';
 
   // Web-native hooks - must be after state declarations
-  useKeyboardNavigation(!gameOver && !isPaused && !showTutorial);
-  useWakeLock();
+  const { request: requestWakeLock } = useWakeLock(!gameOver && !isPaused && !showTutorial);
 
 
   React.useEffect(() => {
@@ -610,6 +609,17 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       setStats(newStats);
     }
   };
+  
+  // Custom keyboard handlers for game (must be after handler definitions)
+  const keyboardHandlers = React.useMemo(() => ({
+    ArrowLeft: handleSwipeLeft,
+    ArrowRight: handleSwipeRight,
+    Escape: handleClose,
+    Enter: () => { if (feedbackInfo) setFeedbackInfo(null); },
+    ' ': () => { if (feedbackInfo) setFeedbackInfo(null); },
+  }), [handleSwipeLeft, handleSwipeRight, handleClose, feedbackInfo]);
+  
+  useKeyboardNavigation(!gameOver && !isPaused && !showTutorial, keyboardHandlers);
 
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
@@ -804,6 +814,11 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
                   { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
                   stats.timeSlows <= 0 && { opacity: 0.4 }
                 ]}
+                // @ts-ignore
+                className="powerup-button"
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel="Tijd vertragen"
               >
                 <Text style={styles.powerupIcon}>⏱️</Text>
                 <View style={styles.countBadge}>
@@ -821,6 +836,11 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
                 { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
                 (stats.hints <= 0 || activeHint !== null) && { opacity: 0.4 }
               ]}
+              // @ts-ignore
+              className="powerup-button"
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel="Hint gebruiken"
             >
               <Text style={styles.powerupIcon}>🔍</Text>
               <View style={styles.countBadge}>
