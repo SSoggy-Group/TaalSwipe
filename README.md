@@ -4,7 +4,7 @@
   <img src="assets/thumbnail.png" alt="TaalSwipe Banner" width="100%" />
 </p>
 
-TaalSwipe is a Tinder-like swipe game I built to test your knowledge of Dutch spelling, slang, and weird language facts. You get a flashcard with a word or sentence, and you have to swipe left or right before the panic timer runs out. 
+TaalSwipe is a Tinder-like swipe game to test your knowledge of Dutch spelling, slang, and weird language facts. You get a flashcard with a word or sentence, and you have to swipe left or right before the panic timer runs out. 
 
 It's super fast, a little stressful, and surprisingly addictive once you get the hang of it. I wanted to make something that actually feels like a modern mobile app rather than just another boring multiple-choice quiz.
 
