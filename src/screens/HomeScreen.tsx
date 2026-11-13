@@ -50,9 +50,6 @@ export function HomeScreen({ navigation }: Props) {
 
   const floatY = useSharedValue(0);
 
-  // Enable keyboard navigation for web
-  useKeyboardNavigation(true);
-
   React.useEffect(() => {
     floatY.value = withRepeat(
       withSequence(
@@ -127,41 +124,17 @@ export function HomeScreen({ navigation }: Props) {
     },
   ] as const;
 
-  React.useEffect(() => {
-    if (typeof window === 'undefined' || !(window as any).addEventListener) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
+  // Custom keyboard handlers for HomeScreen mode selection
+  const keyboardHandlers = React.useMemo(() => ({
+    ArrowRight: () => setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 1, modeCards.length - 1)),
+    ArrowLeft: () => setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 1, 0)),
+    ArrowDown: () => setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 3, modeCards.length - 1)),
+    ArrowUp: () => setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 3, 0)),
+    Enter: () => { if (selectedIndex !== null) modeCards[selectedIndex].onPress(); },
+  }), [selectedIndex, modeCards]);
 
-
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 1, modeCards.length - 1));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 1, 0));
-      } else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex(prev => prev === null ? 0 : Math.min(prev + 3, modeCards.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(prev => prev === null ? 0 : Math.max(prev - 3, 0));
-      } else if (e.key === 'Enter') {
-        if (selectedIndex !== null) {
-          e.preventDefault();
-          modeCards[selectedIndex].onPress();
-        }
-      }
-    };
-    if (typeof globalThis !== 'undefined' && globalThis.window && (globalThis.window as any).addEventListener) {
-      // @ts-ignore
-      globalThis.window.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      if (typeof globalThis !== 'undefined' && globalThis.window && (globalThis.window as any).removeEventListener) {
-        // @ts-ignore
-        globalThis.window.removeEventListener('keydown', handleKeyDown);
-      }
-    };
-  }, [selectedIndex, modeCards]);
+  // Enable keyboard navigation for web with custom handlers
+  useKeyboardNavigation(true, keyboardHandlers);
 
   const renderModeCards = (compact = false) => (
     <>

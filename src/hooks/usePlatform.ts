@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
+export const isWeb = Platform.OS === 'web';
+
 export function usePlatform() {
-  const [isWeb, setIsWeb] = useState(Platform.OS === 'web');
   const [isDesktop, setIsDesktop] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -37,13 +38,13 @@ export function usePlatform() {
 export function usePWAInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
+  const [promptReady, setPromptReady] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const handler = (e: Event) => {
-      // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
+      // Store the event but don't prevent default yet - only when we're ready to show our banner
       setDeferredPrompt(e as any);
       setCanInstall(true);
     };
@@ -59,8 +60,17 @@ export function usePWAInstall() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
+  const preparePrompt = () => {
+    if (deferredPrompt && !promptReady) {
+      setPromptReady(true);
+    }
+  };
+
   const install = async () => {
     if (!deferredPrompt) return false;
+    
+    // Now prevent default since we're showing our UI
+    (deferredPrompt as any).preventDefault();
     
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
@@ -68,15 +78,17 @@ export function usePWAInstall() {
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
       setCanInstall(false);
+      setPromptReady(false);
       return true;
     }
+    setPromptReady(false);
     return false;
   };
 
-  return { canInstall, install };
+  return { canInstall, install, preparePrompt };
 }
 
-export function useKeyboardNavigation(enabled: boolean = true) {
+export function useKeyboardNavigation(enabled: boolean = true, customHandlers?: Record<string, () => void>) {
   useEffect(() => {
     if (typeof window === 'undefined' || !enabled) return;
 
@@ -89,7 +101,14 @@ export function useKeyboardNavigation(enabled: boolean = true) {
         return;
       }
 
-      // Handle common game keys
+      // Handle custom handlers first
+      if (customHandlers && customHandlers[e.key]) {
+        e.preventDefault();
+        customHandlers[e.key]();
+        return;
+      }
+
+      // Handle common game keys - only prevent default if enabled
       if (['ArrowLeft', 'ArrowRight', 'Escape', ' ', 'Enter'].includes(e.key)) {
         e.preventDefault();
       }
@@ -97,10 +116,10 @@ export function useKeyboardNavigation(enabled: boolean = true) {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled]);
+  }, [enabled, customHandlers]);
 }
 
-export function useWakeLock() {
+export function useWakeLock(autoRequest: boolean = false) {
   const [wakeLock, setWakeLock] = useState<any>(null);
   const [supported, setSupported] = useState(false);
 
@@ -109,6 +128,15 @@ export function useWakeLock() {
       setSupported(true);
     }
   }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (wakeLock) {
+        wakeLock.release().catch(() => {});
+      }
+    };
+  }, [wakeLock]);
 
   const request = async () => {
     if (!supported || wakeLock) return;
@@ -131,6 +159,13 @@ export function useWakeLock() {
       setWakeLock(null);
     }
   };
+
+  // Auto-request if enabled
+  useEffect(() => {
+    if (autoRequest && supported && !wakeLock) {
+      request();
+    }
+  }, [autoRequest, supported, wakeLock]);
 
   return { request, release, isActive: !!wakeLock, supported };
 }

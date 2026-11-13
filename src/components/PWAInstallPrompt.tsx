@@ -5,10 +5,10 @@ import { usePWAInstall } from '../hooks/usePlatform';
 import { useAppTheme } from '../theme/colors';
 
 export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
-  const { canInstall, install } = usePWAInstall();
+  const { canInstall, install, preparePrompt } = usePWAInstall();
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const theme = useAppTheme('straattaal');
+  const theme = useAppTheme();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
@@ -17,8 +17,10 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
     if (canInstall && !dismissed) {
       // Check if user has already dismissed this session
       if (typeof window !== 'undefined') {
-        const hasDismissed = sessionStorage.getItem('pwa-install-dismissed');
+        const hasDismissed = sessionStorage.getItem('taalswipe-pwa-install-dismissed');
         if (!hasDismissed) {
+          // Prepare the prompt (stores deferredPrompt)
+          preparePrompt();
           setTimeout(() => {
             setShowPrompt(true);
             Animated.parallel([
@@ -47,7 +49,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
         ]).start();
       }
     };
-  }, [canInstall, dismissed, showPrompt]);
+  }, [canInstall, dismissed, showPrompt, preparePrompt]);
 
   const handleInstall = async () => {
     const success = await install();
@@ -55,7 +57,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
       setShowPrompt(false);
       setDismissed(true);
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem('pwa-install-dismissed', 'true');
+        sessionStorage.setItem('taalswipe-pwa-install-dismissed', 'true');
       }
     }
   };
@@ -69,7 +71,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
         setShowPrompt(false);
         setDismissed(true);
         if (typeof window !== 'undefined') {
-          sessionStorage.setItem('pwa-install-dismissed', 'true');
+          sessionStorage.setItem('taalswipe-pwa-install-dismissed', 'true');
         }
       }
     });

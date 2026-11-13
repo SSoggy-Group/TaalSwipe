@@ -36,7 +36,7 @@ function App() {
     
     // Register Service Worker for PWA
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {
+      navigator.serviceWorker.register(new URL('/sw.js', location.origin)).catch(() => {
         // Silently fail if SW registration fails
       });
     }
