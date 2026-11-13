@@ -12,6 +12,7 @@ import {
 import * as Font from 'expo-font';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
+import { PWAInstallPrompt } from './src/components/PWAInstallPrompt';
 
 function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -33,6 +34,13 @@ function App() {
   useEffect(() => {
     soundManager.init();
     
+    // Register Service Worker for PWA
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {
+        // Silently fail if SW registration fails
+      });
+    }
+
     const disableContextMenu = (e: MouseEvent) => {
       if (e.target instanceof HTMLElement && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
         return;
@@ -65,6 +73,7 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       <AppNavigator />
+      <PWAInstallPrompt />
     </GestureHandlerRootView>
   );
 }

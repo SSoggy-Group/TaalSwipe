@@ -26,6 +26,7 @@ import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { soundManager } from '../audio/SoundManager';
 import { ConfettiBurst } from '../platform/ConfettiBurst';
+import { useKeyboardNavigation, useWakeLock } from '../hooks/usePlatform';
 
 type RootStackParamList = {
   Home: undefined;
@@ -318,6 +319,10 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
   const isSpelling = mode === 'spelling';
 
+  // Web-native hooks - must be after state declarations
+  useKeyboardNavigation(!gameOver && !isPaused && !showTutorial);
+  useWakeLock();
+
 
   React.useEffect(() => {
     async function initGame() {
@@ -609,32 +614,10 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
 
+  // Context menu for Tauri desktop app (right-click to copy/search words)
   React.useEffect(() => {
-    if (Platform.OS !== 'web' || globalThis.window === undefined) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || showTutorial || isPaused || gameOver || feedbackInfo) return;
-
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        handleSwipeLeft();
-      }
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        handleSwipeRight();
-      }
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        handleClose();
-      }
-      if (event.key === 'Enter' || event.key === ' ') {
-        // If feedback is showing, space/enter goes to next
-        if (feedbackInfo) {
-          event.preventDefault();
-          setFeedbackInfo(null);
-        }
-      }
-    };
+    if (typeof window === 'undefined' || !window.addEventListener) return;
+    if (!(globalThis as any).__TAURI_INTERNALS__) return;
 
     const handleContextMenu = async (event: MouseEvent) => {
       if (gameOver || isPaused || !currentItem) return;
@@ -643,49 +626,35 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       const { wordText, explanationText } = getItemDetails(currentItem, mode);
       if (!wordText) return;
 
-      if ((globalThis as any).__TAURI_INTERNALS__) {
-        try {
-          const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
-          
-          const copyItem = await MenuItem.new({
-            text: `Kopieer: "${wordText}"`,
-            action: () => {
-              Clipboard.setStringAsync(wordText);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-          });
-          
-          const searchItem = await MenuItem.new({
-            text: 'Zoek op Google',
-            action: () => {
-              const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
-              globalThis.window.open(url, '_blank');
-            }
-          });
-          
-          const menu = await Menu.new({ items: [copyItem, searchItem] });
-          await menu.popup();
-        } catch (err) {
-          console.warn('Failed to show Tauri context menu', err);
-        }
+      try {
+        const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
+        
+        const copyItem = await MenuItem.new({
+          text: `Kopieer: "${wordText}"`,
+          action: () => {
+            Clipboard.setStringAsync(wordText);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          }
+        });
+        
+        const searchItem = await MenuItem.new({
+          text: 'Zoek op Google',
+          action: () => {
+            const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
+            window.open(url, '_blank');
+          }
+        });
+        
+        const menu = await Menu.new({ items: [copyItem, searchItem] });
+        await menu.popup();
+      } catch (err) {
+        console.warn('Failed to show Tauri context menu', err);
       }
     };
 
-    if (typeof window !== 'undefined' && (window as any).addEventListener) {
-      // @ts-ignore
-      window.addEventListener('keydown', handleKeyDown);
-      // @ts-ignore
-      window.addEventListener('contextmenu', handleContextMenu);
-    }
-    return () => {
-      if (typeof window !== 'undefined' && (window as any).removeEventListener) {
-        // @ts-ignore
-        window.removeEventListener('keydown', handleKeyDown);
-        // @ts-ignore
-        window.removeEventListener('contextmenu', handleContextMenu);
-      }
-    };
-  }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial, currentItem, mode]);
+    window.addEventListener('contextmenu', handleContextMenu);
+    return () => window.removeEventListener('contextmenu', handleContextMenu);
+  }, [gameOver, isPaused, currentItem, mode]);
 
   let leftLabel = 'FOUT ✗';
   let rightLabel = 'GOED ✓';

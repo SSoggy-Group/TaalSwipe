@@ -1,8 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, ViewStyle } from 'react-native';
 import { BlurView } from 'expo-blur';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
-import { Colors } from '../theme/colors';
+import { useAppTheme } from '../theme/colors';
+import { useColorScheme } from 'react-native';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface GlassButtonProps {
   readonly title: string;
@@ -12,58 +16,78 @@ interface GlassButtonProps {
 }
 
 export function GlassButton({ title, emoji, onPress, style }: GlassButtonProps) {
-  const handlePress = () => {
+  const theme = useAppTheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const scale = useSharedValue(1);
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.94, { damping: 15, stiffness: 300 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onPress();
   };
 
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
-    <Pressable
-      onPress={handlePress}
+    <AnimatedPressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
       focusable={false}
-      style={({ pressed }) => [
-        styles.pressable,
-        pressed && styles.pressed,
-        style,
-      ]}
+      style={[styles.pressable, style, animatedStyle, { shadowColor: theme.cardTextPrimary }]}
     >
-      <BlurView intensity={30} tint="light" style={styles.blur}>
+      <BlurView 
+        intensity={isDark ? 30 : 50} 
+        tint={isDark ? "dark" : "light"} 
+        style={[
+          styles.blur, 
+          { 
+            backgroundColor: theme.glass.background,
+            borderColor: theme.glass.border,
+            borderBottomColor: theme.glass.highlight,
+          }
+        ]}
+      >
         {emoji && <Text style={styles.emoji}>{emoji}</Text>}
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, { color: theme.cardTextPrimary }]}>{title}</Text>
       </BlurView>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
 const styles = StyleSheet.create({
   pressable: {
-    borderRadius: 20,
-    overflow: 'hidden',
+    borderRadius: 22,
     marginVertical: 8,
-  },
-  pressed: {
-    opacity: 0.85,
-    transform: [{ scale: 0.97 }],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 3,
   },
   blur: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 22,
+    paddingVertical: 18,
     paddingHorizontal: 24,
-    backgroundColor: Colors.glass.background,
     borderWidth: 1,
-    borderColor: Colors.glass.border,
-    borderRadius: 20,
+    borderBottomWidth: 3,
+    borderRadius: 22,
     gap: 12,
+    overflow: 'hidden',
   },
   emoji: {
-    fontSize: 28,
+    fontSize: 26,
   },
   title: {
-    fontFamily: 'Inter_700Bold', // Make it bolder for playfulness
-    fontSize: 20,
-    color: '#1E293B', // Dark slate instead of white
-    letterSpacing: 0,
+    fontFamily: 'Inter_700Bold',
+    fontSize: 18,
+    letterSpacing: 0.5,
   },
 });
