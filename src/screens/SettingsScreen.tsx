@@ -17,7 +17,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 const INCORRECT_SOUNDS = [
-  { id: 'default', name: 'Standaard' },
+  { id: 'default', name: 'Warm' },
   { id: '2042', name: 'Zacht' },
   { id: '954', name: 'Buzzer' },
   { id: '950', name: 'Chirp' },
