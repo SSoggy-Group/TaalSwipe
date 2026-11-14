@@ -53,7 +53,8 @@
           }
         }
       ],
-      "./plugins/withReleaseSigning"
+      "./plugins/withReleaseSigning",
+      "./plugins/withAbiSplits"
     ],
     "owner": "ssoggy-group",
     "extra": {
