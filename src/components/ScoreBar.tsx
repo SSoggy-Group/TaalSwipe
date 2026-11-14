@@ -25,7 +25,8 @@ export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBa
   }, [progressPercent]);
 
   const animatedProgressStyle = useAnimatedStyle(() => ({
-    width: `${progressWidth.value}%`,
+    // Scale instead of width: no layout recalculation every frame.
+    transform: [{ scaleX: progressWidth.value / 100 }],
   }));
 
   return (
@@ -88,7 +89,9 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: '100%',
+    width: '100%',
     borderRadius: RADIUS.pill,
+    transformOrigin: 'left center',
   },
   comboContainer: {
     alignItems: 'center',

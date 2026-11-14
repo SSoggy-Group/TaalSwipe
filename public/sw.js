@@ -2,7 +2,7 @@
 // Caches assets for offline play
 
 const CACHE_PREFIX = 'taalswipe-';
-const CACHE_NAME = `${CACHE_PREFIX}v5`;
+const CACHE_NAME = `${CACHE_PREFIX}v6`;
 const STATIC_ASSETS = [
   './index.html',
   './manifest.json',
