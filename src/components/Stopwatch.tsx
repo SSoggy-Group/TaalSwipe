@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useImperativeHandle } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useAppTheme } from '../theme/colors';
 
 export interface StopwatchRef {
   getTime: () => number;
@@ -12,6 +13,7 @@ interface Props {
 export const Stopwatch = React.memo(React.forwardRef<StopwatchRef, Props>(
   (props, ref) => {
     const { running } = props;
+    const theme = useAppTheme();
     const [elapsedMs, setElapsedMs] = useState(0);
 
     useEffect(() => {
@@ -33,16 +35,16 @@ export const Stopwatch = React.memo(React.forwardRef<StopwatchRef, Props>(
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       const deciseconds = Math.floor((ms % 1000) / 100);
-      
+
       const mStr = minutes > 0 ? `${minutes}:` : '';
       const sStr = minutes > 0 ? seconds.toString().padStart(2, '0') : seconds.toString();
-      
+
       return `${mStr}${sStr}.${deciseconds}`;
     };
 
     return (
       <View style={styles.container}>
-        <Text style={styles.timeText}>{formatTime(elapsedMs)}</Text>
+        <Text style={[styles.timeText, { color: theme.inkSecondary }]}>{formatTime(elapsedMs)}</Text>
       </View>
     );
   }
@@ -54,10 +56,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   timeText: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    color: '#38BDF8',
-    letterSpacing: 2,
+    fontFamily: 'Inter_500Medium',
+    fontSize: 16,
+    letterSpacing: 0.4,
     fontVariant: ['tabular-nums'],
   },
 });

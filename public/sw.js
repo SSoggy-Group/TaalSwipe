@@ -1,7 +1,7 @@
 // Service Worker for TaalSwipe PWA
 // Caches assets for offline play
 
-const CACHE_NAME = 'taalswipe-v1';
+const CACHE_NAME = 'taalswipe-v2';
 const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',

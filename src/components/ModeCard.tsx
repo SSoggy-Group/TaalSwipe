@@ -1,76 +1,97 @@
 import React from 'react';
 import { StyleProp, StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
-import { useAppTheme } from '../theme/colors';
-import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme, RADIUS } from '../theme/colors';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
 interface Props {
-  emoji: string;
-  title: string;
-  description: string;
-  onPress: () => void;
-  style?: ViewStyle;
-  wrapperStyle?: StyleProp<ViewStyle>;
-  delay?: number;
-  color?: string;
-  compact?: boolean;
-  isSelected?: boolean;
+  readonly icon: IoniconName;
+  readonly title: string;
+  readonly description: string;
+  readonly onPress: () => void;
+  readonly style?: StyleProp<ViewStyle>;
+  readonly wrapperStyle?: StyleProp<ViewStyle>;
+  readonly delay?: number;
+  readonly compact?: boolean;
+  readonly isSelected?: boolean;
+  readonly meta?: string;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-export const ModeCard = React.memo(function ModeCard({ emoji, title, description, onPress, style, wrapperStyle, delay = 0, color, compact = false, isSelected = false }: Props) {
+export const ModeCard = React.memo(function ModeCard({
+  icon,
+  title,
+  description,
+  onPress,
+  style,
+  wrapperStyle,
+  delay = 0,
+  compact = false,
+  isSelected = false,
+  meta,
+}: Props) {
   const theme = useAppTheme();
-  const scale = useSharedValue(1);
-  const cardColor = color || theme.accent;
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.96, { damping: 12, stiffness: 300 });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 12, stiffness: 300 });
-  };
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
 
   return (
-    <Animated.View entering={FadeInUp.delay(delay).duration(500).springify()} style={wrapperStyle}>
-      <AnimatedPressable 
-        style={[
-          styles.card, 
+    <Animated.View
+      entering={FadeIn.delay(Math.min(delay, 220)).duration(260)}
+      style={wrapperStyle}
+    >
+      <Pressable
+        style={({ pressed }) => [
+          styles.card,
           compact && styles.compactCard,
-          { 
-            backgroundColor: isSelected ? 'rgba(56, 189, 248, 0.15)' : theme.glass.background, 
-            borderColor: isSelected ? '#38BDF8' : theme.glass.border,
-            borderBottomColor: isSelected ? '#38BDF8' : theme.glass.highlight,
-            shadowColor: theme.cardTextPrimary,
+          {
+            backgroundColor: pressed ? theme.surfaceMuted : theme.surface,
+            borderColor: isSelected ? theme.accent : theme.border,
+            borderWidth: isSelected ? 1.5 : 1,
           },
-          style, 
-          animatedStyle,
-          compact && styles.desktopCardSurface,
-        ]} 
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onPress={onPress}
-        accessible={true}
+          style,
+        ]}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onPress();
+        }}
+        accessible
         focusable={false}
         accessibilityRole="button"
         accessibilityLabel={`${title}. ${description}`}
-        // @ts-ignore
-        className="mode-card"
+        testID="mode-card"
       >
-        <View style={[styles.iconContainer, compact && styles.compactIconContainer, { backgroundColor: cardColor, borderBottomColor: 'rgba(0,0,0,0.15)' }]}>
-          <Text style={[styles.emoji, compact && styles.compactEmoji]}>{emoji}</Text>
+        <View
+          style={[
+            styles.iconTile,
+            compact && styles.compactIconTile,
+            { backgroundColor: theme.accentSoft },
+          ]}
+        >
+          <Ionicons name={icon} size={compact ? 20 : 22} color={theme.accent} />
         </View>
+
         <View style={styles.textContainer}>
-          <Text style={[styles.title, compact && styles.compactTitle, { color: theme.cardTextPrimary }]}>{title}</Text>
-          <Text style={[styles.description, compact && styles.compactDescription, { color: theme.cardTextSecondary }]}>{description}</Text>
+          <View style={styles.titleRow}>
+            <Text
+              style={[styles.title, compact && styles.compactTitle, { color: theme.ink }]}
+              numberOfLines={1}
+            >
+              {title}
+            </Text>
+            {meta ? (
+              <Text style={[styles.meta, { color: theme.inkMuted }]}>{meta}</Text>
+            ) : null}
+          </View>
+          <Text
+            style={[styles.description, compact && styles.compactDescription, { color: theme.inkSecondary }]}
+            numberOfLines={3}
+          >
+            {description}
+          </Text>
         </View>
-      </AnimatedPressable>
+
+        <Ionicons name="chevron-forward" size={18} color={theme.inkMuted} />
+      </Pressable>
     </Animated.View>
   );
 });
@@ -79,68 +100,58 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderBottomWidth: 4,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    borderRadius: RADIUS.card,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    gap: 14,
   },
   compactCard: {
-    minHeight: 120,
-    padding: 14,
-    marginBottom: 0,
-    borderRadius: 20,
-    borderBottomWidth: 3,
+    minHeight: 108,
+    alignItems: 'flex-start',
+    paddingVertical: 16,
   },
-  desktopCardSurface: {
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-  },
-  iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 18,
+  iconTile: {
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.control,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 16,
-    borderBottomWidth: 2,
   },
-  compactIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    marginRight: 12,
-  },
-  emoji: {
-    fontSize: 28,
-  },
-  compactEmoji: {
-    fontSize: 24,
+  compactIconTile: {
+    width: 36,
+    height: 36,
   },
   textContainer: {
     flex: 1,
+    gap: 3,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: 8,
   },
   title: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 18,
-    marginBottom: 4,
-    letterSpacing: 0.2,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 16,
+    letterSpacing: -0.1,
+    flexShrink: 1,
   },
   compactTitle: {
-    fontSize: 16,
+    fontSize: 15,
+  },
+  meta: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 11,
+    letterSpacing: 0.2,
   },
   description: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    lineHeight: 20,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 13,
+    lineHeight: 19,
   },
   compactDescription: {
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
   },
 });

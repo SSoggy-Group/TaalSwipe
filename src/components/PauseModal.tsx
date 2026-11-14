@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { Colors, useAppTheme } from '../theme/colors';
+import { StyleSheet, Text, View, Modal, Pressable } from 'react-native';
+import { useAppTheme, RADIUS } from '../theme/colors';
 import { BouncyButton } from './BouncyButton';
 
 interface Props {
@@ -21,37 +20,31 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
       transparent
       animationType="fade"
       onRequestClose={onResume}
-      statusBarTranslucent={true}
+      statusBarTranslucent
     >
-      <BlurView intensity={80} tint={theme.glass.background === '#FFFFFF' ? 'light' : 'dark'} style={styles.container}>
-        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
-          <Text style={[styles.title, { color: theme.cardTextPrimary }]}>Gepauzeerd ⏸️</Text>
-          
-          <View style={[styles.scoreBox, { backgroundColor: theme.glass.highlight }]}>
-            <Text style={styles.scoreValue}>{score}</Text>
-            <Text style={[styles.scoreLabel, { color: theme.cardTextSecondary }]}>Huidige Score</Text>
+      <Pressable style={styles.container} onPress={onResume}>
+        <View
+          style={[styles.content, { backgroundColor: theme.surface, borderColor: theme.border }]}
+          onStartShouldSetResponder={() => true}
+        >
+          <Text style={[styles.title, { color: theme.ink }]}>Gepauzeerd</Text>
+
+          <View style={[styles.scoreBox, { backgroundColor: theme.surfaceMuted }]}>
+            <Text style={[styles.scoreValue, { color: theme.ink }]}>{score}</Text>
+            <Text style={[styles.scoreLabel, { color: theme.inkSecondary }]}>Goede antwoorden</Text>
           </View>
 
           <View style={styles.buttonContainer}>
-            <BouncyButton
-              title="Doorgaan"
-              color={Colors.accent}
-              borderColor="#8B5CF6"
-              bottomBorderColor="#7C3AED"
-              style={styles.button}
-              onPress={onResume}
-            />
+            <BouncyButton title="Doorgaan" onPress={onResume} style={styles.button} />
             <BouncyButton
               title="Stoppen"
-              color="#FF4B4B"
-              borderColor="#D33333"
-              bottomBorderColor="#9A1D1D"
-              style={styles.button}
+              variant="secondary"
               onPress={onQuit}
+              style={styles.button}
             />
           </View>
         </View>
-      </BlurView>
+      </Pressable>
     </Modal>
   );
 }
@@ -62,43 +55,40 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+    backgroundColor: 'rgba(16, 18, 22, 0.45)',
   },
   content: {
-    backgroundColor: 'rgba(20, 20, 30, 0.75)',
-    borderRadius: 24,
-    padding: 32,
+    borderRadius: RADIUS.card + 2,
+    padding: 24,
     width: '100%',
+    maxWidth: 380,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   title: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 28,
-    color: Colors.textPrimary,
-    marginBottom: 24,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 20,
+    letterSpacing: -0.2,
+    marginBottom: 18,
     textAlign: 'center',
   },
   scoreBox: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 16,
+    borderRadius: RADIUS.control,
     padding: 16,
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 22,
   },
   scoreValue: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 48,
-    color: Colors.correct,
+    fontFamily: 'Inter_700Bold',
+    fontSize: 34,
+    fontVariant: ['tabular-nums'],
   },
   scoreLabel: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textTransform: 'uppercase',
-    marginTop: 4,
+    fontSize: 13,
+    marginTop: 2,
   },
   buttonContainer: {
-    gap: 16,
+    gap: 10,
   },
   button: {
     width: '100%',

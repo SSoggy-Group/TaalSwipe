@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Text, Pressable, Animated, Easing } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePWAInstall } from '../hooks/usePlatform';
-import { useAppTheme } from '../theme/colors';
+import { useAppTheme, RADIUS } from '../theme/colors';
 
 export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
   const { canInstall, install, preparePrompt } = usePWAInstall();
@@ -11,70 +11,52 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
   const theme = useAppTheme();
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const slideAnim = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
-    if (canInstall && !dismissed) {
-      // Check if user has already dismissed this session
-      if (typeof window !== 'undefined') {
-        const hasDismissed = sessionStorage.getItem('taalswipe-pwa-install-dismissed');
-        if (!hasDismissed) {
-          // Prepare the prompt (stores deferredPrompt)
-          preparePrompt();
-          setTimeout(() => {
-            setShowPrompt(true);
-            Animated.parallel([
-              Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 300,
-                easing: Easing.out(Easing.cubic),
-                useNativeDriver: true,
-              }),
-              Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 400,
-                easing: Easing.out(Easing.back(1.2)),
-                useNativeDriver: true,
-              }),
-            ]).start();
-          }, 3000); // Show after 3 seconds
-        }
-      }
-    }
-    return () => {
-      if (showPrompt) {
-        Animated.parallel([
-          Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-          Animated.timing(slideAnim, { toValue: 20, duration: 200, useNativeDriver: true }),
-        ]).start();
-      }
-    };
-  }, [canInstall, dismissed, showPrompt, preparePrompt]);
+    if (!canInstall || dismissed) return;
+    if (typeof window === 'undefined') return;
+    if (sessionStorage.getItem('taalswipe-pwa-install-dismissed')) return;
 
-  const handleInstall = async () => {
-    const success = await install();
-    if (success) {
+    const timer = setTimeout(() => {
+      preparePrompt();
+      setShowPrompt(true);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 260,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [canInstall, dismissed]);
+
+  const dismiss = () => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 0, duration: 160, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 16, duration: 160, useNativeDriver: true }),
+    ]).start(({ finished }) => {
+      if (!finished) return;
       setShowPrompt(false);
       setDismissed(true);
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('taalswipe-pwa-install-dismissed', 'true');
       }
-    }
+    });
   };
 
-  const handleDismiss = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: -20, duration: 200, useNativeDriver: true }),
-    ]).start(({ finished }) => {
-      if (finished) {
-        setShowPrompt(false);
-        setDismissed(true);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('taalswipe-pwa-install-dismissed', 'true');
-        }
-      }
-    });
+  const handleInstall = async () => {
+    const success = await install();
+    if (success) dismiss();
   };
 
   if (!showPrompt) return null;
@@ -90,27 +72,42 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
       ]}
       pointerEvents="box-none"
     >
-      <View style={[styles.bannerContent, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
-        <View style={styles.iconWrapper}>
-          <Ionicons name="phone-portrait" size={28} color={theme.accent} />
+      <View
+        style={[
+          styles.bannerContent,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
+      >
+        <View style={[styles.iconTile, { backgroundColor: theme.accentSoft }]}>
+          <Ionicons name="phone-portrait-outline" size={20} color={theme.accent} />
         </View>
+
         <View style={styles.textWrapper}>
-          <Text style={[styles.title, { color: theme.cardTextPrimary }]}>Installeer TaalSwipe</Text>
-          <Text style={[styles.subtitle, { color: theme.cardTextSecondary }]}>
-            Speel offline, sneller laden, native ervaring
+          <Text style={[styles.title, { color: theme.ink }]}>Installeer TaalSwipe</Text>
+          <Text style={[styles.subtitle, { color: theme.inkSecondary }]}>
+            Snel starten vanaf je beginscherm, ook offline.
           </Text>
         </View>
+
         <View style={styles.actions}>
-          <TouchableOpacity style={styles.dismissButton} onPress={handleDismiss} accessibilityLabel="Sluiten">
-            <Ionicons name="close" size={20} color={theme.textMuted} />
-          </TouchableOpacity>
-          <TouchableOpacity
+          <Pressable
+            style={styles.dismissButton}
+            onPress={dismiss}
+            accessibilityLabel="Melding sluiten"
+            focusable={false}
+          >
+            <Ionicons name="close" size={18} color={theme.inkMuted} />
+          </Pressable>
+          <Pressable
             style={[styles.installButton, { backgroundColor: theme.accent }]}
             onPress={handleInstall}
             accessibilityLabel="TaalSwipe installeren"
+            focusable={false}
           >
-            <Text style={styles.installButtonText}>Installeren</Text>
-          </TouchableOpacity>
+            <Text style={[styles.installButtonText, { color: theme.accentContrast }]}>
+              Installeren
+            </Text>
+          </Pressable>
         </View>
       </View>
     </Animated.View>
@@ -120,65 +117,62 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
 const styles = StyleSheet.create({
   banner: {
     position: 'absolute',
-    bottom: 24,
+    bottom: 20,
     left: 16,
     right: 16,
-    maxWidth: 480,
+    maxWidth: 520,
     alignSelf: 'center',
     zIndex: 1000,
-    pointerEvents: 'box-none',
   },
   bannerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
+    padding: 12,
+    borderRadius: RADIUS.card,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
     shadowRadius: 16,
-    elevation: 8,
-    overflow: 'hidden',
+    elevation: 6,
   },
-  iconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+  iconTile: {
+    width: 36,
+    height: 36,
+    borderRadius: RADIUS.control,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 10,
   },
   textWrapper: {
     flex: 1,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 2,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 14,
+    marginBottom: 1,
   },
   subtitle: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 12,
+    lineHeight: 17,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 8,
+    gap: 4,
   },
   dismissButton: {
-    padding: 8,
-    marginRight: 8,
+    padding: 7,
   },
   installButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 10,
+    borderRadius: RADIUS.chip,
   },
   installButtonText: {
-    color: '#0F172A',
-    fontSize: 14,
-    fontWeight: '700',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
   },
 });

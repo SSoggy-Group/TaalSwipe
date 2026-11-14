@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar, View, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-  Inter_900Black,
-} from '@expo-google-fonts/inter';
+import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
+import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
+import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
+import { Inter_700Bold } from '@expo-google-fonts/inter/700Bold';
 import * as Font from 'expo-font';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
 import { PWAInstallPrompt } from './src/components/PWAInstallPrompt';
+import { useAppTheme } from './src/theme/colors';
 
 function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fontError, setFontError] = useState<Error | null>(null);
+  const systemScheme = useColorScheme();
+  const theme = useAppTheme();
+  const loadingBackground = systemScheme === 'dark' ? '#0F1012' : '#F6F4EF';
 
   useEffect(() => {
     Font.loadAsync({
@@ -24,8 +24,6 @@ function App() {
       Inter_500Medium,
       Inter_600SemiBold,
       Inter_700Bold,
-      Inter_800ExtraBold,
-      Inter_900Black,
     })
       .then(() => setFontsLoaded(true))
       .catch((err) => setFontError(err));
@@ -33,7 +31,7 @@ function App() {
 
   useEffect(() => {
     soundManager.init();
-    
+
     // Register Service Worker for PWA
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register(new URL('/sw.js', location.origin)).catch(() => {
@@ -63,15 +61,16 @@ function App() {
   }, []);
 
   if (!fontsLoaded && !fontError) {
-    return (
-      <View style={{ flex: 1, backgroundColor: '#0F172A', justifyContent: 'center', alignItems: 'center' }}>
-      </View>
-    );
+    return <View style={{ flex: 1, backgroundColor: loadingBackground }} />;
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.background }}>
+      <StatusBar
+        barStyle={theme.isDark ? 'light-content' : 'dark-content'}
+        translucent
+        backgroundColor="transparent"
+      />
       <AppNavigator />
       <PWAInstallPrompt />
     </GestureHandlerRootView>

@@ -55,12 +55,12 @@ for (const file of walk(dist)) {
         '<link rel="icon" href="./favicon.ico" />',
         `<link rel="icon" href="./favicon.ico" />
     <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#0F172A" />
+    <meta name="theme-color" content="#1F4E79" />
     <meta name="description" content="Swipe through Dutch language challenges, build streaks, and improve spelling, grammar, slang, and brand-name knowledge." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="TaalSwipe" />
-    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="apple-touch-icon" href="./assets/icon-180.png" />
     <link rel="stylesheet" href="./web-native.css" />`
       );
     } else if (patched.includes('</head>')) {
@@ -68,12 +68,12 @@ for (const file of walk(dist)) {
       patched = patched.replace(
         '</head>',
         `    <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#0F172A" />
+    <meta name="theme-color" content="#1F4E79" />
     <meta name="description" content="Swipe through Dutch language challenges, build streaks, and improve spelling, grammar, slang, and brand-name knowledge." />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="TaalSwipe" />
-    <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+    <link rel="apple-touch-icon" href="./assets/icon-180.png" />
     <link rel="stylesheet" href="./web-native.css" />
   </head>`
       );

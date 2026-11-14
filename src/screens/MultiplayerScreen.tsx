@@ -3,10 +3,9 @@ import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'r
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from '../platform/haptics';
-import Animated, { ZoomIn } from 'react-native-reanimated';
-import { useAppTheme } from '../theme/colors';
+import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
+import { useAppTheme, RADIUS } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
-import { ConfettiBurst } from '../platform/ConfettiBurst'; 
 import { GradientBackground } from '../components/GradientBackground';
 import { SwipeCard } from '../components/SwipeCard';
 import { BouncyButton } from '../components/BouncyButton';
@@ -27,6 +26,7 @@ type RootStackParamList = {
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Multiplayer'>;
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -43,18 +43,17 @@ interface MultiplayerItem {
   mode: string;
   leftLabel: string;
   rightLabel: string;
-  color: string;
   explanation: string;
   subText?: string;
 }
 
-const MODES_CONFIG = [
-  { key: 'spelling', name: 'Spelling', color: '#0EA5E9', icon: '✍️' },
-  { key: 'dt', name: 'D/T Spelling', color: '#F59E0B', icon: '📝' },
-  { key: 'straattaal', name: 'Straattaal', color: '#8B5CF6', icon: '🤙' },
-  { key: 'dunglish', name: 'Dunglish', color: '#EC4899', icon: '🇳🇱🇬🇧' },
-  { key: 'vandale', name: 'Van Dale', color: '#10B981', icon: '📖' },
-  { key: 'brand', name: 'Merken', color: '#EF4444', icon: '🏷️' },
+const MODES_CONFIG: readonly { key: string; name: string; icon: IconName }[] = [
+  { key: 'spelling', name: 'Spelling', icon: 'text-outline' },
+  { key: 'dt', name: 'D/t-spelling', icon: 'create-outline' },
+  { key: 'straattaal', name: 'Straattaal', icon: 'chatbubbles-outline' },
+  { key: 'dunglish', name: 'Dunglish', icon: 'globe-outline' },
+  { key: 'vandale', name: 'Van Dale', icon: 'book-outline' },
+  { key: 'brand', name: 'Merken', icon: 'pricetag-outline' },
 ];
 
 const TARGET_SCORE = 15;
@@ -64,9 +63,9 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   const theme = useAppTheme();
   const { width, height } = useWindowDimensions();
   const isLandscape = width > height;
-  
+
   const [gameStarted, setGameStarted] = useState(false);
-  const [showDefinitions, setShowDefinitions] = useState(true); // Toggle displaying definitions/subtexts on cards
+  const [showDefinitions, setShowDefinitions] = useState(true);
   const [enabledModes, setEnabledModes] = useState<Record<string, boolean>>({
     spelling: true,
     dt: true,
@@ -79,16 +78,16 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   // Independent shuffled data lists for both players
   const [p1Data, setP1Data] = useState<MultiplayerItem[]>([]);
   const [p2Data, setP2Data] = useState<MultiplayerItem[]>([]);
-  
+
   const [p1Index, setP1Index] = useState(0);
   const [p2Index, setP2Index] = useState(0);
-  
+
   const [p1Score, setP1Score] = useState(0);
   const [p2Score, setP2Score] = useState(0);
-  
+
   const [p1Penalty, setP1Penalty] = useState(false);
   const [p2Penalty, setP2Penalty] = useState(false);
-  
+
   const [winner, setWinner] = useState<number | null>(null);
 
   useEffect(() => {
@@ -98,9 +97,8 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
   const toggleMode = (key: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setEnabledModes(prev => {
+    setEnabledModes((prev) => {
       const next = { ...prev, [key]: !prev[key] };
-      // Make sure at least one mode remains enabled
       const values = Object.values(next);
       if (values.filter(Boolean).length === 0) {
         return prev;
@@ -111,88 +109,86 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
   const handleStartGame = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     const selectedData: MultiplayerItem[] = [];
     if (enabledModes.spelling) {
-      selectedData.push(...spellingData.map(x => {
-        let spellingExplanation = 'Dit woord is onjuist gespeld!';
+      selectedData.push(...spellingData.map((x) => {
+        let spellingExplanation = 'Dit woord is onjuist gespeld.';
         if (x.isCorrect) {
-          spellingExplanation = 'Dit woord is correct gespeld!';
+          spellingExplanation = 'Dit woord is correct gespeld.';
         } else if (x.correction) {
-          spellingExplanation = `Fout gespeld! Het moet zijn: "${x.correction}"`;
+          spellingExplanation = `Fout gespeld. Het moet zijn: "${x.correction}"`;
         }
         return {
           text: x.text,
           isCorrect: x.isCorrect,
-          mode: 'SPELLING',
-          leftLabel: 'FOUT ✗',
-          rightLabel: 'GOED ✓',
-          color: '#0EA5E9',
+          mode: 'Spelling',
+          leftLabel: 'Fout',
+          rightLabel: 'Goed',
           explanation: spellingExplanation,
         };
       }));
     }
     if (enabledModes.dt) {
-      selectedData.push(...dtData.map(x => {
+      selectedData.push(...dtData.map((x) => {
         const isCorrect = Math.random() > 0.5;
         const displayedAnswer = isCorrect ? x.correctAnswer : x.wrongAnswer;
         const formattedText = x.sentence.replace('___', displayedAnswer);
         return {
           text: formattedText,
           isCorrect,
-          mode: 'D/T SPELLING',
-          leftLabel: 'FOUT ✗',
-          rightLabel: 'GOED ✓',
-          color: '#F59E0B',
+          mode: 'D/t',
+          leftLabel: 'Fout',
+          rightLabel: 'Goed',
           explanation: `Werkwoord: ${x.verb}.\n${x.explanation}`,
-          subText: `Werkwoord: ${x.verb}`
+          subText: `Werkwoord: ${x.verb}`,
         };
       }));
     }
     if (enabledModes.straattaal) {
-      selectedData.push(...straattaalData.map(x => ({
+      selectedData.push(...straattaalData.map((x) => ({
         text: x.word,
         isCorrect: x.isReal,
-        mode: 'STRAATTAAL',
-        leftLabel: 'VERZONNEN ✗',
-        rightLabel: 'ECHT ✓',
-        color: '#8B5CF6',
-        explanation: x.isReal ? `Bestaat echt! Betekenis:\n"${x.definition}"` : `AI-verzonnen! Zou betekenen:\n"${x.definition}"`,
-        subText: `"${x.definition}"`
+        mode: 'Straattaal',
+        leftLabel: 'Verzonnen',
+        rightLabel: 'Echt',
+        explanation: x.isReal
+          ? `Bestaat echt. Betekenis: "${x.definition}"`
+          : `Verzonnen door AI. Zou betekenen: "${x.definition}"`,
+        subText: `"${x.definition}"`,
       })));
     }
     if (enabledModes.dunglish) {
-      selectedData.push(...dunglishData.map(x => ({
+      selectedData.push(...dunglishData.map((x) => ({
         text: x.text,
         isCorrect: x.isRealProverb,
-        mode: 'DUNGLISH',
-        leftLabel: 'NEP ✗',
-        rightLabel: 'ECHT ✓',
-        color: '#EC4899',
-        explanation: x.isRealProverb ? x.explanation : `Geen echt spreekwoord!\n"${x.explanation}"`
+        mode: 'Dunglish',
+        leftLabel: 'Nep',
+        rightLabel: 'Echt',
+        explanation: x.isRealProverb ? x.explanation : `Geen echt spreekwoord. ${x.explanation}`,
       })));
     }
     if (enabledModes.vandale) {
-      selectedData.push(...vanDaleData.map(x => ({
+      selectedData.push(...vanDaleData.map((x) => ({
         text: x.word,
         isCorrect: x.inVanDale,
-        mode: 'VAN DALE',
-        leftLabel: 'ONZIN ✗',
-        rightLabel: 'VAN DALE ✓',
-        color: '#10B981',
-        explanation: x.inVanDale ? `Staat in de Dikke Van Dale!\n"${x.definition}"` : `Staat niet in de Dikke Van Dale.\n"${x.definition}"`,
-        subText: `"${x.definition}"`
+        mode: 'Van Dale',
+        leftLabel: 'Onzin',
+        rightLabel: 'Van Dale',
+        explanation: x.inVanDale
+          ? `Staat in de Dikke Van Dale. "${x.definition}"`
+          : `Staat niet in de Dikke Van Dale. "${x.definition}"`,
+        subText: `"${x.definition}"`,
       })));
     }
     if (enabledModes.brand) {
-      selectedData.push(...brandData.map(x => ({
+      selectedData.push(...brandData.map((x) => ({
         text: x.word,
         isCorrect: x.isBrand,
-        mode: 'MERKEN',
-        leftLabel: 'SOORT ✗',
-        rightLabel: 'MERK ✓',
-        color: '#EF4444',
-        explanation: x.explanation
+        mode: 'Merken',
+        leftLabel: 'Soortnaam',
+        rightLabel: 'Merknaam',
+        explanation: x.explanation,
       })));
     }
 
@@ -214,40 +210,39 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
     if (winner !== null) return;
     if (player === 1 && p1Penalty) return;
     if (player === 2 && p2Penalty) return;
-    
+
     const currentIndex = player === 1 ? p1Index : p2Index;
     const gameData = player === 1 ? p1Data : p2Data;
     if (gameData.length === 0) return;
     const item = gameData[currentIndex % gameData.length];
-    
+
     const isCorrect = item.isCorrect === answerIsRight;
-    
+
     if (isCorrect) {
       soundManager.playCorrect();
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       if (player === 1) {
-        setP1Score(s => s + 1);
-        setP1Index(i => i + 1);
+        setP1Score((s) => s + 1);
+        setP1Index((i) => i + 1);
       } else {
-        setP2Score(s => s + 1);
-        setP2Index(i => i + 1);
+        setP2Score((s) => s + 1);
+        setP2Index((i) => i + 1);
       }
     } else {
       soundManager.playIncorrect();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      
-      // Snappy penalty lockout
+
       if (player === 1) {
         setP1Penalty(true);
         setTimeout(() => {
           setP1Penalty(false);
-          setP1Index(i => i + 1);
+          setP1Index((i) => i + 1);
         }, PENALTY_MS);
       } else {
         setP2Penalty(true);
         setTimeout(() => {
           setP2Penalty(false);
-          setP2Index(i => i + 1);
+          setP2Index((i) => i + 1);
         }, PENALTY_MS);
       }
     }
@@ -255,20 +250,20 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!gameStarted || winner !== null) return;
-      
+
       const key = e.key.toLowerCase();
-      
+
       if (isLandscape) {
-        // Landscape: P2 is on Left (uses A/D), P1 is on Right (uses Arrows)
+        // Landscape: P2 is on the left (A/D), P1 is on the right (arrows)
         if (key === 'a') handleSwipe(2, false);
         if (key === 'd') handleSwipe(2, true);
         if (key === 'arrowleft') handleSwipe(1, false);
         if (key === 'arrowright') handleSwipe(1, true);
       } else {
-        // Portrait: P1 is Bottom (uses A/D), P2 is Top (rotated, uses Arrows)
+        // Portrait: P1 is at the bottom (A/D), P2 is on top and rotated (arrows)
         if (key === 'a') handleSwipe(1, false);
         if (key === 'd') handleSwipe(1, true);
         if (key === 'arrowright') handleSwipe(2, false);
@@ -300,46 +295,90 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 
     const renderCard = () => {
       if (winner !== null) {
+        const didWin = winner === player;
         return (
-          <Animated.View entering={ZoomIn} style={styles.winnerCard}>
-            <Text style={styles.winnerText}>
-              {winner === player ? '🏆 JIJ WINT!' : '💀 VERLOREN...'}
+          <Animated.View
+            entering={ZoomIn.duration(220)}
+            style={[
+              styles.statusCard,
+              {
+                backgroundColor: theme.surface,
+                borderColor: didWin ? theme.accent : theme.border,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.statusIcon,
+                { backgroundColor: didWin ? theme.accentSoft : theme.surfaceMuted },
+              ]}
+            >
+              <Ionicons
+                name={didWin ? 'trophy-outline' : 'flag-outline'}
+                size={20}
+                color={didWin ? theme.accent : theme.inkMuted}
+              />
+            </View>
+            <Text style={[styles.statusTitle, { color: theme.ink }]}>
+              {didWin ? `Speler ${player} wint` : `Speler ${player} verliest`}
+            </Text>
+            <Text style={[styles.statusBody, { color: theme.inkSecondary }]}>
+              {didWin ? 'Als eerste bij de vijftien punten.' : 'Goed gespeeld, maar net te laat.'}
             </Text>
           </Animated.View>
         );
       }
       if (isPenalty) {
         return (
-          <View style={styles.penaltyCard}>
-            <Text style={styles.penaltyHeader}>FOUT! ❌</Text>
-            <Text style={styles.penaltyWord}>{currentItem.text}</Text>
-            <Text style={styles.penaltyExplanation}>{currentItem.explanation}</Text>
-          </View>
+          <Animated.View
+            entering={FadeIn.duration(160)}
+            style={[
+              styles.penaltyCard,
+              { backgroundColor: theme.surface, borderColor: theme.incorrect },
+            ]}
+          >
+            <View style={[styles.penaltyHeaderRow]}>
+              <Ionicons name="close-circle-outline" size={16} color={theme.incorrect} />
+              <Text style={[styles.penaltyHeader, { color: theme.incorrect }]}>Onjuist</Text>
+            </View>
+            <Text style={[styles.penaltyWord, { color: theme.ink }]}>{currentItem.text}</Text>
+            <Text style={[styles.penaltyExplanation, { color: theme.inkSecondary }]}>
+              {currentItem.explanation}
+            </Text>
+          </Animated.View>
         );
       }
       return (
         <SwipeCard
           key={currentIndex}
-          active={true}
-          compact={true}
+          active
+          compact
           onSwipeLeft={() => handleSwipe(player, false)}
           onSwipeRight={() => handleSwipe(player, true)}
           leftLabel={currentItem.leftLabel}
           rightLabel={currentItem.rightLabel}
         >
           <View style={styles.cardHeader}>
-            <Text style={[styles.modeBadge, { color: currentItem.color, borderColor: currentItem.color }]}>
+            <Text style={[styles.modeBadge, { color: theme.inkSecondary, backgroundColor: theme.surfaceMuted }]}>
               {currentItem.mode}
             </Text>
           </View>
-          <Text style={[styles.word, { color: theme.cardTextPrimary }]} adjustsFontSizeToFit numberOfLines={2}>
+          <Text
+            style={[styles.word, { color: theme.cardTextPrimary }]}
+            adjustsFontSizeToFit
+            numberOfLines={2}
+          >
             {currentItem.text}
           </Text>
-          {showDefinitions && currentItem.subText && (
-            <Text style={[styles.cardSubText, { color: theme.cardTextSecondary }]} adjustsFontSizeToFit numberOfLines={2}>
+          {showDefinitions && currentItem.subText ? (
+            <Text
+              style={[styles.cardSubText, { color: theme.cardTextSecondary }]}
+              adjustsFontSizeToFit
+              numberOfLines={2}
+            >
               {currentItem.subText}
             </Text>
-          )}
+          ) : null}
         </SwipeCard>
       );
     };
@@ -347,12 +386,16 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
     return (
       <View style={[styles.playerArea, shouldRotate && styles.rotated]}>
         <View style={styles.scoreHeader}>
-          <Text style={styles.scoreText}>P{player}: {score}/{TARGET_SCORE}</Text>
+          <Text style={[styles.scoreText, { color: theme.inkSecondary }]}>
+            Speler {player}
+          </Text>
+          <Text style={[styles.scoreValue, { color: theme.ink }]}>
+            {score}
+            <Text style={{ color: theme.inkMuted }}> / {TARGET_SCORE}</Text>
+          </Text>
         </View>
-        
-        <View style={styles.cardContainer}>
-          {renderCard()}
-        </View>
+
+        <View style={styles.cardContainer}>{renderCard()}</View>
       </View>
     );
   };
@@ -361,13 +404,18 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   if (!gameStarted) {
     return (
       <GradientBackground>
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
           <PremiumTopBar title="Multiplayer" />
           <View style={styles.setupContainer}>
-            <View style={[styles.setupContent, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
-              <Text style={[styles.setupTitle, { color: theme.cardTextPrimary }]}>⚔️ Multiplayer Gevecht</Text>
-            <Text style={styles.setupSubtitle}>Kies de categorieën voor de strijd:</Text>
-            
+            <View style={styles.setupHeader}>
+              <Text style={[styles.setupTitle, { color: theme.ink }]}>
+                Speel samen op één scherm
+              </Text>
+              <Text style={[styles.setupSubtitle, { color: theme.inkSecondary }]}>
+                Kies de categorieën. Wie het eerst vijftien punten haalt, wint.
+              </Text>
+            </View>
+
             <View style={styles.setupList}>
               {MODES_CONFIG.map((m) => {
                 const isEnabled = enabledModes[m.key];
@@ -377,67 +425,71 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                     onPress={() => toggleMode(m.key)}
                     style={[
                       styles.setupItem,
-                      { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                      isEnabled && { borderColor: m.color, backgroundColor: 'rgba(255, 255, 255, 0.05)' }
+                      { backgroundColor: theme.surface, borderColor: theme.border },
                     ]}
                     focusable={false}
                   >
                     <View style={styles.setupItemLeft}>
-                      <Text style={styles.setupItemIcon}>{m.icon}</Text>
-                      <Text style={[styles.setupItemName, { color: theme.cardTextPrimary }]}>{m.name}</Text>
+                      <View style={[styles.setupIcon, { backgroundColor: theme.surfaceMuted }]}>
+                        <Ionicons name={m.icon} size={16} color={theme.inkSecondary} />
+                      </View>
+                      <Text style={[styles.setupItemName, { color: theme.ink }]}>{m.name}</Text>
                     </View>
-                    <View style={[
-                      styles.checkbox,
-                      { borderColor: theme.glass.border },
-                      isEnabled && { backgroundColor: m.color, borderColor: m.color }
-                    ]}>
-                      {isEnabled && <Ionicons name="checkmark" size={16} color="#FFF" />}
+                    <View
+                      style={[
+                        styles.checkbox,
+                        {
+                          borderColor: isEnabled ? theme.accent : theme.borderStrong,
+                          backgroundColor: isEnabled ? theme.accent : 'transparent',
+                        },
+                      ]}
+                    >
+                      {isEnabled ? (
+                        <Ionicons name="checkmark" size={13} color={theme.accentContrast} />
+                      ) : null}
                     </View>
                   </TouchableOpacity>
                 );
               })}
             </View>
 
-            {/* Option to show definitions */}
             <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setShowDefinitions(!showDefinitions);
               }}
-              style={[
-                styles.setupItem,
-                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border, width: '100%', marginBottom: 20 },
-                showDefinitions && { borderColor: theme.accent, backgroundColor: 'rgba(255, 255, 255, 0.05)' }
-              ]}
+              style={[styles.setupItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
               focusable={false}
             >
               <View style={styles.setupItemLeft}>
-                <Text style={styles.setupItemIcon}>💡</Text>
-                <Text style={[styles.setupItemName, { color: theme.cardTextPrimary }]}>Definities tonen</Text>
+                <View style={[styles.setupIcon, { backgroundColor: theme.surfaceMuted }]}>
+                  <Ionicons name="reader-outline" size={16} color={theme.inkSecondary} />
+                </View>
+                <Text style={[styles.setupItemName, { color: theme.ink }]}>Definities tonen</Text>
               </View>
-              <View style={[
-                styles.checkbox,
-                { borderColor: theme.glass.border },
-                showDefinitions && { backgroundColor: theme.accent, borderColor: theme.accent }
-              ]}>
-                {showDefinitions && <Ionicons name="checkmark" size={16} color="#FFF" />}
+              <View
+                style={[
+                  styles.checkbox,
+                  {
+                    borderColor: showDefinitions ? theme.accent : theme.borderStrong,
+                    backgroundColor: showDefinitions ? theme.accent : 'transparent',
+                  },
+                ]}
+              >
+                {showDefinitions ? (
+                  <Ionicons name="checkmark" size={13} color={theme.accentContrast} />
+                ) : null}
               </View>
             </TouchableOpacity>
+
+            <BouncyButton title="Start wedstrijd" onPress={handleStartGame} style={styles.startButton} />
 
             <BouncyButton
-              title="START GEVECHT ⚔️"
-              onPress={handleStartGame}
-              style={styles.startButton}
-            />
-
-            <TouchableOpacity 
-              style={[styles.backBtn, { marginTop: 16 }]} 
-              focusable={false}
+              title="Annuleren"
+              variant="quiet"
               onPress={() => navigation.goBack()}
-            >
-              <Text style={styles.backBtnText}>Annuleren</Text>
-            </TouchableOpacity>
-          </View>
+              style={styles.cancelButton}
+            />
           </View>
         </SafeAreaView>
       </GradientBackground>
@@ -447,23 +499,25 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
   // 2. ACTIVE GAMEPLAY STATE UI
   return (
     <GradientBackground>
-      {winner !== null && <ConfettiBurst count={150} origin={{x: -10, y: 0}} />}
-      <SafeAreaView style={[styles.container, isLandscape && styles.landscapeContainer]}>
+      <SafeAreaView style={[styles.container, isLandscape && styles.landscapeContainer]} edges={['top']}>
         {/* Player 2 Area (Top or Left) */}
         {renderPlayerArea(2)}
-        
+
         <View style={[styles.divider, isLandscape && styles.verticalDivider]}>
           {winner === null ? (
-            <TouchableOpacity style={styles.quitBtn} focusable={false} onPress={() => setGameStarted(false)}>
-              <Text style={styles.quitText}>STOP</Text>
+            <TouchableOpacity
+              style={[styles.quitButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              focusable={false}
+              onPress={() => setGameStarted(false)}
+            >
+              <Ionicons name="close" size={14} color={theme.inkSecondary} />
+              <Text style={[styles.quitText, { color: theme.inkSecondary }]}>Stop</Text>
             </TouchableOpacity>
           ) : (
-            <BouncyButton 
-              title="Terug ⚙️" 
-              color="#38BDF8" 
-              borderColor="#0284C7" 
-              bottomBorderColor="#0369A1" 
-              onPress={() => setGameStarted(false)} 
+            <BouncyButton
+              title="Terug naar setup"
+              variant="secondary"
+              onPress={() => setGameStarted(false)}
             />
           )}
         </View>
@@ -476,6 +530,9 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
@@ -495,14 +552,20 @@ const styles = StyleSheet.create({
   scoreHeader: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
     marginBottom: 8,
+    paddingHorizontal: 4,
   },
   scoreText: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    opacity: 0.8,
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+    letterSpacing: 0.1,
+  },
+  scoreValue: {
+    fontFamily: 'Inter_700Bold',
+    fontSize: 18,
+    fontVariant: ['tabular-nums'],
   },
   cardContainer: {
     width: '100%',
@@ -511,174 +574,184 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   modeBadge: {
-    fontFamily: 'Inter_800ExtraBold',
+    fontFamily: 'Inter_500Medium',
     fontSize: 11,
-    letterSpacing: 1,
-    borderWidth: 1.5,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    letterSpacing: 0.1,
+    borderRadius: RADIUS.pill,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    overflow: 'hidden',
   },
   word: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 28,
+    fontFamily: 'Inter_700Bold',
+    fontSize: 26,
+    letterSpacing: -0.6,
     textAlign: 'center',
   },
   cardSubText: {
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: 'Inter_400Regular',
     fontSize: 13,
     textAlign: 'center',
     marginTop: 8,
-    opacity: 0.8,
-    fontStyle: 'italic',
-    paddingHorizontal: 16,
+    lineHeight: 19,
+    paddingHorizontal: 12,
+  },
+  statusCard: {
+    width: '100%',
+    minHeight: 180,
+    borderRadius: RADIUS.card + 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    gap: 6,
+  },
+  statusIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  statusTitle: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  statusBody: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    textAlign: 'center',
   },
   penaltyCard: {
     width: '100%',
     minHeight: 180,
-    backgroundColor: '#EF4444',
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#B91C1C',
-    borderBottomWidth: 8,
+    borderRadius: RADIUS.card + 2,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 18,
+  },
+  penaltyHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
   },
   penaltyHeader: {
-    color: '#FFE4E6',
-    fontFamily: 'Inter_900Black',
-    fontSize: 18,
-    letterSpacing: 1,
-    marginBottom: 6,
-    textTransform: 'uppercase',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    letterSpacing: 0.4,
   },
   penaltyWord: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 22,
+    fontFamily: 'Inter_700Bold',
+    fontSize: 20,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   penaltyExplanation: {
-    color: '#FFE4E6',
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 14,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 13,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 19,
     paddingHorizontal: 8,
   },
-  winnerCard: {
-    width: '100%',
-    minHeight: 180,
-    backgroundColor: '#10B981',
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#059669',
-    borderBottomWidth: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  winnerText: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 32,
-  },
   divider: {
-    height: 80,
+    height: 44,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   verticalDivider: {
-    width: 80,
+    width: 44,
     height: '100%',
   },
-  quitBtn: {
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 20,
+  quitButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: RADIUS.pill,
+    borderWidth: 1,
   },
   quitText: {
-    color: '#FFF',
-    fontFamily: 'Inter_900Black',
-    fontSize: 16,
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
   },
-  // SETUP STYLES
   setupContainer: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+    paddingBottom: 24,
   },
-  setupContent: {
-    borderRadius: 32,
-    borderWidth: 1.5,
-    padding: 24,
-    alignItems: 'center',
+  setupHeader: {
+    marginBottom: 20,
+    gap: 6,
   },
   setupTitle: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 26,
-    marginBottom: 4,
-    textAlign: 'center',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 24,
+    letterSpacing: -0.6,
   },
   setupSubtitle: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginBottom: 24,
-    textAlign: 'center',
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 21,
   },
   setupList: {
     width: '100%',
-    gap: 12,
-    marginBottom: 28,
+    gap: 6,
+    marginBottom: 6,
   },
   setupItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 14,
-    borderRadius: 18,
-    borderWidth: 2,
+    padding: 11,
+    borderRadius: RADIUS.control,
+    borderWidth: 1,
+    width: '100%',
+    marginBottom: 6,
   },
   setupItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
   },
-  setupItemIcon: {
-    fontSize: 20,
+  setupIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: RADIUS.chip,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   setupItemName: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 15,
+    fontFamily: 'Inter_500Medium',
+    fontSize: 14,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 8,
-    borderWidth: 2,
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   startButton: {
     width: '100%',
-    paddingVertical: 16,
+    marginTop: 10,
   },
-  backBtn: {
-    paddingVertical: 10,
-  },
-  backBtnText: {
-    fontFamily: 'Inter_700Bold',
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 14,
+  cancelButton: {
+    width: '100%',
+    marginTop: 4,
   },
 });
