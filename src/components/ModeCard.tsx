@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleProp, StyleSheet, Text, View, Pressable, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme, RADIUS } from '../theme/colors';
-import Animated, { FadeIn } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
@@ -14,7 +13,6 @@ interface Props {
   readonly onPress: () => void;
   readonly style?: StyleProp<ViewStyle>;
   readonly wrapperStyle?: StyleProp<ViewStyle>;
-  readonly delay?: number;
   readonly compact?: boolean;
   readonly isSelected?: boolean;
   readonly meta?: string;
@@ -29,7 +27,6 @@ export const ModeCard = React.memo(function ModeCard({
   onPress,
   style,
   wrapperStyle,
-  delay = 0,
   compact = false,
   isSelected = false,
   meta,
@@ -39,10 +36,7 @@ export const ModeCard = React.memo(function ModeCard({
   const theme = useAppTheme();
 
   return (
-    <Animated.View
-      entering={FadeIn.delay(Math.min(delay, 220)).duration(260)}
-      style={wrapperStyle}
-    >
+    <View style={wrapperStyle}>
       <Pressable
         style={({ pressed }) => [
           styles.card,
@@ -108,7 +102,7 @@ export const ModeCard = React.memo(function ModeCard({
 
         <Ionicons name="chevron-forward" size={18} color={theme.inkMuted} />
       </Pressable>
-    </Animated.View>
+    </View>
   );
 });
 

@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, ScrollView, useWindowDimensions, Pressable, Ima
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useIsFocused } from '@react-navigation/native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientBackground } from '../components/GradientBackground';
 import { ModeCard } from '../components/ModeCard';
@@ -197,10 +196,7 @@ export function HomeScreen({ navigation }: Props) {
             contentContainerStyle={[styles.scrollContent, isDesktop && styles.scrollContentDesktop]}
             showsVerticalScrollIndicator={false}
           >
-            <Animated.View
-              entering={FadeInDown.duration(320)}
-              style={[styles.hero, isDesktop && styles.heroDesktop]}
-            >
+            <View style={[styles.hero, isDesktop && styles.heroDesktop]}>
               <View style={styles.heroCopy}>
                 <Text style={[styles.title, isDesktop && styles.titleDesktop, { color: theme.ink }]}>
                   Test je Nederlands.
@@ -254,7 +250,7 @@ export function HomeScreen({ navigation }: Props) {
                   </Text>
                 </View>
               ) : null}
-            </Animated.View>
+            </View>
 
             {isDesktop && stats ? (
               <View style={[styles.metricsStrip, { borderColor: theme.border, backgroundColor: theme.surface }]}>
@@ -302,7 +298,6 @@ export function HomeScreen({ navigation }: Props) {
                   title={mode.title}
                   description={mode.description}
                   meta={mode.meta}
-                  delay={index * 40}
                   onPress={() => openMode(mode.key)}
                   compact={isDesktop}
                   isSelected={selectedIndex === index}

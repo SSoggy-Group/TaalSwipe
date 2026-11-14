@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pressable, Platform, StyleSheet, Text, ViewStyle, TextStyle, StyleProp } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, createAnimatedComponent } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, createAnimatedComponent } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 import { useAppTheme, RADIUS } from '../theme/colors';
 
@@ -25,6 +25,8 @@ interface Props {
 }
 
 const AnimatedPressable = createAnimatedComponent(Pressable);
+const PRESS_SPRING = { damping: 20, stiffness: 320, mass: 0.6 };
+const RELEASE_SPRING = { damping: 18, stiffness: 260, mass: 0.7 };
 
 function readableOn(hex: string): string {
   const value = hex.replace('#', '');
@@ -62,13 +64,13 @@ export const BouncyButton = React.memo(function BouncyButton({
 
   const handlePressIn = () => {
     if (disabled) return;
-    scale.value = withTiming(0.985, { duration: 90 });
+    scale.value = withSpring(0.97, PRESS_SPRING);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const handlePressOut = () => {
     if (disabled) return;
-    scale.value = withTiming(1, { duration: 140 });
+    scale.value = withSpring(1, RELEASE_SPRING);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({

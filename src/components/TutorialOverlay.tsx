@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable, Modal, Platform } from 'react-native';
-import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAppTheme, RADIUS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { BouncyButton } from './BouncyButton';
@@ -97,12 +97,11 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
     >
       <View style={styles.container}>
         <Animated.View
-          entering={FadeIn.duration(200)}
+          entering={FadeIn.duration(160)}
           style={styles.innerContainer}
           pointerEvents="box-none"
         >
           <Animated.View
-            entering={ZoomIn.duration(220)}
             style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
           >
             <View style={styles.helperRow}>

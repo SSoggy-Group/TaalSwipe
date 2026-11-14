@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView, useWindowDimensio
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from '../platform/haptics';
-import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAppTheme, RADIUS } from '../theme/colors';
 import { soundManager } from '../audio/SoundManager';
 import { GradientBackground } from '../components/GradientBackground';
@@ -298,7 +298,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
         const didWin = winner === player;
         return (
           <Animated.View
-            entering={ZoomIn.duration(220)}
+            entering={FadeIn.duration(160)}
             style={[
               styles.statusCard,
               {

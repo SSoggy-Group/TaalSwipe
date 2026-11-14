@@ -243,7 +243,7 @@ function getDunglishFeedback(d: DunglishItem) {
 
 function getSpellingFeedback(sp: SpellingItem) {
   return {
-    title: sp.isCorrect ? 'Goed' : 'Fout',
+    title: sp.isCorrect ? 'Goed' : 'Juiste spelling',
     message: sp.isCorrect
       ? `"${sp.text}" is goed gespeld.`
       : `"${sp.text}" moet zijn: ${sp.correction}`,
@@ -751,7 +751,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     <GradientBackground>
       <SafeAreaView style={[styles.safeArea, isDesktop && styles.desktopGameShell]} edges={['top']}>
         {hardcoreMode && (
-          <Animated.View entering={FadeInDown} style={styles.heartsContainer}>
+          <View style={styles.heartsContainer}>
             {HEART_KEYS.map((key, i) => (
               <Ionicons
                 key={key}
@@ -760,7 +760,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
                 color={i < lives ? theme.incorrect : theme.inkMuted}
               />
             ))}
-          </Animated.View>
+          </View>
         )}
 
         <View style={[styles.headerContainer, isDesktop && styles.desktopHeaderContainer]}>
@@ -921,10 +921,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
         {/* Swipe actions */}
         {!gameOver && currentItem && !showTutorial && !feedbackInfo && (
-          <Animated.View
-            entering={FadeInDown.delay(120).duration(260)}
-            style={[styles.actionRow, isDesktop && styles.desktopActionRow]}
-          >
+          <View style={[styles.actionRow, isDesktop && styles.desktopActionRow]}>
             <Pressable
               onPress={handleSwipeLeft}
               style={({ pressed }) => [
@@ -972,7 +969,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
                 color={theme.isDark ? '#0F1012' : '#FFFFFF'}
               />
             </Pressable>
-          </Animated.View>
+          </View>
         )}
       </SafeAreaView>
 
@@ -980,7 +977,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
       {feedbackInfo && (
         <Animated.View
-          entering={SlideInDown.duration(240)}
+          entering={SlideInDown.springify().damping(24).stiffness(260)}
           exiting={SlideOutDown.duration(180)}
           style={[
             styles.feedbackPanel,
@@ -1019,8 +1016,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
       {showShieldAlert && (
         <Animated.View
-          entering={FadeInDown.duration(240)}
-          exiting={FadeOut.duration(200)}
+          entering={FadeInDown.duration(180)}
+          exiting={FadeOut.duration(140)}
           style={styles.toastContainer}
         >
           <View style={[styles.toast, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -1034,8 +1031,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
       {showTimeSlowAlert && (
         <Animated.View
-          entering={FadeInDown.duration(240)}
-          exiting={FadeOut.duration(200)}
+          entering={FadeInDown.duration(180)}
+          exiting={FadeOut.duration(140)}
           style={styles.toastContainer}
         >
           <View style={[styles.toast, { backgroundColor: theme.surface, borderColor: theme.border }]}>

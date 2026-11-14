@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
+  Easing,
   interpolate,
   Extrapolation,
   runOnJS,
@@ -18,9 +19,9 @@ import { useSettingsStore } from '../store/settingsStore';
 const SWIPE_THRESHOLD = 120;
 
 const SPRING_CONFIG = {
-  damping: 20,
-  stiffness: 220,
-  mass: 0.7,
+  damping: 22,
+  stiffness: 260,
+  mass: 0.8,
 };
 
 interface SwipeCardProps {
@@ -100,21 +101,35 @@ export const SwipeCard = React.memo(function SwipeCard({
     })
     .onEnd((event) => {
       if (event.translationX > SWIPE_THRESHOLD) {
-        translateX.value = withTiming(currentWidth * 1.5, { duration: 280 }, (finished) => {
-          if (finished) {
-            runOnJS(onSwipeRight)();
-          }
+        translateX.value = withTiming(
+          currentWidth * 1.5,
+          { duration: 220, easing: Easing.out(Easing.cubic) },
+          (finished) => {
+            if (finished) {
+              runOnJS(onSwipeRight)();
+            }
+          },
+        );
+        translateY.value = withTiming(event.translationY * 0.8, {
+          duration: 220,
+          easing: Easing.out(Easing.cubic),
         });
-        translateY.value = withTiming(event.translationY * 0.8, { duration: 280 });
         runOnJS(playSwooshSound)();
         runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       } else if (event.translationX < -SWIPE_THRESHOLD) {
-        translateX.value = withTiming(-currentWidth * 1.5, { duration: 280 }, (finished) => {
-          if (finished) {
-            runOnJS(onSwipeLeft)();
-          }
+        translateX.value = withTiming(
+          -currentWidth * 1.5,
+          { duration: 220, easing: Easing.out(Easing.cubic) },
+          (finished) => {
+            if (finished) {
+              runOnJS(onSwipeLeft)();
+            }
+          },
+        );
+        translateY.value = withTiming(event.translationY * 0.8, {
+          duration: 220,
+          easing: Easing.out(Easing.cubic),
         });
-        translateY.value = withTiming(event.translationY * 0.8, { duration: 280 });
         runOnJS(playSwooshSound)();
         runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
       } else {

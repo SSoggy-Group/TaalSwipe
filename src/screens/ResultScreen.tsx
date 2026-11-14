@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Share, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
 import { BouncyButton } from '../components/BouncyButton';
 import { PremiumTopBar } from '../components/PremiumTopBar';
@@ -95,8 +94,7 @@ export function ResultScreen({ route, navigation }: Props) {
   };
 
   const renderHistoryItem = ({ item, index }: { item: NonNullable<typeof history>[0]; index: number }) => (
-    <Animated.View
-      entering={FadeInDown.delay(150 + index * 30).duration(240)}
+    <View
       style={[styles.historyItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
     >
       <View style={styles.historyHeader}>
@@ -117,7 +115,7 @@ export function ResultScreen({ route, navigation }: Props) {
       <Text style={[styles.historyExplanation, { color: theme.inkSecondary }]}>
         {item.explanation}
       </Text>
-    </Animated.View>
+    </View>
   );
 
   return (
@@ -131,7 +129,7 @@ export function ResultScreen({ route, navigation }: Props) {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
-            <Animated.View entering={FadeInDown.duration(280)}>
+            <View>
               <View
                 style={[
                   styles.scoreCard,
@@ -185,11 +183,11 @@ export function ResultScreen({ route, navigation }: Props) {
               {history && history.length > 0 ? (
                 <Text style={[styles.sectionTitle, { color: theme.ink }]}>Antwoorden</Text>
               ) : null}
-            </Animated.View>
+            </View>
           }
           renderItem={renderHistoryItem}
           ListFooterComponent={
-            <Animated.View entering={FadeInDown.delay(200).duration(240)} style={styles.buttonContainer}>
+            <View style={styles.buttonContainer}>
               <BouncyButton
                 title="Nog een keer"
                 onPress={() => navigation.navigate('Game', { mode: rawMode || 'spelling' } as any)}
@@ -206,7 +204,7 @@ export function ResultScreen({ route, navigation }: Props) {
                 variant="quiet"
                 onPress={() => navigation.navigate('Home')}
               />
-            </Animated.View>
+            </View>
           }
         />
       </SafeAreaView>

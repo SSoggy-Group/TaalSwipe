@@ -19,7 +19,7 @@ export function ScoreBar({ score, currentIndex, maxTotal, combo, mode }: ScoreBa
 
   React.useEffect(() => {
     progressWidth.value = withTiming(progressPercent * 100, {
-      duration: 320,
+      duration: 220,
       easing: Easing.out(Easing.cubic),
     });
   }, [progressPercent]);

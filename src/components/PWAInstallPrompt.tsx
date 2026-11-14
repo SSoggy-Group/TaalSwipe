@@ -30,14 +30,15 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }:
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 260,
+          duration: 200,
           easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
-        Animated.timing(slideAnim, {
+        Animated.spring(slideAnim, {
           toValue: 0,
-          duration: 300,
-          easing: Easing.out(Easing.cubic),
+          damping: 22,
+          stiffness: 240,
+          mass: 0.8,
           useNativeDriver: true,
         }),
       ]).start();
@@ -52,8 +53,8 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }:
 
   const dismiss = () => {
     Animated.parallel([
-      Animated.timing(fadeAnim, { toValue: 0, duration: 160, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 16, duration: 160, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 0, duration: 140, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 16, duration: 140, useNativeDriver: true }),
     ]).start(({ finished }) => {
       if (!finished) return;
       setShowPrompt(false);
