@@ -1,8 +1,8 @@
-# TaalSwipe
-
 <p align="center">
-  <img src="assets/thumbnail.png" alt="TaalSwipe Banner" width="100%" />
+  <img src="assets/logo.png" alt="TaalSwipe logo" width="140" />
 </p>
+
+# TaalSwipe
 
 TaalSwipe is a Tinder-like swipe game to test your knowledge of Dutch spelling, slang, and weird language facts. You get a flashcard with a word or sentence, and you have to swipe left or right before the panic timer runs out. 
 
