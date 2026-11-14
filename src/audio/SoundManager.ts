@@ -35,6 +35,7 @@ const SOUND_FILES: Record<string, any> = {
 
 class SoundManager {
   private players: Record<string, AudioPlayer> = {};
+  private lastPlayedAt: Record<string, number> = {};
   private initialized = false;
 
   async init() {
@@ -58,8 +59,12 @@ class SoundManager {
     }
   }
 
-  private play(key: string, rate: number = 1) {
+  private play(key: string, rate: number = 1, minInterval: number = 0, restartIfPlaying: boolean = true) {
     if (!useSettingsStore.getState().isSoundEnabled) return;
+
+    const now = Date.now();
+    if (minInterval > 0 && now - (this.lastPlayedAt[key] ?? 0) < minInterval) return;
+
     let player = this.players[key];
     if (!player) {
       let fallbackKey = '';
@@ -76,6 +81,9 @@ class SoundManager {
       console.warn(`[SoundManager] Player "${key}" not loaded`);
       return;
     }
+    if (!restartIfPlaying && player.playing) return;
+    this.lastPlayedAt[key] = now;
+
     try {
       player.setPlaybackRate(rate);
       player.seekTo(0);
@@ -93,13 +101,14 @@ class SoundManager {
   
   playCorrect(combo: number = 0) {
     const rate = Math.min(1 + (combo * 0.05), 1.6);
-    this.play('correct', rate);
+    this.play('correct', rate, 100);
   }
 
   playIncorrect() {
     const id = useSettingsStore.getState().incorrectSoundId || 'default';
     const key = id === 'default' ? 'incorrect' : `incorrect_${id}`;
-    this.play(key);
+    // Never retrigger the wrong cue while it is still playing.
+    this.play(key, 1, 200, false);
   }
 
   playGameOver() {
@@ -113,7 +122,7 @@ class SoundManager {
 
   testIncorrect(id: string) {
     const key = id === 'default' ? 'incorrect' : `incorrect_${id}`;
-    this.play(key);
+    this.play(key, 1, 150, false);
   }
 
   testGameOver(id: string) {
@@ -135,6 +144,7 @@ class SoundManager {
       }
     }
     this.players = {};
+    this.lastPlayedAt = {};
     this.initialized = false;
   }
 }

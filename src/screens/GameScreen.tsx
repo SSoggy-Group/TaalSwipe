@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Pressable, StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
@@ -493,10 +493,18 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     }
   }, [stats, advanceGame, survivalMode, mode, showFeedback, hardcoreMode, updateStats]);
 
+  const lastAnswerAtRef = useRef(0);
+  const lastContinueAtRef = useRef(0);
+
   const handleAnswer = useCallback((swipedRight: boolean) => {
-    if (gameOver) return;
+    // Block answers while feedback, a pause, or the tutorial is open, and
+    // collapse rapid duplicate inputs (key repeat, double taps) into one.
+    if (gameOver || isPaused || showTutorial || feedbackInfo) return;
+    if (Date.now() - lastAnswerAtRef.current < 180) return;
+
     const item = data[currentIndex];
     if (!item) return;
+    lastAnswerAtRef.current = Date.now();
 
     const correct = checkIsCorrect(item, mode, swipedRight);
     const { wordText, explanationText } = getItemDetails(item, mode);
@@ -512,7 +520,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     } else {
       handleIncorrectAnswer(item);
     }
-  }, [currentIndex, data, gameOver, mode, handleCorrectAnswer, handleIncorrectAnswer]);
+  }, [currentIndex, data, gameOver, isPaused, showTutorial, feedbackInfo, mode, handleCorrectAnswer, handleIncorrectAnswer]);
 
   const handleSwipeRight = useCallback(() => handleAnswer(true), [handleAnswer]);
   const handleSwipeLeft = useCallback(() => handleAnswer(false), [handleAnswer]);
@@ -602,14 +610,22 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     }
   };
   
+  const handleContinue = useCallback(() => {
+    if (!feedbackInfo) return;
+    if (Date.now() - lastContinueAtRef.current < 250) return;
+    lastContinueAtRef.current = Date.now();
+    setFeedbackInfo(null);
+    advanceGame(false);
+  }, [feedbackInfo, advanceGame]);
+
   // Custom keyboard handlers for game (must be after handler definitions)
   const keyboardHandlers = React.useMemo(() => ({
     ArrowLeft: handleSwipeLeft,
     ArrowRight: handleSwipeRight,
     Escape: handleClose,
-    Enter: () => { if (feedbackInfo) setFeedbackInfo(null); },
-    ' ': () => { if (feedbackInfo) setFeedbackInfo(null); },
-  }), [handleSwipeLeft, handleSwipeRight, handleClose, feedbackInfo]);
+    Enter: handleContinue,
+    ' ': handleContinue,
+  }), [handleSwipeLeft, handleSwipeRight, handleClose, handleContinue]);
   
   useKeyboardNavigation(!gameOver && !isPaused && !showTutorial, keyboardHandlers);
 
@@ -787,7 +803,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
               key={currentIndex}
               onSwipeRight={handleSwipeRight}
               onSwipeLeft={handleSwipeLeft}
-              active={!gameOver}
+              active={!gameOver && !isPaused && !showTutorial && !feedbackInfo}
               leftLabel={leftLabel}
               rightLabel={rightLabel}
               combo={combo}
@@ -956,10 +972,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
           <BouncyButton
             title={gameOver ? 'Bekijk resultaten' : 'Doorgaan'}
-            onPress={() => {
-              setFeedbackInfo(null);
-              advanceGame(false);
-            }}
+            onPress={handleContinue}
             style={styles.continueButton}
           />
         </Animated.View>
