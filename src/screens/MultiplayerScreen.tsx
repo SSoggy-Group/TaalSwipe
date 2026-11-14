@@ -416,6 +416,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               </Text>
             </View>
 
+            <View style={[styles.setupGroup, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <View style={styles.setupList}>
               {MODES_CONFIG.map((m) => {
                 const isEnabled = enabledModes[m.key];
@@ -426,10 +427,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                     accessibilityRole="checkbox"
                     accessibilityState={{ checked: isEnabled }}
                     accessibilityLabel={m.name}
-                    style={[
-                      styles.setupItem,
-                      { backgroundColor: theme.surface, borderColor: theme.border },
-                    ]}
+                    style={[styles.setupItem, { borderBottomColor: theme.border }]}
                     focusable={false}
                   >
                     <View style={styles.setupItemLeft}>
@@ -464,7 +462,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               accessibilityRole="checkbox"
               accessibilityState={{ checked: showDefinitions }}
               accessibilityLabel="Definities tonen"
-              style={[styles.setupItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              style={[styles.setupItem, styles.setupItemLast]}
               focusable={false}
             >
               <View style={styles.setupItemLeft}>
@@ -487,6 +485,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                 ) : null}
               </View>
             </TouchableOpacity>
+            </View>
 
             <BouncyButton title="Start wedstrijd" onPress={handleStartGame} style={styles.startButton} />
 
@@ -732,20 +731,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
   },
+  setupGroup: {
+    borderRadius: RADIUS.card,
+    borderWidth: 1,
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
   setupList: {
     width: '100%',
-    gap: 6,
-    marginBottom: 6,
   },
   setupItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 11,
-    borderRadius: RADIUS.control,
-    borderWidth: 1,
+    padding: 12,
     width: '100%',
-    marginBottom: 6,
+    borderBottomWidth: 1,
+  },
+  setupItemLast: {
+    borderBottomWidth: 0,
   },
   setupItemLeft: {
     flexDirection: 'row',

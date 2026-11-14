@@ -20,16 +20,23 @@ function SettingRow({
   title,
   description,
   control,
+  last = false,
 }: {
   icon: IconName;
   title: string;
   description?: string;
   control: React.ReactNode;
+  last?: boolean;
 }) {
   const theme = useAppTheme();
 
   return (
-    <View style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+    <View
+      style={[
+        styles.settingRow,
+        !last && { borderBottomWidth: 1, borderBottomColor: theme.border },
+      ]}
+    >
       <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
         <Ionicons name={icon} size={17} color={theme.inkSecondary} />
       </View>
@@ -111,7 +118,9 @@ export function SettingsScreen({ navigation }: Props) {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsList}>
             <Text style={[styles.sectionLabel, { color: theme.inkMuted }]}>Weergave</Text>
 
+            <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <SettingRow
+              last
               icon="contrast-outline"
               title="Thema"
               description="Volg je systeem of kies handmatig."
@@ -152,10 +161,13 @@ export function SettingsScreen({ navigation }: Props) {
                 </View>
               }
             />
+            </View>
 
             <Text style={[styles.sectionLabel, { color: theme.inkMuted }]}>Geluid</Text>
 
+            <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <SettingRow
+              last
               icon="volume-medium-outline"
               title="Geluidseffecten"
               description="Feedback bij antwoorden en swipes."
@@ -169,9 +181,11 @@ export function SettingsScreen({ navigation }: Props) {
                 />
               }
             />
+            </View>
 
             <Text style={[styles.sectionLabel, { color: theme.inkMuted }]}>Spelmodi</Text>
 
+            <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <SettingRow
               icon="heart-outline"
               title="Hardcore"
@@ -206,6 +220,7 @@ export function SettingsScreen({ navigation }: Props) {
             />
 
             <SettingRow
+              last
               icon="flash-outline"
               title="Speedrun"
               description="Vijftig woorden, tijd loopt mee."
@@ -222,12 +237,14 @@ export function SettingsScreen({ navigation }: Props) {
                 />
               }
             />
+            </View>
 
             <Text style={[styles.sectionLabel, { color: theme.inkMuted }]}>Overig</Text>
 
+            <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <TouchableOpacity
               onPress={handleResetTutorials}
-              style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              style={styles.settingRow}
               accessibilityRole="button"
               accessibilityLabel="Tutorials herstellen"
             >
@@ -242,6 +259,7 @@ export function SettingsScreen({ navigation }: Props) {
               </View>
               <Ionicons name="chevron-forward" size={17} color={theme.inkMuted} />
             </TouchableOpacity>
+            </View>
 
             <Text style={[styles.footer, { color: theme.inkMuted }]}>TaalSwipe</Text>
           </ScrollView>
@@ -280,12 +298,15 @@ const styles = StyleSheet.create({
     marginTop: 14,
     marginBottom: 2,
   },
+  group: {
+    borderRadius: RADIUS.card,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    borderRadius: RADIUS.card,
-    borderWidth: 1,
     gap: 12,
   },
   iconTile: {

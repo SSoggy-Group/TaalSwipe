@@ -196,7 +196,20 @@ export function ShopScreen({ navigation }: Props) {
   });
 
   const getItemState = (item: ShopItem) => {
-    if (!stats) return { buttonTitle: '', buttonVariant: 'primary' as const, badge: '', disabled: false, equipped: false };
+    if (!stats) {
+      return {
+        buttonTitle: '',
+        buttonVariant: 'primary' as const,
+        badge: '',
+        status: '',
+        disabled: false,
+        equipped: false,
+      };
+    }
+
+    const priceLabel = stats.xp >= item.price
+      ? `${item.price} XP`
+      : `Nog ${item.price - stats.xp} XP`;
 
     if (item.type === 'background' || item.type === 'card') {
       const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
@@ -205,43 +218,64 @@ export function ShopScreen({ navigation }: Props) {
         : equippedCard === item.id;
 
       if (isEquipped) {
-        return { buttonTitle: 'In gebruik', buttonVariant: 'secondary' as const, badge: 'Actief', disabled: true, equipped: true };
+        return {
+          buttonTitle: '',
+          buttonVariant: 'secondary' as const,
+          badge: '',
+          status: 'In gebruik',
+          disabled: true,
+          equipped: true,
+        };
       }
       if (isUnlocked) {
-        return { buttonTitle: 'Gebruiken', buttonVariant: 'secondary' as const, badge: 'Ontgrendeld', disabled: false, equipped: false };
+        return {
+          buttonTitle: 'Gebruiken',
+          buttonVariant: 'secondary' as const,
+          badge: '',
+          status: '',
+          disabled: false,
+          equipped: false,
+        };
       }
-      const canAfford = stats.xp >= item.price;
       return {
-        buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
+        buttonTitle: priceLabel,
         buttonVariant: 'primary' as const,
         badge: '',
-        disabled: !canAfford,
+        status: '',
+        disabled: stats.xp < item.price,
         equipped: false,
       };
     }
 
     if (item.type === 'powerup') {
       const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
-      const canAfford = stats.xp >= item.price;
       return {
-        buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
+        buttonTitle: priceLabel,
         buttonVariant: 'primary' as const,
-        badge: `In bezit: ${stats[statsKey] || 0}`,
-        disabled: !canAfford,
+        badge: `${stats[statsKey] || 0} in bezit`,
+        status: '',
+        disabled: stats.xp < item.price,
         equipped: false,
       };
     }
 
     const targetMultiplier = item.multiplier || 1;
     if (stats.xpMultiplier >= targetMultiplier) {
-      return { buttonTitle: 'Gekocht', buttonVariant: 'secondary' as const, badge: 'Actief', disabled: true, equipped: false };
+      return {
+        buttonTitle: '',
+        buttonVariant: 'secondary' as const,
+        badge: '',
+        status: 'Actief',
+        disabled: true,
+        equipped: false,
+      };
     }
-    const canAfford = stats.xp >= item.price;
     return {
-      buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
+      buttonTitle: priceLabel,
       buttonVariant: 'primary' as const,
       badge: '',
-      disabled: !canAfford,
+      status: '',
+      disabled: stats.xp < item.price,
       equipped: false,
     };
   };
@@ -291,52 +325,66 @@ export function ShopScreen({ navigation }: Props) {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.shopListContent}
           >
-            {stats && filteredItems.map((item) => {
-              const state = getItemState(item);
-              return (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.shopItem,
-                    {
-                      backgroundColor: theme.surface,
-                      borderColor: state.equipped ? theme.accent : theme.border,
-                    },
-                  ]}
-                >
-                  <View style={styles.itemTopRow}>
-                    <View style={[styles.iconWrapper, { backgroundColor: theme.surfaceMuted }]}>
-                      <Ionicons name={item.icon} size={19} color={theme.accent} />
-                    </View>
+            {stats ? (
+              <View style={[styles.shopGroup, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                {filteredItems.map((item, index) => {
+                  const state = getItemState(item);
+                  return (
+                    <React.Fragment key={item.id}>
+                      {index > 0 ? (
+                        <View style={[styles.rowDivider, { backgroundColor: theme.border }]} />
+                      ) : null}
+                      <View
+                        style={[
+                          styles.shopRow,
+                          state.equipped && { backgroundColor: theme.accentSoft },
+                        ]}
+                      >
+                        <View style={[styles.iconWrapper, { backgroundColor: theme.surfaceMuted }]}>
+                          <Ionicons name={item.icon} size={18} color={theme.accent} />
+                        </View>
 
-                    <View style={styles.textWrapper}>
-                      <View style={styles.itemTitleRow}>
-                        <Text style={[styles.itemName, { color: theme.ink }]} numberOfLines={1}>
-                          {item.name}
-                        </Text>
-                        {state.badge ? (
-                          <Text style={[styles.itemBadge, { color: theme.inkSecondary }]}>
-                            {state.badge}
+                        <View style={styles.textWrapper}>
+                          <Text style={[styles.itemName, { color: theme.ink }]} numberOfLines={1}>
+                            {item.name}
                           </Text>
-                        ) : null}
-                      </View>
-                      <Text style={[styles.itemDescription, { color: theme.inkSecondary }]}>
-                        {item.description}
-                      </Text>
-                    </View>
-                  </View>
+                          <Text
+                            style={[styles.itemDescription, { color: theme.inkSecondary }]}
+                            numberOfLines={2}
+                          >
+                            {item.description}
+                          </Text>
+                          {state.badge ? (
+                            <Text style={[styles.itemBadge, { color: theme.inkMuted }]}>
+                              {state.badge}
+                            </Text>
+                          ) : null}
+                        </View>
 
-                  <BouncyButton
-                    title={state.buttonTitle}
-                    variant={state.buttonVariant}
-                    disabled={state.disabled}
-                    onPress={() => handleAction(item)}
-                    style={styles.itemButton}
-                    accessibilityLabel={`${item.name}: ${state.buttonTitle}`}
-                  />
-                </View>
-              );
-            })}
+                        {state.status ? (
+                          <View style={[styles.statusPill, { backgroundColor: theme.surfaceMuted }]}>
+                            <Ionicons name="checkmark" size={12} color={theme.accent} />
+                            <Text style={[styles.statusText, { color: theme.inkSecondary }]}>
+                              {state.status}
+                            </Text>
+                          </View>
+                        ) : (
+                          <BouncyButton
+                            title={state.buttonTitle}
+                            variant={state.buttonVariant}
+                            disabled={state.disabled}
+                            onPress={() => handleAction(item)}
+                            style={styles.rowButton}
+                            textStyle={styles.rowButtonText}
+                            accessibilityLabel={`${item.name}: ${state.buttonTitle}`}
+                          />
+                        )}
+                      </View>
+                    </React.Fragment>
+                  );
+                })}
+              </View>
+            ) : null}
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -402,20 +450,25 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     gap: 10,
   },
-  shopItem: {
-    padding: 14,
+  shopGroup: {
     borderRadius: RADIUS.card,
     borderWidth: 1,
+    overflow: 'hidden',
+  },
+  shopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     gap: 12,
   },
-  itemTopRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
+  rowDivider: {
+    height: 1,
+    marginLeft: 60,
   },
   iconWrapper: {
-    width: 38,
-    height: 38,
+    width: 34,
+    height: 34,
     borderRadius: RADIUS.control,
     justifyContent: 'center',
     alignItems: 'center',
@@ -424,29 +477,40 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 2,
   },
-  itemTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
   itemName: {
     fontFamily: 'Inter_600SemiBold',
     fontSize: 15,
-    flexShrink: 1,
   },
   itemBadge: {
     fontFamily: 'Inter_500Medium',
-    fontSize: 10,
-    letterSpacing: 0.2,
+    fontSize: 11,
+    marginTop: 2,
   },
   itemDescription: {
     fontFamily: 'Inter_400Regular',
     fontSize: 12,
-    lineHeight: 17,
+    lineHeight: 16,
   },
-  itemButton: {
-    paddingVertical: 10,
-    minHeight: 40,
+  statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: RADIUS.pill,
+  },
+  statusText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+  },
+  rowButton: {
+    minHeight: 36,
+    minWidth: 86,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.chip,
+  },
+  rowButtonText: {
+    fontSize: 12,
   },
 });

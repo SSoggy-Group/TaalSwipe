@@ -286,7 +286,16 @@ export function HomeScreen({ navigation }: Props) {
               <Text style={[styles.sectionHint, { color: theme.inkMuted }]}>{MODES.length} modi</Text>
             </View>
 
-            <View style={[styles.modeList, isDesktop && styles.modeGrid]}>
+            <View
+              style={[
+                styles.modeList,
+                isDesktop && styles.modeGrid,
+                !isDesktop && [
+                  styles.modeGroup,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ],
+              ]}
+            >
               {MODES.map((mode, index) => (
                 <ModeCard
                   key={mode.key}
@@ -298,6 +307,8 @@ export function HomeScreen({ navigation }: Props) {
                   onPress={() => openMode(mode.key)}
                   compact={isDesktop}
                   isSelected={selectedIndex === index}
+                  grouped={!isDesktop}
+                  isLast={index === MODES.length - 1}
                   wrapperStyle={
                     isDesktop
                       ? index === 0
@@ -516,6 +527,12 @@ const styles = StyleSheet.create({
   },
   modeList: {
     gap: 8,
+  },
+  modeGroup: {
+    borderRadius: RADIUS.card,
+    borderWidth: 1,
+    overflow: 'hidden',
+    gap: 0,
   },
   modeGrid: {
     flexDirection: 'row',

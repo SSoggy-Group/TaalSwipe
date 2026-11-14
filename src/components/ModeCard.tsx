@@ -18,6 +18,8 @@ interface Props {
   readonly compact?: boolean;
   readonly isSelected?: boolean;
   readonly meta?: string;
+  readonly grouped?: boolean;
+  readonly isLast?: boolean;
 }
 
 export const ModeCard = React.memo(function ModeCard({
@@ -31,6 +33,8 @@ export const ModeCard = React.memo(function ModeCard({
   compact = false,
   isSelected = false,
   meta,
+  grouped = false,
+  isLast = false,
 }: Props) {
   const theme = useAppTheme();
 
@@ -43,11 +47,23 @@ export const ModeCard = React.memo(function ModeCard({
         style={({ pressed }) => [
           styles.card,
           compact && styles.compactCard,
+          grouped && styles.groupedCard,
           {
-            backgroundColor: pressed ? theme.surfaceMuted : theme.surface,
-            borderColor: isSelected ? theme.accent : theme.border,
-            borderWidth: isSelected ? 1.5 : 1,
+            backgroundColor: pressed
+              ? theme.surfaceMuted
+              : grouped
+                ? isSelected
+                  ? theme.accentSoft
+                  : 'transparent'
+                : theme.surface,
+            borderColor: grouped
+              ? 'transparent'
+              : isSelected
+                ? theme.accent
+                : theme.border,
+            borderWidth: grouped ? 0 : isSelected ? 1.5 : 1,
           },
+          grouped && !isLast && { borderBottomWidth: 1, borderBottomColor: theme.border },
           style,
         ]}
         onPress={() => {
@@ -108,6 +124,10 @@ const styles = StyleSheet.create({
   compactCard: {
     minHeight: 96,
     alignItems: 'flex-start',
+    paddingVertical: 14,
+  },
+  groupedCard: {
+    borderRadius: 0,
     paddingVertical: 14,
   },
   iconTile: {

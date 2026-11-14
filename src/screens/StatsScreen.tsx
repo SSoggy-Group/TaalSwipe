@@ -108,14 +108,6 @@ export function StatsScreen({ navigation, route }: Props) {
     setAlertVisible(true);
   };
 
-  const renderStatCard = (icon: IconName, value: string | number, label: string) => (
-    <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-      <Ionicons name={icon} size={16} color={theme.inkMuted} />
-      <Text style={[styles.statValue, { color: theme.ink }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.inkSecondary }]}>{label}</Text>
-    </View>
-  );
-
   const renderStatsTab = () => (
     <View style={styles.tabContent}>
       <View style={[styles.profileCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -145,21 +137,31 @@ export function StatsScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <View style={styles.statsGrid}>
-        {renderStatCard('swap-horizontal-outline', stats.totalSwipes, 'Swipes')}
-        {renderStatCard('flame-outline', stats.highestCombo, 'Beste reeks')}
-      </View>
-      <View style={styles.statsGrid}>
-        {renderStatCard('calendar-outline', stats.currentStreak, 'Huidige streak')}
-        {renderStatCard('trending-up-outline', stats.bestStreak, 'Beste streak')}
-      </View>
-      <View style={styles.statsGrid}>
-        {renderStatCard('checkmark-circle-outline', stats.totalCorrect ?? 0, 'Goed')}
-        {renderStatCard('close-circle-outline', stats.totalWrong ?? 0, 'Fout')}
-      </View>
-      <View style={styles.statsGrid}>
-        {renderStatCard('locate-outline', `${accuracy}%`, 'Nauwkeurigheid')}
-        {renderStatCard('game-controller-outline', stats.sessionsPlayed ?? 0, 'Sessies')}
+      <Text style={[styles.sectionTitle, { color: theme.ink }]}>Overzicht</Text>
+      <View style={[styles.statsPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        {[
+          { icon: 'swap-horizontal-outline' as IconName, value: stats.totalSwipes, label: 'Swipes' },
+          { icon: 'flame-outline' as IconName, value: stats.highestCombo, label: 'Beste reeks' },
+          { icon: 'calendar-outline' as IconName, value: stats.currentStreak, label: 'Huidige streak' },
+          { icon: 'trending-up-outline' as IconName, value: stats.bestStreak, label: 'Beste streak' },
+          { icon: 'checkmark-circle-outline' as IconName, value: stats.totalCorrect ?? 0, label: 'Goed' },
+          { icon: 'close-circle-outline' as IconName, value: stats.totalWrong ?? 0, label: 'Fout' },
+          { icon: 'locate-outline' as IconName, value: `${accuracy}%`, label: 'Nauwkeurigheid' },
+          { icon: 'game-controller-outline' as IconName, value: stats.sessionsPlayed ?? 0, label: 'Sessies' },
+        ].map((metric, index, metrics) => (
+          <View
+            key={metric.label}
+            style={[
+              styles.statCell,
+              index % 2 === 0 && [styles.statCellRight, { borderColor: theme.border }],
+              index < metrics.length - 2 && [styles.statCellBottom, { borderColor: theme.border }],
+            ]}
+          >
+            <Ionicons name={metric.icon} size={15} color={theme.inkMuted} />
+            <Text style={[styles.statValue, { color: theme.ink }]}>{metric.value}</Text>
+            <Text style={[styles.statLabel, { color: theme.inkSecondary }]}>{metric.label}</Text>
+          </View>
+        ))}
       </View>
 
       <Text style={[styles.sectionTitle, { color: theme.ink }]}>Power-ups</Text>
@@ -206,72 +208,76 @@ export function StatsScreen({ navigation, route }: Props) {
           {completedCount} van {ACHIEVEMENTS.length} behaald
         </Text>
 
-        {ACHIEVEMENTS.map((achievement) => {
-          const currentVal = achievement.currentValue(stats);
-          const isCompleted = currentVal >= achievement.target;
-          const progressPercentage = Math.min(100, Math.max(0, (currentVal / achievement.target) * 100));
+        <View style={[styles.groupPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+          {ACHIEVEMENTS.map((achievement, index) => {
+            const currentVal = achievement.currentValue(stats);
+            const isCompleted = currentVal >= achievement.target;
+            const progressPercentage = Math.min(100, Math.max(0, (currentVal / achievement.target) * 100));
 
-          return (
-            <View
-              key={achievement.id}
-              style={[
-                styles.achievementCard,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
-            >
-              <View style={styles.achievementInfo}>
+            return (
+              <React.Fragment key={achievement.id}>
+                {index > 0 ? (
+                  <View style={[styles.rowDivider, { backgroundColor: theme.border }]} />
+                ) : null}
                 <View
                   style={[
-                    styles.achievementIconWrapper,
-                    { backgroundColor: isCompleted ? theme.accentSoft : theme.surfaceMuted },
+                    styles.achievementRow,
+                    isCompleted && { backgroundColor: theme.accentSoft },
                   ]}
                 >
-                  <Ionicons
-                    name={achievement.icon}
-                    size={19}
-                    color={isCompleted ? theme.accent : theme.inkMuted}
-                  />
-                </View>
-
-                <View style={styles.achievementTextWrapper}>
-                  <View style={styles.achievementHeaderRow}>
-                    <Text style={[styles.achievementName, { color: theme.ink }]}>
-                      {achievement.name}
-                    </Text>
-                    {isCompleted ? (
-                      <Ionicons name="checkmark-circle" size={15} color={theme.correct} />
-                    ) : null}
+                  <View
+                    style={[
+                      styles.achievementIconWrapper,
+                      { backgroundColor: isCompleted ? theme.surface : theme.surfaceMuted },
+                    ]}
+                  >
+                    <Ionicons
+                      name={achievement.icon}
+                      size={18}
+                      color={isCompleted ? theme.accent : theme.inkMuted}
+                    />
                   </View>
-                  <Text style={[styles.achievementDesc, { color: theme.inkSecondary }]}>
-                    {achievement.description}
-                  </Text>
 
-                  <View style={styles.achievementProgressRow}>
-                    <View style={[styles.achievementProgressBarBg, { backgroundColor: theme.surfaceMuted }]}>
-                      <View
-                        style={[
-                          styles.achievementProgressBarFill,
-                          {
-                            width: `${progressPercentage}%`,
-                            backgroundColor: isCompleted ? theme.correct : theme.accent,
-                          },
-                        ]}
-                      />
+                  <View style={styles.achievementTextWrapper}>
+                    <View style={styles.achievementHeaderRow}>
+                      <Text style={[styles.achievementName, { color: theme.ink }]}>
+                        {achievement.name}
+                      </Text>
+                      {isCompleted ? (
+                        <Ionicons name="checkmark-circle" size={15} color={theme.correct} />
+                      ) : null}
                     </View>
-                    <Text
-                      style={[
-                        styles.achievementProgressText,
-                        { color: isCompleted ? theme.correct : theme.inkSecondary },
-                      ]}
-                    >
-                      {currentVal} / {achievement.target}
+                    <Text style={[styles.achievementDesc, { color: theme.inkSecondary }]}>
+                      {achievement.description}
                     </Text>
+
+                    <View style={styles.achievementProgressRow}>
+                      <View style={[styles.achievementProgressBarBg, { backgroundColor: theme.surfaceMuted }]}>
+                        <View
+                          style={[
+                            styles.achievementProgressBarFill,
+                            {
+                              width: `${progressPercentage}%`,
+                              backgroundColor: isCompleted ? theme.correct : theme.accent,
+                            },
+                          ]}
+                        />
+                      </View>
+                      <Text
+                        style={[
+                          styles.achievementProgressText,
+                          { color: isCompleted ? theme.correct : theme.inkSecondary },
+                        ]}
+                      >
+                        {Math.min(currentVal, achievement.target)} / {achievement.target}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-            </View>
-          );
-        })}
+              </React.Fragment>
+            );
+          })}
+        </View>
       </View>
     );
   };
@@ -282,26 +288,30 @@ export function StatsScreen({ navigation, route }: Props) {
         Je beste score per modus.
       </Text>
 
-      {LEADERBOARD_MODES.map((mode) => (
-        <View
-          key={mode.id}
-          style={[styles.leaderboardRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
-        >
-          <View style={styles.leaderboardModeInfo}>
-            <View style={[styles.leaderboardIconBox, { backgroundColor: theme.surfaceMuted }]}>
-              <Ionicons name={mode.icon} size={17} color={theme.accent} />
-            </View>
-            <Text style={[styles.leaderboardTitle, { color: theme.ink }]}>{mode.title}</Text>
-          </View>
+      <View style={[styles.groupPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        {LEADERBOARD_MODES.map((mode, index) => (
+          <React.Fragment key={mode.id}>
+            {index > 0 ? (
+              <View style={[styles.rowDivider, { backgroundColor: theme.border }]} />
+            ) : null}
+            <View style={styles.leaderboardRow}>
+              <View style={styles.leaderboardModeInfo}>
+                <View style={[styles.leaderboardIconBox, { backgroundColor: theme.surfaceMuted }]}>
+                  <Ionicons name={mode.icon} size={17} color={theme.accent} />
+                </View>
+                <Text style={[styles.leaderboardTitle, { color: theme.ink }]}>{mode.title}</Text>
+              </View>
 
-          <View style={styles.leaderboardScoreBox}>
-            <Text style={[styles.leaderboardScore, { color: theme.ink }]}>
-              {stats.highScores[mode.id] ?? 0}
-            </Text>
-            <Text style={[styles.leaderboardScoreLabel, { color: theme.inkMuted }]}>punten</Text>
-          </View>
-        </View>
-      ))}
+              <View style={styles.leaderboardScoreBox}>
+                <Text style={[styles.leaderboardScore, { color: theme.ink }]}>
+                  {stats.highScores[mode.id] ?? 0}
+                </Text>
+                <Text style={[styles.leaderboardScoreLabel, { color: theme.inkSecondary }]}>punten</Text>
+              </View>
+            </View>
+          </React.Fragment>
+        ))}
+      </View>
 
       <Text style={[styles.leaderboardFooter, { color: theme.inkMuted }]}>
         Verbeter een record om extra XP te verdienen.
@@ -468,16 +478,23 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: RADIUS.pill,
   },
-  statsGrid: {
+  statsPanel: {
     flexDirection: 'row',
-    gap: 10,
-  },
-  statCard: {
-    flex: 1,
-    padding: 14,
+    flexWrap: 'wrap',
     borderRadius: RADIUS.card,
     borderWidth: 1,
+    overflow: 'hidden',
+  },
+  statCell: {
+    width: '50%',
+    padding: 14,
     gap: 4,
+  },
+  statCellRight: {
+    borderRightWidth: 1,
+  },
+  statCellBottom: {
+    borderBottomWidth: 1,
   },
   statValue: {
     fontFamily: 'Inter_700Bold',
@@ -536,19 +553,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: 4,
   },
-  achievementCard: {
-    padding: 14,
+  groupPanel: {
     borderRadius: RADIUS.card,
     borderWidth: 1,
+    overflow: 'hidden',
   },
-  achievementInfo: {
+  rowDivider: {
+    height: 1,
+    marginLeft: 60,
+  },
+  achievementRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    padding: 14,
     gap: 12,
   },
   achievementIconWrapper: {
-    width: 40,
-    height: 40,
+    width: 34,
+    height: 34,
     borderRadius: RADIUS.control,
     justifyContent: 'center',
     alignItems: 'center',
@@ -603,8 +625,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 14,
-    borderRadius: RADIUS.card,
-    borderWidth: 1,
   },
   leaderboardModeInfo: {
     flexDirection: 'row',
