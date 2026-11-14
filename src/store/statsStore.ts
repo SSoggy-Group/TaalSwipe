@@ -30,6 +30,7 @@ export interface AppStats {
   shields: number;
   timeSlows: number;
   hints: number;
+  doubleXpBonuses: number;
   xpMultiplier: number;
   seenHistory: Record<string, string[]>;
 }
@@ -64,6 +65,7 @@ const DEFAULT_STATS: AppStats = {
   shields: 0,
   timeSlows: 0,
   hints: 0,
+  doubleXpBonuses: 0,
   xpMultiplier: 1,
   seenHistory: {},
 };

@@ -25,7 +25,7 @@ interface ShopItem {
   price: number;
   icon: IconName;
   description: string;
-  statsKey?: 'shields' | 'timeSlows' | 'hints';
+  statsKey?: 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
   multiplier?: number;
 }
 
@@ -62,7 +62,7 @@ const SHOP_ITEMS: ShopItem[] = [
   { id: 'powerup_shield', name: 'Schild', type: 'powerup', statsKey: 'shields', price: 250, icon: 'shield-checkmark-outline', description: 'Voorkomt één fout en houdt je reeks intact.' },
   { id: 'powerup_timer', name: 'Tijdvertraging', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: 'timer-outline', description: 'Reset de timer in speed-spelling.' },
   { id: 'powerup_hint', name: 'Hint', type: 'powerup', statsKey: 'hints', price: 400, icon: 'search-outline', description: 'Licht de juiste swipe-richting op.' },
-  { id: 'powerup_double', name: 'Dubbele XP', type: 'powerup', statsKey: 'hints', price: 600, icon: 'star-outline', description: 'Verdubbelt de XP van je volgende sessie.' },
+  { id: 'powerup_double', name: 'Dubbele XP', type: 'powerup', statsKey: 'doubleXpBonuses', price: 600, icon: 'star-outline', description: 'Verdubbelt de XP van je volgende sessie.' },
 
   // UPGRADES
   { id: 'upgrade_xp_15', name: 'XP-booster 1,5×', type: 'upgrade', multiplier: 1.5, price: 1500, icon: 'speedometer-outline', description: 'Permanent 50% extra XP.' },
@@ -141,7 +141,7 @@ export function ShopScreen({ navigation }: Props) {
         return;
       }
 
-      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
+      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
       const currentVal = stats[statsKey] || 0;
 
       const newStats = {
@@ -214,7 +214,7 @@ export function ShopScreen({ navigation }: Props) {
     }
 
     if (item.type === 'powerup') {
-      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
+      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
       return {
         buttonTitle: `${item.price} XP`,
         buttonVariant: 'primary' as const,

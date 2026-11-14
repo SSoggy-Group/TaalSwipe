@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as Haptics from '../platform/haptics';
@@ -406,7 +406,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
       <GradientBackground>
         <SafeAreaView style={styles.safeArea} edges={['top']}>
           <PremiumTopBar title="Multiplayer" />
-          <View style={styles.setupContainer}>
+          <ScrollView style={styles.setupScroll} contentContainerStyle={styles.setupContainer}>
             <View style={styles.setupHeader}>
               <Text style={[styles.setupTitle, { color: theme.ink }]}>
                 Speel samen op één scherm
@@ -490,7 +490,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               onPress={() => navigation.goBack()}
               style={styles.cancelButton}
             />
-          </View>
+          </ScrollView>
         </SafeAreaView>
       </GradientBackground>
     );
@@ -684,8 +684,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
     fontSize: 12,
   },
-  setupContainer: {
+  setupScroll: {
     flex: 1,
+  },
+  setupContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
     width: '100%',

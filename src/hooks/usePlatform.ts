@@ -88,9 +88,9 @@ export function usePWAInstall() {
   return { canInstall, install, preparePrompt };
 }
 
-export function useKeyboardNavigation(enabled: boolean = true, customHandlers?: Record<string, () => void>) {
+export function useKeyboardNavigation(enabled: boolean = true, customHandlers?: Record<string, (event: KeyboardEvent) => void>) {
   useEffect(() => {
-    if (typeof window === 'undefined' || !enabled) return;
+    if (typeof window === 'undefined' || typeof window.addEventListener !== 'function' || !enabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Allow default behavior for input elements
@@ -101,10 +101,17 @@ export function useKeyboardNavigation(enabled: boolean = true, customHandlers?: 
         return;
       }
 
+      // Preserve native activation for focused controls, including their children.
+      if ((e.key === 'Enter' || e.key === ' ') &&
+          e.target instanceof Element &&
+          e.target.closest('button, a[href], [role="button"]')) {
+        return;
+      }
+
       // Handle custom handlers first
       if (customHandlers && customHandlers[e.key]) {
         e.preventDefault();
-        customHandlers[e.key]();
+        customHandlers[e.key](e);
         return;
       }
 

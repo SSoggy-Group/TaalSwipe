@@ -22,7 +22,7 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
       onRequestClose={onResume}
       statusBarTranslucent
     >
-      <Pressable style={styles.container} onPress={onResume}>
+      <Pressable accessible={false} style={styles.container} onPress={onResume}>
         <View
           style={[styles.content, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onStartShouldSetResponder={() => true}

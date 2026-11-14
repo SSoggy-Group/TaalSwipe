@@ -34,7 +34,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: serve from cache, fallback to network
+// Fetch: network-first navigation, cache-first assets
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -66,7 +66,8 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async () => {
-          return (await caches.match(request)) || (await caches.match('/index.html'));
+          const cached = (await caches.match(request)) || (await caches.match('/index.html'));
+          return cached || new Response('Offline', { status: 503 });
         })
     );
     return;

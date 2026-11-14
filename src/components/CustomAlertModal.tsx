@@ -33,7 +33,7 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
 
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={handleClose} statusBarTranslucent>
-      <Pressable style={styles.overlay} onPress={handleClose}>
+      <Pressable accessible={false} style={styles.overlay} onPress={handleClose}>
         <View
           style={[styles.alertContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}
           onStartShouldSetResponder={() => true}

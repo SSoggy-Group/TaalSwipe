@@ -299,6 +299,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const timerRef = React.useRef<TimerBarRef>(null);
   const stopwatchRef = React.useRef<StopwatchRef>(null);
 
+  const sessionXpMultiplier = React.useRef(1);
+
   const [data, setData] = useState<any[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -328,6 +330,10 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       await statsStore.updateStreak(); // Track daily streak
       const currentStats = await statsStore.getStats();
       if (currentStats) {
+        sessionXpMultiplier.current = currentStats.doubleXpBonuses > 0 ? 2 : 1;
+        if (currentStats.doubleXpBonuses > 0) currentStats.doubleXpBonuses -= 1;
+        currentStats.sessionsPlayed = (currentStats.sessionsPlayed ?? 0) + 1;
+        await statsStore.saveStats(currentStats);
         setStats(currentStats);
         // Ensure tutorial is shown first time
         if (!(currentStats.tutorialSeen as any)[mode]) {
@@ -367,11 +373,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       }
     }
     initGame();
-    // Track sessions played
-    statsStore.getStats().then(s => {
-      s.sessionsPlayed = (s.sessionsPlayed ?? 0) + 1;
-      statsStore.saveStats(s);
-    });
   }, [mode, speedrunMode]);
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0, wasCorrect?: boolean) => {
@@ -381,7 +382,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     if (wasCorrect === false) currentStats.totalWrong   = (currentStats.totalWrong   ?? 0) + 1;
     
     const multiplier = currentStats.xpMultiplier || 1;
-    const finalXp = Math.round(earnedXp * multiplier);
+    const finalXp = Math.round(earnedXp * multiplier * sessionXpMultiplier.current);
     
     currentStats.xp += hardcoreMode ? finalXp * 2 : finalXp; // Double XP for hardcore
     if (currentCombo > currentStats.highestCombo) {
@@ -620,11 +621,11 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
   // Custom keyboard handlers for game (must be after handler definitions)
   const keyboardHandlers = React.useMemo(() => ({
-    ArrowLeft: handleSwipeLeft,
-    ArrowRight: handleSwipeRight,
-    Escape: handleClose,
-    Enter: handleContinue,
-    ' ': handleContinue,
+    ArrowLeft: (event: KeyboardEvent) => { if (!event.repeat) handleSwipeLeft(); },
+    ArrowRight: (event: KeyboardEvent) => { if (!event.repeat) handleSwipeRight(); },
+    Escape: (event: KeyboardEvent) => { if (!event.repeat) handleClose(); },
+    Enter: (event: KeyboardEvent) => { if (!event.repeat) handleContinue(); },
+    ' ': (event: KeyboardEvent) => { if (!event.repeat) handleContinue(); },
   }), [handleSwipeLeft, handleSwipeRight, handleClose, handleContinue]);
   
   useKeyboardNavigation(!gameOver && !isPaused && !showTutorial, keyboardHandlers);
