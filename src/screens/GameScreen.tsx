@@ -8,7 +8,7 @@ import * as Speech from '../platform/speech';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, { FadeInDown, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
-import { SwipeCard, CardSkinWrapper } from '../components/SwipeCard';
+import { SwipeCard } from '../components/SwipeCard';
 import { ScoreBar } from '../components/ScoreBar';
 import { TimerBar, TimerBarRef } from '../components/TimerBar';
 import { Stopwatch, StopwatchRef } from '../components/Stopwatch';
@@ -291,7 +291,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
   const { mode } = route.params;
-  const { hardcoreMode, equippedCard, survivalMode, speedrunMode } = useSettingsStore();
+  const { hardcoreMode, survivalMode, speedrunMode } = useSettingsStore();
 
   const theme = useAppTheme(mode);
   
@@ -622,7 +622,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   useKeyboardNavigation(!gameOver && !isPaused && !showTutorial, keyboardHandlers);
 
   const currentItem = data[currentIndex];
-  const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
 
   // Context menu for Tauri desktop app (right-click to copy/search words)
   React.useEffect(() => {
@@ -758,22 +757,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         )}
 
         <View style={[styles.cardStack, isDesktop && styles.desktopCardStack]}>
-          {/* Next card preview (behind) */}
-          {nextItem && (
-            <View style={[styles.previewCard, { transform: [{ scale: 0.92 }, { translateY: 16 }], width: '85%' }]}>
-              <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
-                <View style={{ padding: 32, alignItems: 'center', justifyContent: 'center', minHeight: 280 }}>
-                  <CardContent
-                    mode={mode}
-                    item={nextItem}
-                    theme={theme}
-                    speakWord={speakWord}
-                  />
-                </View>
-              </CardSkinWrapper>
-            </View>
-          )}
-
           {/* Active card */}
           {currentItem && (
             <SwipeCard
@@ -1042,13 +1025,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255,255,255,0.36)',
     fontFamily: 'Inter_800ExtraBold',
   },
-  previewCard: {
-    position: 'absolute',
-    width: '100%',
-    maxWidth: 420,
-    alignItems: 'center',
-    opacity: 0.6,
-  },
   cardPlaceholder: {
     width: '100%',
     maxWidth: 420,
@@ -1120,16 +1096,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 40,
     width: '100%',
-    gap: 32,
+    gap: 20,
   },
   desktopActionRow: {
     justifyContent: 'center',
     paddingBottom: 28,
   },
   actionButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 156,
+    height: 84,
+    borderRadius: 42,
     borderWidth: 2,
     borderBottomWidth: 8,
     alignItems: 'center',
@@ -1140,13 +1116,14 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     paddingVertical: 0,
-    paddingHorizontal: 0,
+    paddingHorizontal: 8,
   },
   actionButtonText: {
     fontFamily: 'Inter_800ExtraBold',
-    fontSize: 20,
+    fontSize: 15,
     color: '#FFFFFF',
     textTransform: 'uppercase',
+    letterSpacing: 0,
   },
   feedbackPanel: {
     position: 'absolute',

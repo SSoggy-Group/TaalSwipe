@@ -84,6 +84,7 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string, gameM
   // 3. Card colors depend on cardId and background's dark/light nature
   // Enhance glassmorphism defaults to be cleaner
   let glassBackground = isDark ? 'rgba(30, 41, 59, 0.45)' : 'rgba(255, 255, 255, 0.25)';
+  let glassOpaqueBackground = isDark ? '#1E293B' : '#FFFFFF';
   let glassBorder = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.4)';
   let glassHighlight = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.35)';
   
@@ -93,42 +94,49 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string, gameM
   // Overriding card theme colors
   if (cardId === 'card_gold') {
     glassBackground = isDark ? 'rgba(45, 34, 3, 0.6)' : 'rgba(255, 253, 245, 0.6)';
+    glassOpaqueBackground = isDark ? '#2D2203' : '#FFFDF5';
     glassBorder = 'rgba(202, 138, 4, 0.8)'; // Gold
     glassHighlight = isDark ? 'rgba(202, 138, 4, 0.2)' : 'rgba(254, 249, 231, 0.6)';
     cardTextPrimary = isDark ? '#FDE047' : '#854D0E';
     cardTextSecondary = isDark ? '#CA8A04' : '#A16207';
   } else if (cardId === 'card_neon') {
     glassBackground = 'rgba(11, 15, 25, 0.7)'; // Cyber slate
+    glassOpaqueBackground = '#0B0F19';
     glassBorder = 'rgba(6, 182, 212, 0.8)'; // Cyber cyan
     glassHighlight = 'rgba(6, 182, 212, 0.15)';
     cardTextPrimary = '#FFFFFF';
     cardTextSecondary = '#38BDF8';
   } else if (cardId === 'card_retro') {
     glassBackground = isDark ? 'rgba(23, 37, 84, 0.6)' : 'rgba(240, 249, 255, 0.6)';
+    glassOpaqueBackground = isDark ? '#172554' : '#F0F9FF';
     glassBorder = isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.6)'; // Retro pixel black
     glassHighlight = isDark ? 'rgba(30, 58, 138, 0.5)' : 'rgba(224, 242, 254, 0.6)';
     cardTextPrimary = isDark ? '#60A5FA' : '#1D4ED8';
     cardTextSecondary = isDark ? '#93C5FD' : '#2563EB';
   } else if (cardId === 'card_holo') {
     glassBackground = 'rgba(255, 255, 255, 0.4)';
+    glassOpaqueBackground = '#FFFFFF';
     glassBorder = 'rgba(236, 72, 153, 0.6)'; // Soft holographic purple/pink
     glassHighlight = 'rgba(250, 232, 255, 0.6)';
     cardTextPrimary = '#4A044E';
     cardTextSecondary = '#86198F';
   } else if (cardId === 'card_rainbow') {
     glassBackground = isDark ? 'rgba(15, 23, 42, 0.5)' : 'rgba(255, 255, 255, 0.3)';
+    glassOpaqueBackground = isDark ? '#0F172A' : '#FFFFFF';
     glassBorder = 'rgba(59, 130, 246, 0.6)';
     glassHighlight = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.4)';
     cardTextPrimary = isDark ? '#F8FAFC' : '#1E293B';
     cardTextSecondary = isDark ? '#94A3B8' : '#64748B';
   } else if (cardId === 'card_shadow') {
     glassBackground = 'rgba(9, 13, 22, 0.7)'; // Very dark black
+    glassOpaqueBackground = '#090D16';
     glassBorder = 'rgba(63, 63, 70, 0.8)'; // Slate dark gray
     glassHighlight = 'rgba(255, 255, 255, 0.05)';
     cardTextPrimary = '#F4F4F5'; // Off-white
     cardTextSecondary = '#A1A1AA';
   } else if (cardId === 'card_pastel') {
     glassBackground = 'rgba(236, 253, 245, 0.6)'; // Minty fresh pastel
+    glassOpaqueBackground = '#ECFDF5';
     glassBorder = 'rgba(52, 211, 153, 0.6)';
     glassHighlight = 'rgba(209, 250, 229, 0.6)';
     cardTextPrimary = '#065F46';
@@ -150,6 +158,7 @@ export const getColors = (isDark: boolean, bgId?: string, cardId?: string, gameM
     },
     glass: {
       background: glassBackground,
+      opaqueBackground: glassOpaqueBackground,
       border: glassBorder,
       highlight: glassHighlight,
     },

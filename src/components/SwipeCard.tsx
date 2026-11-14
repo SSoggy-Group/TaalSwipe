@@ -44,7 +44,7 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
         end={{ x: 1, y: 1 }}
         style={[{ borderRadius: 24, borderWidth: 0, padding: 3, paddingBottom: 9, minHeight: compact ? 180 : 300, width: '100%' }, style]}
       >
-        <View style={{ flex: 1, backgroundColor: theme.glass.background, borderRadius: 21, overflow: 'hidden' }}>
+        <View style={{ flex: 1, backgroundColor: theme.glass.opaqueBackground, borderRadius: 21, overflow: 'hidden' }}>
           {children}
         </View>
       </LinearGradient>
@@ -53,7 +53,7 @@ export const CardSkinWrapper = React.memo(function CardSkinWrapper({ children, e
 
 const CARD_SKIN_STYLES: Record<string, (theme: any) => any> = {
   card_gold: (theme) => ({
-    backgroundColor: theme.glass.background,
+    backgroundColor: theme.glass.opaqueBackground,
     borderColor: '#CA8A04',
     borderBottomColor: '#854D0E',
     borderRadius: 24,
@@ -74,7 +74,7 @@ const CARD_SKIN_STYLES: Record<string, (theme: any) => any> = {
     elevation: 8,
   }),
   card_retro: (theme) => ({
-    backgroundColor: theme.glass.background,
+    backgroundColor: theme.glass.opaqueBackground,
     borderColor: '#000000',
     borderBottomColor: '#000000',
     borderRadius: 4,
@@ -86,7 +86,7 @@ const CARD_SKIN_STYLES: Record<string, (theme: any) => any> = {
     shadowRadius: 0,
   }),
   card_holo: () => ({
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: '#FFFFFF',
     borderColor: '#EC4899',
     borderBottomColor: '#BE185D',
     borderRadius: 24,
@@ -126,7 +126,7 @@ const CARD_SKIN_STYLES: Record<string, (theme: any) => any> = {
     }
     const comboActive = typeof combo === 'number' && combo >= 3;
     return {
-      backgroundColor: theme.glass.background,
+      backgroundColor: theme.glass.opaqueBackground,
       borderColor: comboActive ? '#FF9600' : theme.glass.border,
       borderBottomColor: comboActive ? '#CC7800' : theme.glass.highlight,
       borderRadius: 24,
