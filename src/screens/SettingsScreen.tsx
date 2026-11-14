@@ -8,39 +8,12 @@ import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from '../platform/haptics';
 import { statsStore } from '../store/statsStore';
 import { CustomAlertModal } from '../components/CustomAlertModal';
-import { soundManager } from '../audio/SoundManager';
 import { GradientBackground } from '../components/GradientBackground';
 import { PremiumTopBar } from '../components/PremiumTopBar';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
-
-const INCORRECT_SOUNDS = [
-  { id: 'default', name: 'Warm' },
-  { id: '2042', name: 'Zacht' },
-  { id: '954', name: 'Buzzer' },
-  { id: '950', name: 'Chirp' },
-  { id: '472', name: 'Blip' },
-  { id: '2939', name: 'Arcade' },
-  { id: '240', name: 'Zachte klik' },
-  { id: '1540', name: 'Klokje' },
-];
-
-const GAMEOVER_SOUNDS = [
-  { id: 'default', name: 'Standaard' },
-  { id: '2941', name: 'Melodie' },
-  { id: '568', name: 'Dromerig' },
-  { id: '571', name: 'Trombone' },
-  { id: '2960', name: 'Retro' },
-  { id: '3053', name: 'Zacht signaal' },
-];
-
-const SWOOSH_SOUNDS = [
-  { id: 'default', name: 'Standaard' },
-  { id: '1152', name: 'Lucht' },
-  { id: '1153', name: 'Wind' },
-];
 
 export function SettingsScreen({ navigation }: Props) {
   const {
@@ -54,12 +27,6 @@ export function SettingsScreen({ navigation }: Props) {
     toggleSurvivalMode,
     speedrunMode,
     toggleSpeedrunMode,
-    incorrectSoundId,
-    setIncorrectSoundId,
-    gameoverSoundId,
-    setGameoverSoundId,
-    swooshSoundId,
-    setSwooshSoundId,
   } = useSettingsStore();
 
   const theme = useAppTheme();
@@ -101,30 +68,6 @@ export function SettingsScreen({ navigation }: Props) {
     setAlertVisible(true);
   };
 
-  const selectIncorrectSound = (id: string) => {
-    setIncorrectSoundId(id);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setTimeout(() => {
-      soundManager.testIncorrect(id);
-    }, 50);
-  };
-
-  const selectGameoverSound = (id: string) => {
-    setGameoverSoundId(id);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setTimeout(() => {
-      soundManager.testGameOver(id);
-    }, 50);
-  };
-
-  const selectSwooshSound = (id: string) => {
-    setSwooshSoundId(id);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setTimeout(() => {
-      soundManager.testSwoosh(id);
-    }, 50);
-  };
-
   const SettingRow = ({
     icon,
     title,
@@ -148,44 +91,6 @@ export function SettingsScreen({ navigation }: Props) {
       </View>
       {control}
     </View>
-  );
-
-  const SoundChips = ({
-    sounds,
-    activeId,
-    onSelect,
-  }: {
-    sounds: { id: string; name: string }[];
-    activeId: string;
-    onSelect: (id: string) => void;
-  }) => (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.chipsContainer}
-    >
-      {sounds.map((sound) => {
-        const isActive = (activeId || 'default') === sound.id;
-        return (
-          <TouchableOpacity
-            key={sound.id}
-            onPress={() => onSelect(sound.id)}
-            style={[
-              styles.chip,
-              {
-                backgroundColor: isActive ? theme.accentSoft : 'transparent',
-                borderColor: isActive ? theme.accent : theme.border,
-              },
-            ]}
-          >
-            {isActive ? <Ionicons name="checkmark" size={12} color={theme.accent} /> : null}
-            <Text style={[styles.chipText, { color: isActive ? theme.accent : theme.inkSecondary }]}>
-              {sound.name}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </ScrollView>
   );
 
   const switchColors = {
@@ -255,39 +160,6 @@ export function SettingsScreen({ navigation }: Props) {
                 />
               }
             />
-
-            {isSoundEnabled ? (
-              <View style={[styles.soundCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.soundTitle, { color: theme.ink }]}>Geluiden kiezen</Text>
-
-                <View style={styles.soundSelectorRow}>
-                  <Text style={[styles.soundLabel, { color: theme.inkSecondary }]}>Swipe</Text>
-                  <SoundChips
-                    sounds={SWOOSH_SOUNDS}
-                    activeId={swooshSoundId}
-                    onSelect={selectSwooshSound}
-                  />
-                </View>
-
-                <View style={styles.soundSelectorRow}>
-                  <Text style={[styles.soundLabel, { color: theme.inkSecondary }]}>Fout antwoord</Text>
-                  <SoundChips
-                    sounds={INCORRECT_SOUNDS}
-                    activeId={incorrectSoundId}
-                    onSelect={selectIncorrectSound}
-                  />
-                </View>
-
-                <View style={styles.soundSelectorRow}>
-                  <Text style={[styles.soundLabel, { color: theme.inkSecondary }]}>Einde ronde</Text>
-                  <SoundChips
-                    sounds={GAMEOVER_SOUNDS}
-                    activeId={gameoverSoundId}
-                    onSelect={selectGameoverSound}
-                  />
-                </View>
-              </View>
-            ) : null}
 
             <Text style={[styles.sectionLabel, { color: theme.inkMuted }]}>Spelmodi</Text>
 
@@ -436,40 +308,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'transparent',
-  },
-  soundCard: {
-    borderRadius: RADIUS.card,
-    borderWidth: 1,
-    padding: 16,
-    gap: 16,
-  },
-  soundTitle: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 15,
-  },
-  soundSelectorRow: {
-    gap: 8,
-  },
-  soundLabel: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 12,
-  },
-  chipsContainer: {
-    gap: 6,
-    paddingVertical: 1,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    borderRadius: RADIUS.pill,
-    borderWidth: 1,
-  },
-  chipText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 12,
   },
   footer: {
     fontFamily: 'Inter_400Regular',

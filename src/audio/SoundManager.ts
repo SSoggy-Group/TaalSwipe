@@ -3,39 +3,18 @@ import { useSettingsStore } from '../store/settingsStore';
 
 type SoundKey = 'swoosh' | 'correct' | 'incorrect' | 'gameover' | 'win' | 'purchase';
 
-const SOUND_FILES: Record<string, any> = {
+const SOUND_FILES: Record<SoundKey, any> = {
   swoosh: require('../../assets/sounds/swoosh.wav'),
   correct: require('../../assets/sounds/correct.wav'),
   incorrect: require('../../assets/sounds/incorrect_soft.wav'),
   gameover: require('../../assets/sounds/gameover.wav'),
   win: require('../../assets/sounds/win.wav'),
   purchase: require('../../assets/sounds/purchase.wav'),
-
-  // Swoosh candidates
-  'swoosh_166': require('../../assets/sounds/candidates/swoosh_166.wav'),
-  'swoosh_1152': require('../../assets/sounds/candidates/swoosh_1152.wav'),
-  'swoosh_1153': require('../../assets/sounds/candidates/swoosh_1153.wav'),
-  
-  // Incorrect candidates
-  'incorrect_240': require('../../assets/sounds/candidates/incorrect_240.wav'),
-  'incorrect_472': require('../../assets/sounds/candidates/incorrect_472.wav'),
-  'incorrect_950': require('../../assets/sounds/candidates/incorrect_950.wav'),
-  'incorrect_954': require('../../assets/sounds/candidates/incorrect_954.wav'),
-  'incorrect_1540': require('../../assets/sounds/candidates/incorrect_1540.wav'),
-  'incorrect_2042': require('../../assets/sounds/candidates/incorrect_2042.wav'),
-  'incorrect_2939': require('../../assets/sounds/candidates/incorrect_2939.wav'),
-
-  // Game Over candidates
-  'gameover_568': require('../../assets/sounds/candidates/gameover_568.wav'),
-  'gameover_571': require('../../assets/sounds/candidates/gameover_571.wav'),
-  'gameover_2941': require('../../assets/sounds/candidates/gameover_2941.wav'),
-  'gameover_2960': require('../../assets/sounds/candidates/gameover_2960.wav'),
-  'gameover_3053': require('../../assets/sounds/candidates/gameover_3053.wav'),
 };
 
 class SoundManager {
-  private players: Record<string, AudioPlayer> = {};
-  private lastPlayedAt: Record<string, number> = {};
+  private players: Partial<Record<SoundKey, AudioPlayer>> = {};
+  private lastPlayedAt: Partial<Record<SoundKey, number>> = {};
   private initialized = false;
 
   async init() {
@@ -46,7 +25,7 @@ class SoundManager {
         interruptionMode: 'mixWithOthers',
       });
 
-      for (const key of Object.keys(SOUND_FILES)) {
+      for (const key of Object.keys(SOUND_FILES) as SoundKey[]) {
         try {
           this.players[key] = createAudioPlayer(SOUND_FILES[key]);
         } catch (e) {
@@ -59,29 +38,17 @@ class SoundManager {
     }
   }
 
-  private play(key: string, rate: number = 1, minInterval: number = 0, restartIfPlaying: boolean = true) {
+  private play(key: SoundKey, rate: number = 1, minInterval: number = 0) {
     if (!useSettingsStore.getState().isSoundEnabled) return;
 
     const now = Date.now();
     if (minInterval > 0 && now - (this.lastPlayedAt[key] ?? 0) < minInterval) return;
 
-    let player = this.players[key];
-    if (!player) {
-      let fallbackKey = '';
-      if (key.startsWith('swoosh')) {
-        fallbackKey = 'swoosh';
-      } else if (key.startsWith('incorrect')) {
-        fallbackKey = 'incorrect';
-      } else if (key.startsWith('gameover')) {
-        fallbackKey = 'gameover';
-      }
-      player = this.players[fallbackKey];
-    }
+    const player = this.players[key];
     if (!player) {
       console.warn(`[SoundManager] Player "${key}" not loaded`);
       return;
     }
-    if (!restartIfPlaying && player.playing) return;
     this.lastPlayedAt[key] = now;
 
     try {
@@ -94,49 +61,32 @@ class SoundManager {
   }
 
   playSwoosh() {
-    const id = useSettingsStore.getState().swooshSoundId || 'default';
-    const key = id === 'default' ? 'swoosh' : `swoosh_${id}`;
-    this.play(key);
+    this.play('swoosh', 1, 80);
   }
-  
+
   playCorrect(combo: number = 0) {
     const rate = Math.min(1 + (combo * 0.05), 1.6);
     this.play('correct', rate, 100);
   }
 
   playIncorrect() {
-    const id = useSettingsStore.getState().incorrectSoundId || 'default';
-    const key = id === 'default' ? 'incorrect' : `incorrect_${id}`;
-    // Never retrigger the wrong cue while it is still playing.
-    this.play(key, 1, 200, false);
+    this.play('incorrect', 1, 250);
   }
 
   playGameOver() {
-    const id = useSettingsStore.getState().gameoverSoundId || 'default';
-    const key = id === 'default' ? 'gameover' : `gameover_${id}`;
-    this.play(key);
+    this.play('gameover', 1, 300);
   }
 
-  playWin() { this.play('win'); }
-  playPurchase() { this.play('purchase'); }
-
-  testIncorrect(id: string) {
-    const key = id === 'default' ? 'incorrect' : `incorrect_${id}`;
-    this.play(key, 1, 150, false);
+  playWin() {
+    this.play('win');
   }
 
-  testGameOver(id: string) {
-    const key = id === 'default' ? 'gameover' : `gameover_${id}`;
-    this.play(key);
-  }
-
-  testSwoosh(id: string) {
-    const key = id === 'default' ? 'swoosh' : `swoosh_${id}`;
-    this.play(key);
+  playPurchase() {
+    this.play('purchase', 1, 150);
   }
 
   unload() {
-    for (const key of Object.keys(this.players)) {
+    for (const key of Object.keys(this.players) as SoundKey[]) {
       try {
         this.players[key]?.remove();
       } catch (error) {
