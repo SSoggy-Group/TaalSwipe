@@ -234,11 +234,30 @@ export function useWakeLock(autoRequest: boolean = false) {
   };
 
   useEffect(() => {
-    if (autoRequest && supported) {
-      request();
-    } else if (!autoRequest && lockRef.current) {
-      release();
+    if (!autoRequest || !supported) {
+      if (lockRef.current) release();
+      return;
     }
+
+    request();
+
+    // Browsers release the screen wake lock while the document is hidden.
+    // Reacquire it when the active game becomes visible again.
+    const handleVisibilityChange = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        request();
+      }
+    };
+
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      }
+    };
     // request/release are intentionally omitted: they change identity every
     // render and including them would re-run this effect in a loop.
   }, [autoRequest, supported]);

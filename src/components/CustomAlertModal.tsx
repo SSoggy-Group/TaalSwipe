@@ -40,16 +40,15 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
       statusBarTranslucent
       accessibilityLabel={title}
     >
-      <Pressable accessible={false} style={styles.overlay} onPress={handleClose}>
+      <View style={styles.overlay}>
         <View
           style={[styles.alertContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}
-          onStartShouldSetResponder={() => true}
         >
           <Text style={[styles.title, { color: theme.ink }]}>{title}</Text>
           <Text style={[styles.message, { color: theme.inkSecondary }]}>{message}</Text>
 
           <View style={styles.buttonContainer}>
-            {renderButtons.map((btn) => {
+            {renderButtons.map((btn, index) => {
               const variant = btn.style === 'destructive'
                 ? 'danger'
                 : btn.style === 'cancel'
@@ -65,12 +64,20 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
                     handleClose();
                   }}
                   style={styles.button}
+                  autoFocus={index === 0}
                 />
               );
             })}
           </View>
         </View>
-      </Pressable>
+        <Pressable
+          accessible={false}
+          focusable={false}
+          tabIndex={-1}
+          style={styles.backdrop}
+          onPress={handleClose}
+        />
+      </View>
     </Modal>
   );
 }
@@ -78,10 +85,19 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(16, 18, 22, 0.45)',
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: 'rgba(16, 18, 22, 0.45)',
+    zIndex: 0,
   },
   alertContainer: {
     borderRadius: RADIUS.card + 2,
@@ -89,6 +105,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
     borderWidth: 1,
+    zIndex: 1,
   },
   title: {
     fontFamily: 'Inter_600SemiBold',

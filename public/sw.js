@@ -1,7 +1,8 @@
 // Service Worker for TaalSwipe PWA
 // Caches assets for offline play
 
-const CACHE_NAME = 'taalswipe-v4';
+const CACHE_PREFIX = 'taalswipe-';
+const CACHE_NAME = `${CACHE_PREFIX}v5`;
 const STATIC_ASSETS = [
   './index.html',
   './manifest.json',
@@ -10,14 +11,33 @@ const STATIC_ASSETS = [
   './web-native.css',
 ].map((asset) => new URL(asset, self.location.href).href);
 const INDEX_URL = STATIC_ASSETS[0];
+const PRECACHE_MANIFEST_URL = new URL('./precache-manifest.json', self.location.href).href;
 
-// Install: cache static assets, tolerating individual failures so one missing
-// file under sub-path hosting cannot block the whole worker.
+// Install: precache the exported app bundle (including the startup JS) plus
+// the core shell, tolerating individual failures under sub-path hosting.
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return Promise.all(
-        STATIC_ASSETS.map((asset) =>
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const assets = new Set(STATIC_ASSETS);
+
+      try {
+        const response = await fetch(PRECACHE_MANIFEST_URL, { cache: 'no-store' });
+        if (response.ok) {
+          const manifest = await response.json();
+          if (Array.isArray(manifest)) {
+            for (const asset of manifest) {
+              if (typeof asset === 'string') {
+                assets.add(new URL(asset, self.location.href).href);
+              }
+            }
+          }
+        }
+      } catch {
+        // Fall back to the core shell if the manifest is unavailable.
+      }
+
+      await Promise.all(
+        Array.from(assets).map((asset) =>
           cache.add(asset).catch(() => {
             // Ignore a missing optional asset and keep installing.
           })
@@ -34,7 +54,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => {
       return Promise.all(
         keys
-          .filter((key) => key !== CACHE_NAME)
+          .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
           .map((key) => caches.delete(key))
       );
     })
@@ -61,16 +81,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const storeResponse = (cacheRequest, response) => {
+    const clone = response.clone();
+    event.waitUntil(
+      caches.open(CACHE_NAME)
+        .then((cache) => cache.put(cacheRequest, clone))
+        .catch(() => {
+          // A failed cache write must not affect the network response.
+        })
+    );
+  };
+
   // Navigations must be network-first, otherwise a cached index.html keeps
   // pointing at an old JS bundle after a deploy.
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
+          if (response.ok) storeResponse(request, response);
           return response;
         })
         .catch(async () => {
@@ -87,10 +115,7 @@ self.addEventListener('fetch', (event) => {
 
       return fetch(request).then((response) => {
         // Cache successful GET responses (including JS/CSS bundles)
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        }
+        if (response.ok) storeResponse(request, response);
         return response;
       });
     })

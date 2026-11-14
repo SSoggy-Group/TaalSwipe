@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, Modal } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Modal, Platform } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { useAppTheme, RADIUS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -75,6 +75,17 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
   const theme = useAppTheme();
   const copy = getCopy(mode);
 
+  React.useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    // The shared modal focus trap lands on its leading focus bracket. Move
+    // focus to the tutorial's primary action so Enter starts the round.
+    const timer = setTimeout(() => {
+      const button = document.querySelector<HTMLElement>('[role="dialog"] [role="button"]');
+      button?.focus();
+    }, 60);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <Modal
       transparent
@@ -84,13 +95,15 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
       statusBarTranslucent
       accessibilityLabel={copy.title}
     >
-      <Pressable accessible={false} style={styles.container} onPress={onDismiss}>
-        <View style={styles.backdrop} />
-        <Animated.View entering={FadeIn.duration(200)} style={styles.innerContainer}>
+      <View style={styles.container}>
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          style={styles.innerContainer}
+          pointerEvents="box-none"
+        >
           <Animated.View
             entering={ZoomIn.duration(220)}
             style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
-            onStartShouldSetResponder={() => true}
           >
             <View style={styles.helperRow}>
               <View style={styles.helperColumn}>
@@ -113,10 +126,17 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
             <Text style={[styles.title, { color: theme.ink }]}>{copy.title}</Text>
             <Text style={[styles.body, { color: theme.inkSecondary }]}>{copy.body}</Text>
 
-            <BouncyButton title="Beginnen" onPress={onDismiss} style={styles.button} />
+            <BouncyButton title="Beginnen" onPress={onDismiss} style={styles.button} autoFocus />
           </Animated.View>
         </Animated.View>
-      </Pressable>
+        <Pressable
+          accessible={false}
+          focusable={false}
+          tabIndex={-1}
+          style={styles.backdrop}
+          onPress={onDismiss}
+        />
+      </View>
     </Modal>
   );
 }
@@ -124,6 +144,7 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
   },
   backdrop: {
     position: 'absolute',
@@ -132,12 +153,14 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(16, 18, 22, 0.55)',
+    zIndex: 0,
   },
   innerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+    zIndex: 1,
   },
   card: {
     padding: 24,

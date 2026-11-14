@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, ViewStyle, TextStyle, StyleProp } from 'react-native';
+import { Pressable, Platform, StyleSheet, Text, ViewStyle, TextStyle, StyleProp } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, createAnimatedComponent } from 'react-native-reanimated';
 import * as Haptics from '../platform/haptics';
 import { useAppTheme, RADIUS } from '../theme/colors';
@@ -21,6 +21,7 @@ interface Props {
   readonly disabled?: boolean;
   readonly variant?: Variant;
   readonly accessibilityLabel?: string;
+  readonly autoFocus?: boolean;
 }
 
 const AnimatedPressable = createAnimatedComponent(Pressable);
@@ -45,9 +46,19 @@ export const BouncyButton = React.memo(function BouncyButton({
   disabled = false,
   variant = 'primary',
   accessibilityLabel,
+  autoFocus = false,
 }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
+  const buttonRef = React.useRef<any>(null);
+
+  React.useEffect(() => {
+    if (!autoFocus || Platform.OS !== 'web') return;
+    const node = buttonRef.current;
+    if (node && typeof node.focus === 'function') {
+      node.focus();
+    }
+  }, [autoFocus]);
 
   const handlePressIn = () => {
     if (disabled) return;
@@ -84,6 +95,7 @@ export const BouncyButton = React.memo(function BouncyButton({
 
   return (
     <AnimatedPressable
+      ref={buttonRef}
       onPress={disabled ? undefined : onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}

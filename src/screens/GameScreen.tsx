@@ -644,7 +644,10 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     ' ': (event: KeyboardEvent) => { if (!event.repeat) handleContinue(); },
   }), [handleSwipeLeft, handleSwipeRight, handleClose, handleContinue]);
   
-  useKeyboardNavigation(!gameOver && !isPaused && !showTutorial, keyboardHandlers);
+  useKeyboardNavigation(
+    !isPaused && !showTutorial && (!gameOver || Boolean(feedbackInfo)),
+    keyboardHandlers,
+  );
 
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;

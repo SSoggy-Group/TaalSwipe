@@ -138,6 +138,8 @@ export function SettingsScreen({ navigation }: Props) {
                         accessibilityLabel={
                           pref === 'system' ? 'Systeemthema' : pref === 'light' ? 'Licht thema' : 'Donker thema'
                         }
+                        accessibilityState={{ selected: isActive }}
+                        aria-pressed={isActive}
                       >
                         <Ionicons
                           name={icon}

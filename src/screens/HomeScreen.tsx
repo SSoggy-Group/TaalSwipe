@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, useWindowDimensions, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useIsFocused } from '@react-navigation/native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { GradientBackground } from '../components/GradientBackground';
@@ -87,6 +88,7 @@ const MODES: readonly ModeEntry[] = [
 export function HomeScreen({ navigation }: Props) {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
+  const isFocused = useIsFocused();
   const theme = useAppTheme();
   const [stats, setStats] = React.useState<AppStats | null>(null);
   const [selectedIndex, setSelectedIndex] = React.useState<number | null>(null);
@@ -117,7 +119,7 @@ export function HomeScreen({ navigation }: Props) {
     },
   }), [selectedIndex, isDesktop, openMode]);
 
-  useKeyboardNavigation(true, keyboardHandlers);
+  useKeyboardNavigation(isFocused, keyboardHandlers);
 
   const accuracy = stats && stats.totalSwipes > 0
     ? Math.round((stats.totalCorrect / stats.totalSwipes) * 100)

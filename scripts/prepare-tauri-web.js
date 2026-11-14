@@ -1,6 +1,6 @@
 const { execFileSync } = require('node:child_process');
 const { readFileSync, readdirSync, writeFileSync, copyFileSync, cpSync, existsSync, statSync } = require('node:fs');
-const { join } = require('node:path');
+const { join, extname, relative, sep } = require('node:path');
 
 const root = join(__dirname, '..');
 const dist = join(root, 'dist');
@@ -82,3 +82,21 @@ for (const file of walk(dist)) {
     writeFileSync(file, patched);
   }
 }
+
+// Generate the list of files the service worker precaches. This includes the
+// hashed startup bundle, so a first offline launch can still boot the app.
+const PRECACHE_EXTENSIONS = new Set([
+  '.html', '.js', '.css', '.json', '.png', '.ico', '.svg',
+  '.ttf', '.otf', '.woff', '.woff2', '.wav', '.mp3',
+]);
+
+const precacheFiles = walk(dist)
+  .filter((file) => {
+    const relativePath = relative(dist, file).split(sep).join('/');
+    if (relativePath === 'sw.js' || relativePath === 'precache-manifest.json') return false;
+    return PRECACHE_EXTENSIONS.has(extname(file).toLowerCase());
+  })
+  .map((file) => `./${relative(dist, file).split(sep).join('/')}`)
+  .sort();
+
+writeFileSync(join(dist, 'precache-manifest.json'), JSON.stringify(precacheFiles));

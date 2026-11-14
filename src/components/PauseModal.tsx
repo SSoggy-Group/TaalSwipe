@@ -23,10 +23,9 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
       statusBarTranslucent
       accessibilityLabel="Spel gepauzeerd"
     >
-      <Pressable accessible={false} style={styles.container} onPress={onResume}>
+      <View style={styles.container}>
         <View
           style={[styles.content, { backgroundColor: theme.surface, borderColor: theme.border }]}
-          onStartShouldSetResponder={() => true}
         >
           <Text style={[styles.title, { color: theme.ink }]}>Gepauzeerd</Text>
 
@@ -36,7 +35,7 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
           </View>
 
           <View style={styles.buttonContainer}>
-            <BouncyButton title="Doorgaan" onPress={onResume} style={styles.button} />
+            <BouncyButton title="Doorgaan" onPress={onResume} style={styles.button} autoFocus />
             <BouncyButton
               title="Stoppen"
               variant="secondary"
@@ -45,7 +44,14 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
             />
           </View>
         </View>
-      </Pressable>
+        <Pressable
+          accessible={false}
+          focusable={false}
+          tabIndex={-1}
+          style={styles.backdrop}
+          onPress={onResume}
+        />
+      </View>
     </Modal>
   );
 }
@@ -53,10 +59,19 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
     backgroundColor: 'rgba(16, 18, 22, 0.45)',
+    zIndex: 0,
   },
   content: {
     borderRadius: RADIUS.card + 2,
@@ -64,6 +79,7 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 380,
     borderWidth: 1,
+    zIndex: 1,
   },
   title: {
     fontFamily: 'Inter_600SemiBold',
