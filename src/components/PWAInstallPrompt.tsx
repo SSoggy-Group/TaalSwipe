@@ -8,6 +8,26 @@ interface Props {
   readonly isHome: boolean;
 }
 
+const DISMISS_KEY = 'taalswipe-pwa-install-dismissed';
+
+function wasPromptDismissed(): boolean {
+  try {
+    return typeof window !== 'undefined' && window.sessionStorage.getItem(DISMISS_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function rememberPromptDismissed(): void {
+  try {
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(DISMISS_KEY, 'true');
+    }
+  } catch {
+    // Storage can be unavailable in private or restricted webviews.
+  }
+}
+
 export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }: Props) {
   const { canInstall, install, preparePrompt } = usePWAInstall();
   const [showPrompt, setShowPrompt] = useState(false);
@@ -22,7 +42,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }:
   useEffect(() => {
     if (!canShow || !canInstall || dismissed) return;
     if (typeof window === 'undefined') return;
-    if (sessionStorage.getItem('taalswipe-pwa-install-dismissed')) return;
+    if (wasPromptDismissed()) return;
 
     const timer = setTimeout(() => {
       preparePrompt();
@@ -59,9 +79,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }:
       if (!finished) return;
       setShowPrompt(false);
       setDismissed(true);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('taalswipe-pwa-install-dismissed', 'true');
-      }
+      rememberPromptDismissed();
     });
   };
 

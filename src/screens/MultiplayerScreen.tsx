@@ -424,11 +424,11 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                   <TouchableOpacity
                     key={m.key}
                     onPress={() => toggleMode(m.key)}
-                    accessibilityRole="checkbox"
-                    accessibilityState={{ checked: isEnabled }}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isEnabled }}
                     accessibilityLabel={m.name}
+                    aria-pressed={isEnabled}
                     style={[styles.setupItem, { borderBottomColor: theme.border }]}
-                    focusable={false}
                   >
                     <View style={styles.setupItemLeft}>
                       <View style={[styles.setupIcon, { backgroundColor: theme.surfaceMuted }]}>
@@ -459,11 +459,11 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setShowDefinitions(!showDefinitions);
               }}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: showDefinitions }}
+              accessibilityRole="button"
+              accessibilityState={{ selected: showDefinitions }}
               accessibilityLabel="Definities tonen"
+              aria-pressed={showDefinitions}
               style={[styles.setupItem, styles.setupItemLast]}
-              focusable={false}
             >
               <View style={styles.setupItemLeft}>
                 <View style={[styles.setupIcon, { backgroundColor: theme.surfaceMuted }]}>
@@ -518,7 +518,6 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
           {winner === null ? (
             <TouchableOpacity
               style={[styles.quitButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
-              focusable={false}
               onPress={() => setGameStarted(false)}
               accessibilityRole="button"
               accessibilityLabel="Wedstrijd stoppen"

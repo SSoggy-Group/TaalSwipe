@@ -57,7 +57,13 @@ function ensureInstallPromptListener() {
   installPromptListenerReady = true;
 
   window.addEventListener('beforeinstallprompt', (event) => {
-    // Keep the browser's own install UI out of the way while we show ours.
+    // The custom prompt is mobile-only. Leave the browser's own install UI
+    // alone on desktop, where we do not render a replacement.
+    const isCompact = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 767px)').matches
+      : window.innerWidth < 768;
+    if (!isCompact) return;
+
     event.preventDefault();
     deferredInstallPrompt = event as InstallPromptEvent;
     notifyInstallPromptListeners();
@@ -173,6 +179,7 @@ export function useWakeLock(autoRequest: boolean = false) {
   const lockRef = useRef<any>(null);
   const mountedRef = useRef(true);
   const requestInFlightRef = useRef(false);
+  const shouldHoldRef = useRef(autoRequest);
 
   useEffect(() => {
     if (typeof navigator !== 'undefined' && 'wakeLock' in navigator) {
@@ -202,7 +209,7 @@ export function useWakeLock(autoRequest: boolean = false) {
     requestInFlightRef.current = true;
     try {
       const lock = await (navigator as any).wakeLock.request('screen');
-      if (!mountedRef.current) {
+      if (!mountedRef.current || !shouldHoldRef.current) {
         lock.release().catch(() => {});
         return;
       }
@@ -234,6 +241,8 @@ export function useWakeLock(autoRequest: boolean = false) {
   };
 
   useEffect(() => {
+    shouldHoldRef.current = autoRequest;
+
     if (!autoRequest || !supported) {
       if (lockRef.current) release();
       return;

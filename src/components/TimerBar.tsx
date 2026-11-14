@@ -19,6 +19,7 @@ export interface TimerBarRef {
 interface TimerBarProps {
   readonly duration: number; // ms (max duration)
   readonly running: boolean;
+  readonly paused?: boolean; // freeze without resetting the visible bar
   readonly onTimeUp: () => void;
   readonly onPanicChange?: (isPanicking: boolean) => void;
   readonly resetKey?: number; // change to reset timer completely
@@ -26,7 +27,7 @@ interface TimerBarProps {
 
 export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
   (props, ref) => {
-    const { duration, running, onTimeUp, onPanicChange, resetKey } = props;
+    const { duration, running, paused = false, onTimeUp, onPanicChange, resetKey } = props;
     const theme = useAppTheme();
     const progress = useSharedValue(1);
     const hasPanicked = useSharedValue(false);
@@ -60,13 +61,15 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
       if (running) {
         progress.value = 1;
         startTimer(1);
+      } else if (paused) {
+        cancelAnimation(progress);
       } else {
         cancelAnimation(progress);
         progress.value = 1;
         hasPanicked.value = false;
         if (onPanicChange) onPanicChange(false);
       }
-    }, [resetKey, running, duration]);
+    }, [resetKey, running, paused, duration]);
 
     useAnimatedReaction(
       () => progress.value,

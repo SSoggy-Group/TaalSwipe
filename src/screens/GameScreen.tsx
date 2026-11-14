@@ -26,6 +26,7 @@ import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { soundManager } from '../audio/SoundManager';
 import { useKeyboardNavigation, useWakeLock } from '../hooks/usePlatform';
+import { getResultTotal } from '../utils/gameTotals';
 
 type RootStackParamList = {
   Home: undefined;
@@ -431,13 +432,13 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
     if (gameOver) {
       // currentIndex has not advanced yet, but the terminal wrong answer counts.
-      navigateToResult(score, currentIndex + 1);
+      navigateToResult(score, getResultTotal(currentIndex, true));
       return;
     }
 
     if (!wasCorrect && isSpelling && !survivalMode && !speedrunMode) {
       setGameOver(true);
-      navigateToResult(score, currentIndex + 1);
+      navigateToResult(score, getResultTotal(currentIndex, true));
       return;
     }
 
@@ -586,18 +587,18 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   };
 
   const handleTimeUp = useCallback(() => {
-    if (gameOver || isPaused) return;
+    if (gameOver || isPaused || feedbackInfo) return;
     setGameOver(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
     navigation.replace('Result', {
       score,
-      total: currentIndex,
+      total: getResultTotal(currentIndex, Boolean(feedbackInfo)),
       mode: modeLabels[mode],
       rawMode: mode,
       history,
     });
-  }, [currentIndex, gameOver, isPaused, mode, navigation, score, history, modeLabels]);
+  }, [currentIndex, gameOver, isPaused, feedbackInfo, mode, navigation, score, history, modeLabels]);
 
   const handleClose = useCallback(() => {
     if (gameOver) return;
@@ -610,12 +611,12 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
     navigation.replace('Result', {
       score,
-      total: currentIndex,
+      total: getResultTotal(currentIndex, Boolean(feedbackInfo)),
       mode: modeLabels[mode],
       rawMode: mode,
       history,
     });
-  }, [currentIndex, mode, navigation, score, history, modeLabels]);
+  }, [currentIndex, feedbackInfo, mode, navigation, score, history, modeLabels]);
 
   const handleDismissTutorial = async () => {
     setShowTutorial(false);
@@ -718,7 +719,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   }
 
   const renderTimerOrStopwatch = () => {
-    const isRunning = !isPaused && !gameOver && !showTutorial;
+    const isRunning = !isPaused && !gameOver && !showTutorial && !feedbackInfo;
     if (speedrunMode) {
       return <Stopwatch ref={stopwatchRef} running={isRunning} />;
     }
@@ -738,6 +739,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
           ref={timerRef}
           duration={survivalMode ? 15000 : spellingDuration}
           running={isRunning}
+          paused={Boolean(feedbackInfo)}
           onTimeUp={handleTimeUp}
           onPanicChange={setIsPanicking}
           resetKey={survivalMode ? undefined : timerKey}
