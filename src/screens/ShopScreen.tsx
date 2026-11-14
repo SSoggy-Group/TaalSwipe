@@ -2,78 +2,86 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useAppTheme } from '../theme/colors';
+import { useAppTheme, RADIUS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import * as Haptics from '../platform/haptics';
-import { ConfettiBurst } from '../platform/ConfettiBurst';
 import { BouncyButton } from '../components/BouncyButton';
 import { CustomAlertModal } from '../components/CustomAlertModal';
 import { soundManager } from '../audio/SoundManager';
 import { GradientBackground } from '../components/GradientBackground';
+import { PremiumTopBar } from '../components/PremiumTopBar';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Shop'>;
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+type ShopTab = 'themes' | 'powerups' | 'upgrades';
 
-const SHOP_ITEMS = [
-  // THEMES - BACKGROUNDS
-  { id: 'bg_ocean', name: 'Ocean Breeze', type: 'background', price: 0, icon: '🌊', description: 'Frisse, vloeiende oceaangolven (Standaard)' },
-  { id: 'bg_neon', name: 'Neon Vibes', type: 'background', price: 500, icon: '🌌', description: 'Slapeloze nachten in cyberpunk neon' },
-  { id: 'bg_sunset', name: 'Sunset Flow', type: 'background', price: 1000, icon: '🌅', description: 'Warme zonsondergang verloopkleuren' },
-  { id: 'bg_forest', name: 'Forest Serenity', type: 'background', price: 1200, icon: '🌲', description: 'Rustgevende diepgroene natuur' },
-  { id: 'bg_aurora', name: 'Midnight Aurora', type: 'background', price: 1500, icon: '🌠', description: 'Magische dansende poollichten' },
-  { id: 'bg_matrix', name: 'Matrix Hacker', type: 'background', price: 2000, icon: '👾', description: 'Betreed de digitale code matrix' },
-  { id: 'bg_candy', name: 'Candy Cotton', type: 'background', price: 2500, icon: '🍭', description: 'Zoete en zachte pastelkleuren' },
-  { id: 'bg_volcano', name: 'Volcanic Magma', type: 'background', price: 3000, icon: '🌋', description: 'Intense gloed van vloeibaar magma' },
-  { id: 'bg_royal', name: 'Royal Gold', type: 'background', price: 4000, icon: '👑', description: 'Koninklijke paars-gouden combinatie' },
-  { id: 'bg_nebula', name: 'Space Nebula', type: 'background', price: 5000, icon: '🌟', description: 'Verre kosmische sterrenstelsels' },
+interface ShopItem {
+  id: string;
+  name: string;
+  type: 'background' | 'card' | 'powerup' | 'upgrade';
+  price: number;
+  icon: IconName;
+  description: string;
+  statsKey?: 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
+  multiplier?: number;
+}
 
-  // THEMES - CARDS
-  { id: 'card_default', name: 'Klassiek Glas', type: 'card', price: 0, icon: '📱', description: 'Subtiel semi-transparant glas (Standaard)' },
-  { id: 'card_gold', name: 'Gouden Glans', type: 'card', price: 1500, icon: '✨', description: 'Voor de echte taal-kampioenen' },
-  { id: 'card_neon', name: 'Cyber Neon', type: 'card', price: 2000, icon: '⚡', description: 'Felblauwe laser-gesneden randen' },
-  { id: 'card_retro', name: 'Retro Arcade', type: 'card', price: 2500, icon: '🕹️', description: '8-bit nostalgie met pixelrand' },
-  { id: 'card_holo', name: 'Holografisch', type: 'card', price: 3500, icon: '💿', description: 'Prachtig iridiserende kleuren' },
-  { id: 'card_rainbow', name: 'Rainbow Swipes', type: 'card', price: 5000, icon: '🌈', description: 'Een golvend spectrum van kleuren' },
-  { id: 'card_shadow', name: 'Duistere Schaduw', type: 'card', price: 1000, icon: '🥷', description: 'Stealth look met rood detail' },
-  { id: 'card_pastel', name: 'Matte Pastel', type: 'card', price: 800, icon: '🌸', description: 'Zacht groen voor ultieme focus' },
+const SHOP_ITEMS: ShopItem[] = [
+  // ACHTERGRONDEN
+  { id: 'bg_ocean', name: 'Oceaan', type: 'background', price: 0, icon: 'water-outline', description: 'Koele blauwgrijze tint.' },
+  { id: 'bg_neon', name: 'Neon', type: 'background', price: 500, icon: 'moon-outline', description: 'Paarse avondtint.' },
+  { id: 'bg_sunset', name: 'Zonsondergang', type: 'background', price: 1000, icon: 'partly-sunny-outline', description: 'Warme, rozige tint.' },
+  { id: 'bg_forest', name: 'Bos', type: 'background', price: 1200, icon: 'leaf-outline', description: 'Groene, rustige tint.' },
+  { id: 'bg_aurora', name: 'Poollicht', type: 'background', price: 1500, icon: 'sparkles-outline', description: 'Koel groen met een vleugje mint.' },
+  { id: 'bg_matrix', name: 'Matrix', type: 'background', price: 2000, icon: 'grid-outline', description: 'Diepgroene tint.' },
+  { id: 'bg_candy', name: 'Kermis', type: 'background', price: 2500, icon: 'ice-cream-outline', description: 'Zachte roze tint.' },
+  { id: 'bg_volcano', name: 'Vulkaan', type: 'background', price: 3000, icon: 'flame-outline', description: 'Aardse roodbruine tint.' },
+  { id: 'bg_royal', name: 'Koninklijk', type: 'background', price: 4000, icon: 'cube-outline', description: 'Diep indigoblauw.' },
+  { id: 'bg_nebula', name: 'Nevel', type: 'background', price: 5000, icon: 'planet-outline', description: 'Grijspaarse tint.' },
+  { id: 'bg_lava', name: 'Lava', type: 'background', price: 1800, icon: 'thermometer-outline', description: 'Warme terracotta tint.' },
+  { id: 'bg_cherry', name: 'Kersenbloesem', type: 'background', price: 2200, icon: 'flower-outline', description: 'Fijne rozetint.' },
+  { id: 'bg_arctic', name: 'Arctisch', type: 'background', price: 2800, icon: 'snow-outline', description: 'Koele ijsblauwe tint.' },
+  { id: 'bg_deep_sea', name: 'Diepzee', type: 'background', price: 3500, icon: 'fish-outline', description: 'Donkerblauwe tint.' },
 
-  // POWERUPS
-  { id: 'powerup_shield', name: 'Shield (Schild)', type: 'powerup', statsKey: 'shields', price: 250, icon: '🛡️', description: 'Voorkomt één fout en behoudt je combo/levens. Activeert automatisch.' },
-  { id: 'powerup_timer', name: 'Time Slow (Tijd-Freeze)', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: '⏱️', description: 'Voorkomt game over door de timer te resetten in Speed-Spelling.' },
-  { id: 'powerup_hint', name: 'Hint Joker', type: 'powerup', statsKey: 'hints', price: 400, icon: '🔍', description: 'Onthult de juiste swipe-richting door de knop op te lichten.' },
-  { id: 'powerup_double', name: 'Dubbele XP (1 sessie)', type: 'powerup', statsKey: 'hints', price: 600, icon: '💰', description: 'Verdubbelt de XP voor jouw volgende sessie. Gebruik spaarzaam!' },
+  // KAARTSTIJLEN
+  { id: 'card_default', name: 'Klassiek', type: 'card', price: 0, icon: 'square-outline', description: 'Wit papier met een dunne rand.' },
+  { id: 'card_gold', name: 'Oker', type: 'card', price: 1500, icon: 'sunny-outline', description: 'Warm papier met een okeren rand.' },
+  { id: 'card_neon', name: 'Petrol', type: 'card', price: 2000, icon: 'color-fill-outline', description: 'Koel blauwgroen met een dunne rand.' },
+  { id: 'card_retro', name: 'Archief', type: 'card', price: 2500, icon: 'file-tray-outline', description: 'Gebroken wit met een grijze rand.' },
+  { id: 'card_holo', name: 'Lila', type: 'card', price: 3500, icon: 'albums-outline', description: 'Zacht lila met een paarse rand.' },
+  { id: 'card_rainbow', name: 'Papier', type: 'card', price: 5000, icon: 'layers-outline', description: 'Neutraal wit met een warme rand.' },
+  { id: 'card_shadow', name: 'Inkt', type: 'card', price: 1000, icon: 'moon-outline', description: 'Donkere kaart met lichte tekst.' },
+  { id: 'card_pastel', name: 'Salie', type: 'card', price: 800, icon: 'leaf-outline', description: 'Fris groen met een sage-rand.' },
+  { id: 'card_flame', name: 'Terracotta', type: 'card', price: 2200, icon: 'flame-outline', description: 'Warme roodbruine rand.' },
+  { id: 'card_ice', name: 'IJs', type: 'card', price: 2800, icon: 'snow-outline', description: 'Koele blauwe rand.' },
+
+  // POWER-UPS
+  { id: 'powerup_shield', name: 'Schild', type: 'powerup', statsKey: 'shields', price: 250, icon: 'shield-checkmark-outline', description: 'Vangt één fout op.' },
+  { id: 'powerup_timer', name: 'Tijdvertraging', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: 'timer-outline', description: 'Zet de timer terug.' },
+  { id: 'powerup_hint', name: 'Hint', type: 'powerup', statsKey: 'hints', price: 400, icon: 'search-outline', description: 'Laat de juiste richting zien.' },
+  { id: 'powerup_double', name: 'Dubbele XP', type: 'powerup', statsKey: 'doubleXpBonuses', price: 600, icon: 'star-outline', description: 'Dubbele XP in je volgende ronde.' },
 
   // UPGRADES
-  { id: 'upgrade_xp_15', name: 'XP Booster (1.5x)', type: 'upgrade', multiplier: 1.5, price: 1500, icon: '🚀', description: 'Verdien permanent 50% extra XP uit al je swipes.' },
-  { id: 'upgrade_xp_20', name: 'XP Supercharger (2.0x)', type: 'upgrade', multiplier: 2, price: 3000, icon: '⚡', description: 'Verdien permanent 100% extra XP (overschrijft 1.5x booster).' },
-  { id: 'upgrade_xp_30', name: 'XP Godmode (3.0x)', type: 'upgrade', multiplier: 3, price: 6000, icon: '🌟', description: 'Verdien permanent 200% extra XP. De ultieme upgrade!' },
-
-  // EXTRA BACKGROUNDS
-  { id: 'bg_lava', name: 'Lava Lamp', type: 'background', price: 1800, icon: '🫧', description: 'Zachte, borrelende lava lamp kleuren' },
-  { id: 'bg_cherry', name: 'Cherry Blossom', type: 'background', price: 2200, icon: '🌸', description: 'Japanse kersenbloesem roze tinten' },
-  { id: 'bg_arctic', name: 'Arctic Frost', type: 'background', price: 2800, icon: '❄️', description: 'IJskoude poolnacht blauw-wit' },
-  { id: 'bg_deep_sea', name: 'Deep Sea', type: 'background', price: 3500, icon: '🐋', description: 'Diepzee mysterieuze oceaan blauw' },
-
-  // EXTRA CARD STYLES
-  { id: 'card_flame', name: 'Flame Card', type: 'card', price: 2200, icon: '🔥', description: 'Vurige oranje-rode kaartrand met gloei-effect' },
-  { id: 'card_ice', name: 'Ice Crystal', type: 'card', price: 2800, icon: '🧊', description: 'Ijskristallen met blauwe glasranden' },
+  { id: 'upgrade_xp_15', name: 'XP-booster 1,5×', type: 'upgrade', multiplier: 1.5, price: 1500, icon: 'speedometer-outline', description: 'Altijd 50% extra XP.' },
+  { id: 'upgrade_xp_20', name: 'XP-booster 2×', type: 'upgrade', multiplier: 2, price: 3000, icon: 'rocket-outline', description: 'Altijd 100% extra XP.' },
+  { id: 'upgrade_xp_30', name: 'XP-booster 3×', type: 'upgrade', multiplier: 3, price: 6000, icon: 'trophy-outline', description: 'Altijd 200% extra XP.' },
 ];
 
 export function ShopScreen({ navigation }: Props) {
   const theme = useAppTheme();
   const [stats, setStats] = React.useState<AppStats | null>(null);
-  const [activeTab, setActiveTab] = React.useState<'themes' | 'powerups' | 'upgrades'>('themes');
-  const [shootConfetti, setShootConfetti] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<ShopTab>('themes');
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [alertConfig, setAlertConfig] = React.useState({ title: '', message: '' });
-  
-  const { 
-    equippedBackground, 
-    equippedCard, 
-    setEquippedBackground, 
-    setEquippedCard 
+
+  const {
+    equippedBackground,
+    equippedCard,
+    setEquippedBackground,
+    setEquippedCard,
   } = useSettingsStore();
 
   React.useEffect(() => {
@@ -84,14 +92,13 @@ export function ShopScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
-  const handleAction = async (item: typeof SHOP_ITEMS[0]) => {
+  const handleAction = async (item: ShopItem) => {
     if (!stats) return;
     const isTheme = item.type === 'background' || item.type === 'card';
-    
+
     if (isTheme) {
       const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
       if (isUnlocked) {
-        // Equip logic
         if (item.type === 'background') {
           setEquippedBackground(item.id);
         } else {
@@ -100,88 +107,81 @@ export function ShopScreen({ navigation }: Props) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         return;
       }
-      
-      // Buy theme
+
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }
-      
+
       const newStats = {
         ...stats,
         xp: stats.xp - item.price,
         unlockedItems: [...stats.unlockedItems, item.id],
       };
-      
+
       await statsStore.saveStats(newStats);
       setStats(newStats);
-      
+
       if (item.type === 'background') {
         setEquippedBackground(item.id);
       } else {
         setEquippedCard(item.id);
       }
-      
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       soundManager.playPurchase();
-      setShootConfetti(true);
-      setTimeout(() => setShootConfetti(false), 3000);
       return;
     }
-    
+
     if (item.type === 'powerup') {
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }
-      
-      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
+
+      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
       const currentVal = stats[statsKey] || 0;
-      
+
       const newStats = {
         ...stats,
         xp: stats.xp - item.price,
         [statsKey]: currentVal + 1,
       };
-      
+
       await statsStore.saveStats(newStats);
       setStats(newStats);
-      
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setShootConfetti(true);
-      setTimeout(() => setShootConfetti(false), 2000);
       return;
     }
-    
+
     if (item.type === 'upgrade') {
       const targetMultiplier = item.multiplier || 1;
-      
+
       if (stats.xpMultiplier >= targetMultiplier) {
-        setAlertConfig({ title: 'Al in bezit', message: `Je hebt al een ${stats.xpMultiplier}x of hogere XP upgrade actief!` });
+        setAlertConfig({ title: 'Al actief', message: 'Je hebt al een sterkere XP-booster.' });
         setAlertVisible(true);
         return;
       }
-      
+
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort!` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }
-      
+
       const newStats = {
         ...stats,
         xp: stats.xp - item.price,
         xpMultiplier: targetMultiplier,
       };
-      
+
       await statsStore.saveStats(newStats);
       setStats(newStats);
-      
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setShootConfetti(true);
-      setTimeout(() => setShootConfetti(false), 3000);
     }
   };
 
@@ -192,158 +192,199 @@ export function ShopScreen({ navigation }: Props) {
     if (activeTab === 'powerups') {
       return item.type === 'powerup';
     }
-    if (activeTab === 'upgrades') {
-      return item.type === 'upgrade';
-    }
-    return false;
+    return item.type === 'upgrade';
   });
+
+  const getItemState = (item: ShopItem) => {
+    if (!stats) {
+      return {
+        buttonTitle: '',
+        buttonVariant: 'primary' as const,
+        badge: '',
+        status: '',
+        disabled: false,
+        equipped: false,
+      };
+    }
+
+    const priceLabel = stats.xp >= item.price
+      ? `${item.price} XP`
+      : `Nog ${item.price - stats.xp} XP`;
+
+    if (item.type === 'background' || item.type === 'card') {
+      const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
+      const isEquipped = item.type === 'background'
+        ? equippedBackground === item.id
+        : equippedCard === item.id;
+
+      if (isEquipped) {
+        return {
+          buttonTitle: '',
+          buttonVariant: 'secondary' as const,
+          badge: '',
+          status: 'In gebruik',
+          disabled: true,
+          equipped: true,
+        };
+      }
+      if (isUnlocked) {
+        return {
+          buttonTitle: 'Gebruiken',
+          buttonVariant: 'secondary' as const,
+          badge: '',
+          status: '',
+          disabled: false,
+          equipped: false,
+        };
+      }
+      return {
+        buttonTitle: priceLabel,
+        buttonVariant: 'primary' as const,
+        badge: '',
+        status: '',
+        disabled: stats.xp < item.price,
+        equipped: false,
+      };
+    }
+
+    if (item.type === 'powerup') {
+      const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
+      return {
+        buttonTitle: priceLabel,
+        buttonVariant: 'primary' as const,
+        badge: `${stats[statsKey] || 0} in bezit`,
+        status: '',
+        disabled: stats.xp < item.price,
+        equipped: false,
+      };
+    }
+
+    const targetMultiplier = item.multiplier || 1;
+    if (stats.xpMultiplier >= targetMultiplier) {
+      return {
+        buttonTitle: '',
+        buttonVariant: 'secondary' as const,
+        badge: '',
+        status: 'Actief',
+        disabled: true,
+        equipped: false,
+      };
+    }
+    return {
+      buttonTitle: priceLabel,
+      buttonVariant: 'primary' as const,
+      badge: '',
+      status: '',
+      disabled: stats.xp < item.price,
+      equipped: false,
+    };
+  };
 
   return (
     <GradientBackground>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={[styles.content, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}>
-          
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { backgroundColor: theme.glass.highlight }]}>
-              <Ionicons name="arrow-back" size={24} color={theme.cardTextPrimary} />
-            </TouchableOpacity>
-            <View style={{ alignItems: 'center' }}>
-              <Text style={[styles.title, { color: theme.cardTextPrimary }]}>🛍️ XP Shop</Text>
-              <Text style={[styles.xpText, { color: theme.cardTextSecondary }]}>Jouw saldo: <Text style={{ color: theme.accent, fontFamily: 'Inter_800ExtraBold' }}>{stats?.xp ?? 0} XP</Text></Text>
-            </View>
-            <View style={{ width: 40 }} />
-          </View>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <View style={styles.content}>
+          <PremiumTopBar
+            title="Shop"
+            rightNode={
+              <View style={[styles.xpBadge, { backgroundColor: theme.surfaceMuted }]}>
+                <Ionicons name="diamond-outline" size={13} color={theme.inkSecondary} />
+                <Text style={[styles.xpText, { color: theme.ink }]}>{stats?.xp ?? 0} XP</Text>
+              </View>
+            }
+          />
 
-          {/* Tab Bar */}
-          <View style={[styles.tabBar, { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border }]}>
-            <TouchableOpacity 
-              onPress={() => setActiveTab('themes')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'themes' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'themes' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>🎨 Thema's</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => setActiveTab('powerups')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'powerups' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'powerups' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>🛡️ Power-ups</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              onPress={() => setActiveTab('upgrades')} 
-              style={[
-                styles.tabButton, 
-                activeTab === 'upgrades' && { backgroundColor: theme.glass.background }
-              ]}
-            >
-              <Text style={[
-                styles.tabText, 
-                { color: activeTab === 'upgrades' ? theme.cardTextPrimary : theme.cardTextSecondary }
-              ]}>⚡ Upgrades</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Shop List */}
-          <ScrollView style={styles.shopList} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-            {stats && filteredItems.map((item) => {
-              const isTheme = item.type === 'background' || item.type === 'card';
-              const isPowerup = item.type === 'powerup';
-              const isUpgrade = item.type === 'upgrade';
-              
-              let buttonTitle = `Koop voor ${item.price} XP`;
-              let buttonColor = theme.accent;
-              let itemBadgeText = '';
-
-              if (isTheme) {
-                const isUnlocked = item.price === 0 || stats.unlockedItems.includes(item.id);
-                const isEquipped = item.type === 'background' 
-                  ? equippedBackground === item.id 
-                  : equippedCard === item.id;
-
-                itemBadgeText = item.type === 'background' ? 'Achtergrond' : 'Kaartstijl';
-
-                if (isUnlocked) {
-                  if (isEquipped) {
-                    buttonTitle = 'Uitgerust ✓';
-                    buttonColor = theme.glass.border;
-                  } else {
-                    buttonTitle = 'Uitrusten';
-                    buttonColor = '#58CC02';
-                  }
-                }
-              } else if (isPowerup) {
-                const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints';
-                const count = stats[statsKey] || 0;
-                itemBadgeText = `In bezit: ${count}`;
-                buttonColor = '#58CC02';
-              } else if (isUpgrade) {
-                const targetMultiplier = item.multiplier || 1;
-                const isOwned = stats.xpMultiplier >= targetMultiplier;
-                itemBadgeText = 'Permanente boost';
-                
-                if (isOwned) {
-                  buttonTitle = 'Gekocht ✓';
-                  buttonColor = theme.glass.border;
-                } else {
-                  buttonColor = '#F59E0B'; // Orange for upgrade
-                }
-              }
-
+          <View style={[styles.tabBar, { backgroundColor: theme.surfaceMuted }]}>
+            {([
+              { key: 'themes', label: 'Thema\'s' },
+              { key: 'powerups', label: 'Power-ups' },
+              { key: 'upgrades', label: 'Upgrades' },
+            ] as const).map((tab) => {
+              const isActive = activeTab === tab.key;
               return (
-                <View 
-                  key={item.id} 
+                <TouchableOpacity
+                  key={tab.key}
+                  onPress={() => setActiveTab(tab.key)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isActive }}
                   style={[
-                    styles.shopItem, 
-                    { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                    (isTheme && (equippedBackground === item.id || equippedCard === item.id)) && { borderColor: theme.accent, borderBottomColor: theme.accent }
+                    styles.tabButton,
+                    isActive && { backgroundColor: theme.surface, borderColor: theme.border },
                   ]}
                 >
-                  <View style={styles.itemInfo}>
-                    <View style={[styles.iconWrapper, { backgroundColor: theme.glass.background }]}>
-                      <Text style={styles.itemIcon}>{item.icon}</Text>
-                    </View>
-                    <View style={styles.textWrapper}>
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Text style={[styles.itemName, { color: theme.cardTextPrimary }]}>{item.name}</Text>
-                        {itemBadgeText ? (
-                          <Text style={[styles.badgeText, { color: theme.accent, backgroundColor: theme.glass.background }]}>
-                            {itemBadgeText}
-                          </Text>
-                        ) : null}
-                      </View>
-                      <Text style={[styles.itemDescription, { color: theme.cardTextSecondary }]}>
-                        {item.description}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <BouncyButton 
-                    title={buttonTitle}
-                    color={buttonColor}
-                    borderColor={buttonColor === '#58CC02' ? '#46A302' : buttonColor}
-                    bottomBorderColor={buttonColor === '#58CC02' ? '#2D6A01' : buttonColor}
-                    disabled={buttonTitle.includes('✓')}
-                    textStyle={{ fontSize: 15, color: buttonTitle.includes('✓') ? theme.cardTextSecondary : '#FFF' }}
-                    style={{ paddingVertical: 12, borderRadius: 16, width: '100%' }}
-                    onPress={() => handleAction(item)}
-                  />
-                </View>
+                  <Text style={[styles.tabText, { color: isActive ? theme.ink : theme.inkSecondary }]}>
+                    {tab.label}
+                  </Text>
+                </TouchableOpacity>
               );
             })}
+          </View>
+
+          <ScrollView
+            style={styles.shopList}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.shopListContent}
+          >
+            {stats ? (
+              <View style={[styles.shopGroup, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+                {filteredItems.map((item, index) => {
+                  const state = getItemState(item);
+                  return (
+                    <React.Fragment key={item.id}>
+                      {index > 0 ? (
+                        <View style={[styles.rowDivider, { backgroundColor: theme.border }]} />
+                      ) : null}
+                      <View
+                        style={[
+                          styles.shopRow,
+                          state.equipped && { backgroundColor: theme.accentSoft },
+                        ]}
+                      >
+                        <View style={[styles.iconWrapper, { backgroundColor: theme.surfaceMuted }]}>
+                          <Ionicons name={item.icon} size={18} color={theme.accent} />
+                        </View>
+
+                        <View style={styles.textWrapper}>
+                          <Text style={[styles.itemName, { color: theme.ink }]} numberOfLines={1}>
+                            {item.name}
+                          </Text>
+                          <Text
+                            style={[styles.itemDescription, { color: theme.inkSecondary }]}
+                            numberOfLines={2}
+                          >
+                            {item.description}
+                          </Text>
+                          {state.badge ? (
+                            <Text style={[styles.itemBadge, { color: theme.inkMuted }]}>
+                              {state.badge}
+                            </Text>
+                          ) : null}
+                        </View>
+
+                        {state.status ? (
+                          <View style={[styles.statusPill, { backgroundColor: theme.surfaceMuted }]}>
+                            <Ionicons name="checkmark" size={12} color={theme.accent} />
+                            <Text style={[styles.statusText, { color: theme.inkSecondary }]}>
+                              {state.status}
+                            </Text>
+                          </View>
+                        ) : (
+                          <BouncyButton
+                            title={state.buttonTitle}
+                            variant={state.buttonVariant}
+                            disabled={state.disabled}
+                            onPress={() => handleAction(item)}
+                            style={styles.rowButton}
+                            textStyle={styles.rowButtonText}
+                            accessibilityLabel={`${item.name}: ${state.buttonTitle}`}
+                          />
+                        )}
+                      </View>
+                    </React.Fragment>
+                  );
+                })}
+              </View>
+            ) : null}
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -354,25 +395,6 @@ export function ShopScreen({ navigation }: Props) {
         message={alertConfig.message}
         onClose={() => setAlertVisible(false)}
       />
-
-      {shootConfetti && (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <ConfettiBurst 
-            count={100} 
-            origin={{x: -10, y: 0}} 
-            fallSpeed={2500} 
-            explosionSpeed={350} 
-            fadeOut={true} 
-          />
-          <ConfettiBurst 
-            count={100} 
-            origin={{x: 400, y: 0}} 
-            fallSpeed={2500} 
-            explosionSpeed={350} 
-            fadeOut={true} 
-          />
-        </View>
-      )}
     </GradientBackground>
   );
 }
@@ -383,98 +405,112 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
     width: '100%',
-    maxWidth: 600,
+    maxWidth: 620,
     alignSelf: 'center',
-    borderRadius: 32,
-    borderWidth: 1,
-    marginTop: 24,
-    marginBottom: 24,
   },
-  header: {
+  xpBadge: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: RADIUS.pill,
   },
   xpText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+    fontVariant: ['tabular-nums'],
   },
   tabBar: {
     flexDirection: 'row',
-    borderRadius: 20,
-    padding: 4,
-    borderWidth: 1,
-    marginBottom: 24,
+    borderRadius: RADIUS.control,
+    padding: 3,
+    marginBottom: 16,
+    marginHorizontal: 20,
+    gap: 2,
   },
   tabButton: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 9,
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: RADIUS.chip,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   tabText: {
-    fontFamily: 'Inter_800ExtraBold',
+    fontFamily: 'Inter_500Medium',
     fontSize: 13,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
   shopList: {
     flex: 1,
   },
-  shopItem: {
-    padding: 16,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderBottomWidth: 8,
-    marginBottom: 16,
-    gap: 14,
+  shopListContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    gap: 10,
   },
-  itemInfo: {
+  shopGroup: {
+    borderRadius: RADIUS.card,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  shopRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    gap: 12,
+  },
+  rowDivider: {
+    height: 1,
+    marginLeft: 60,
   },
   iconWrapper: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 34,
+    height: 34,
+    borderRadius: RADIUS.control,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  itemIcon: {
-    fontSize: 32,
-  },
   textWrapper: {
     flex: 1,
+    gap: 2,
   },
   itemName: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 16,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 15,
+  },
+  itemBadge: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 11,
+    marginTop: 2,
   },
   itemDescription: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 13,
-    marginTop: 4,
-    lineHeight: 18,
+    fontFamily: 'Inter_400Regular',
+    fontSize: 12,
+    lineHeight: 16,
   },
-  badgeText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 11,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    overflow: 'hidden',
+  statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: RADIUS.pill,
+  },
+  statusText: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+  },
+  rowButton: {
+    minHeight: 36,
+    minWidth: 86,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: RADIUS.chip,
+  },
+  rowButtonText: {
+    fontSize: 12,
   },
 });

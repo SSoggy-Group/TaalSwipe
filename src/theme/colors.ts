@@ -1,191 +1,198 @@
 import { useColorScheme } from 'react-native';
+import { useSettingsStore } from '../store/settingsStore';
 
-export const getColors = (isDark: boolean, bgId?: string, cardId?: string, gameMode?: string) => {
-  // 1. Default fallback styles
-  let layer1Colors = isDark ? ['#0F172A', '#1E293B'] : ['#1CB0F6', '#0B99DF'];
-  let layer2Colors = isDark ? ['#1E293B', '#0F172A'] : ['#38BDF8', '#1CB0F6'];
-  let accent = '#A78BFA';
-  let accentLight = '#C4B5FD';
-  let textPrimary = '#FFFFFF';
-  let textSecondary = 'rgba(255, 255, 255, 0.7)';
-  let textMuted = 'rgba(255, 255, 255, 0.45)';
+/**
+ * TaalSwipe design tokens.
+ *
+ * The app uses one restrained accent (Delft blue), warm paper surfaces and
+ * hairline borders. Everything else is ink on paper. Cosmetics bought in the
+ * shop change the paper tint or the card border, never the layout language.
+ */
 
-  // 2. Adjust based on equippedBackground or gameMode
-  if (bgId && bgId !== 'bg_default') {
-    if (bgId === 'bg_neon') {
-      layer1Colors = ['#090514', '#1E1B4B']; // Dark violet-blue
-    layer2Colors = ['#1E1B4B', '#090514'];
-    accent = '#F472B6'; // Neon pink accent
-    accentLight = '#FBCFE8';
-  } else if (bgId === 'bg_sunset') {
-    layer1Colors = ['#F97316', '#E11D48']; // Orange to Rose
-    layer2Colors = ['#E11D48', '#EA580C'];
-    accent = '#FDE047'; // Sunny yellow accent
-    accentLight = '#FEF08A';
-  } else if (bgId === 'bg_forest') {
-    layer1Colors = ['#059669', '#064E3B']; // Emerald to deep forest
-    layer2Colors = ['#047857', '#064E3B'];
-    accent = '#34D399'; // Mint/bright green accent
-    accentLight = '#A7F3D0';
-  } else if (bgId === 'bg_aurora') {
-    layer1Colors = ['#0F766E', '#3B0764']; // Aurora Teal to dark purple
-    layer2Colors = ['#115E59', '#3B0764'];
-    accent = '#2DD4BF'; // Bright teal accent
-    accentLight = '#99F6E4';
-  } else if (bgId === 'bg_matrix') {
-    layer1Colors = ['#000000', '#022C22']; // Black to dark green
-    layer2Colors = ['#022C22', '#000000'];
-    accent = '#22C55E'; // Toxic green accent
-    accentLight = '#86EFAC';
-  } else if (bgId === 'bg_candy') {
-    layer1Colors = ['#FBCFE8', '#BFDBFE']; // Pastel pink to sky blue
-    layer2Colors = ['#BFDBFE', '#FDE047'];
-    accent = '#EC4899'; // Deep pink accent
-    accentLight = '#F472B6';
-    textPrimary = '#1E293B'; // Dark text for pastel backgrounds!
-    textSecondary = 'rgba(30, 41, 59, 0.7)';
-    textMuted = 'rgba(30, 41, 59, 0.45)';
-  } else if (bgId === 'bg_volcano') {
-    layer1Colors = ['#18181B', '#991B1B']; // Charcoal to magma red
-    layer2Colors = ['#991B1B', '#18181B'];
-    accent = '#F97316'; // Lava orange accent
-    accentLight = '#FDBA74';
-  } else if (bgId === 'bg_royal') {
-    layer1Colors = ['#2E1065', '#CA8A04']; // Purple to gold
-    layer2Colors = ['#3B0764', '#854D0E'];
-    accent = '#FDE047'; // Gold accent
-    accentLight = '#FEF08A';
-  } else if (bgId === 'bg_nebula') {
-    layer1Colors = ['#1E3A8A', '#701A75']; // Cosmic blue to magenta
-    layer2Colors = ['#701A75', '#1D4ED8'];
-    }
-  } else if (gameMode) {
-    if (gameMode === 'straattaal') {
-      layer1Colors = isDark ? ['#2E1065', '#1E1B4B'] : ['#8B5CF6', '#7C3AED']; 
-      layer2Colors = isDark ? ['#1E1B4B', '#2E1065'] : ['#A78BFA', '#8B5CF6'];
-    } else if (gameMode === 'dunglish') {
-      layer1Colors = isDark ? ['#831843', '#4C0519'] : ['#EC4899', '#DB2777'];
-      layer2Colors = isDark ? ['#4C0519', '#831843'] : ['#F472B6', '#EC4899'];
-    } else if (gameMode === 'spelling') {
-      layer1Colors = isDark ? ['#0C4A6E', '#082F49'] : ['#0EA5E9', '#0284C7'];
-      layer2Colors = isDark ? ['#082F49', '#0C4A6E'] : ['#38BDF8', '#0EA5E9'];
-    } else if (gameMode === 'dt') {
-      layer1Colors = isDark ? ['#78350F', '#451A03'] : ['#F59E0B', '#D97706'];
-      layer2Colors = isDark ? ['#451A03', '#78350F'] : ['#FBBF24', '#F59E0B'];
-    } else if (gameMode === 'vandale') {
-      layer1Colors = isDark ? ['#064E3B', '#022C22'] : ['#10B981', '#059669'];
-      layer2Colors = isDark ? ['#022C22', '#064E3B'] : ['#34D399', '#10B981'];
-    } else if (gameMode === 'brand') {
-      layer1Colors = isDark ? ['#7F1D1D', '#450A0A'] : ['#EF4444', '#DC2626'];
-      layer2Colors = isDark ? ['#450A0A', '#7F1D1D'] : ['#F87171', '#EF4444'];
-    }
-  }
+type Pair = { light: string; dark: string };
 
-  // 3. Card colors depend on cardId and background's dark/light nature
-  let glassBackground = isDark ? '#1E293B' : '#FFFFFF';
-  let glassBorder = isDark ? '#334155' : '#E2E8F0';
-  let glassHighlight = isDark ? '#334155' : '#F8FAFC';
-  
-  let cardTextPrimary = isDark ? '#F8FAFC' : '#1E293B';
-  let cardTextSecondary = isDark ? '#94A3B8' : '#64748B';
+const PAPER: Pair = { light: '#F6F4EF', dark: '#0F1012' };
+const PAPER_TINT: Pair = { light: '#F1EEE7', dark: '#141519' };
 
-  // Overriding card theme colors
-  if (cardId === 'card_gold') {
-    glassBackground = isDark ? '#2D2203' : '#FFFDF5';
-    glassBorder = '#CA8A04'; // Gold
-    glassHighlight = isDark ? '#453508' : '#FEF9E7';
-    cardTextPrimary = isDark ? '#FDE047' : '#854D0E';
-    cardTextSecondary = isDark ? '#CA8A04' : '#A16207';
-  } else if (cardId === 'card_neon') {
-    glassBackground = '#0B0F19'; // Cyber slate
-    glassBorder = '#06B6D4'; // Cyber cyan
-    glassHighlight = '#1E293B';
-    cardTextPrimary = '#FFFFFF';
-    cardTextSecondary = '#38BDF8';
-  } else if (cardId === 'card_retro') {
-    glassBackground = isDark ? '#172554' : '#F0F9FF';
-    glassBorder = '#000000'; // Retro pixel black
-    glassHighlight = isDark ? '#1E3A8A' : '#E0F2FE';
-    cardTextPrimary = isDark ? '#60A5FA' : '#1D4ED8';
-    cardTextSecondary = isDark ? '#93C5FD' : '#2563EB';
-  } else if (cardId === 'card_holo') {
-    glassBackground = 'rgba(255, 255, 255, 0.85)';
-    glassBorder = '#EC4899'; // Soft holographic purple/pink
-    glassHighlight = '#FAE8FF';
-    cardTextPrimary = '#4A044E';
-    cardTextSecondary = '#86198F';
-  } else if (cardId === 'card_rainbow') {
-    glassBackground = isDark ? '#0F172A' : '#FFFFFF';
-    glassBorder = '#3B82F6';
-    glassHighlight = isDark ? '#1E293B' : '#F8FAFC';
-    cardTextPrimary = isDark ? '#F8FAFC' : '#1E293B';
-    cardTextSecondary = isDark ? '#94A3B8' : '#64748B';
-  } else if (cardId === 'card_shadow') {
-    glassBackground = '#090D16'; // Very dark black
-    glassBorder = '#3F3F46'; // Slate dark gray
-    glassHighlight = '#18181B';
-    cardTextPrimary = '#F4F4F5'; // Off-white
-    cardTextSecondary = '#A1A1AA';
-  } else if (cardId === 'card_pastel') {
-    glassBackground = '#ECFDF5'; // Minty fresh pastel
-    glassBorder = '#34D399';
-    glassHighlight = '#D1FAE5';
-    cardTextPrimary = '#065F46';
-    cardTextSecondary = '#047857';
-  }
+const BACKGROUND_TINTS: Record<string, { light: [string, string]; dark: [string, string] }> = {
+  bg_default: { light: ['#F6F4EF', '#F1EEE7'], dark: ['#0F1012', '#141519'] },
+  bg_ocean: { light: ['#EEF2F4', '#E7EDF0'], dark: ['#0E1214', '#131A1F'] },
+  bg_neon: { light: ['#F3F0F4', '#ECE8F1'], dark: ['#121016', '#19141F'] },
+  bg_sunset: { light: ['#F8F1EA', '#F3E9DF'], dark: ['#14110F', '#1D1611'] },
+  bg_forest: { light: ['#EFF3ED', '#E7EDE4'], dark: ['#0E120F', '#141B15'] },
+  bg_aurora: { light: ['#EDF3F1', '#E4EDEA'], dark: ['#0D1211', '#121C1A'] },
+  bg_matrix: { light: ['#EFF3EF', '#E5ECE5'], dark: ['#0E120E', '#131B14'] },
+  bg_candy: { light: ['#F8F0F1', '#F2E6E8'], dark: ['#140F11', '#1D1418'] },
+  bg_volcano: { light: ['#F6EFEB', '#F0E4DD'], dark: ['#130F0D', '#1D1512'] },
+  bg_royal: { light: ['#F1F1F5', '#E9E9F0'], dark: ['#0F1015', '#16182A'] },
+  bg_nebula: { light: ['#F2F0F5', '#E9E6EF'], dark: ['#100F14', '#17141F'] },
+  bg_lava: { light: ['#F7EFEC', '#F1E3DC'], dark: ['#140F0D', '#1F1612'] },
+  bg_cherry: { light: ['#F8EFF1', '#F2E4E8'], dark: ['#140F11', '#1E1418'] },
+  bg_arctic: { light: ['#EFF3F6', '#E6EDF2'], dark: ['#0E1114', '#141C22'] },
+  bg_deep_sea: { light: ['#EDF1F4', '#E3EAEF'], dark: ['#0D1114', '#121B21'] },
+};
+
+type CardSkin = {
+  background: string;
+  border: string;
+  text: string;
+  textSecondary: string;
+};
+
+const DEFAULT_CARD: { light: CardSkin; dark: CardSkin } = {
+  light: { background: '#FFFFFF', border: '#E1DCD1', text: '#16181D', textSecondary: '#5B5F66' },
+  dark: { background: '#17181B', border: '#2B2D32', text: '#F1EFE9', textSecondary: '#A2A6AD' },
+};
+
+const CARD_SKINS: Record<string, { light: CardSkin; dark: CardSkin }> = {
+  card_gold: {
+    light: { background: '#FBF6EA', border: '#D8C08C', text: '#43340F', textSecondary: '#7A652F' },
+    dark: { background: '#1D190F', border: '#5C4A22', text: '#F0E3C2', textSecondary: '#B9A472' },
+  },
+  card_neon: {
+    light: { background: '#EDF4F6', border: '#9FC7D4', text: '#123642', textSecondary: '#476A76' },
+    dark: { background: '#0F1719', border: '#2E4E58', text: '#DCEEF3', textSecondary: '#8FB4BF' },
+  },
+  card_retro: {
+    light: { background: '#F4F1E8', border: '#B9B2A0', text: '#2B2A26', textSecondary: '#63604F' },
+    dark: { background: '#15140F', border: '#3C3A2E', text: '#EDE8D6', textSecondary: '#A5A08A' },
+  },
+  card_holo: {
+    light: { background: '#F5F1F7', border: '#C9B6D8', text: '#3A2745', textSecondary: '#715A80' },
+    dark: { background: '#151018', border: '#463251', text: '#E9DDF0', textSecondary: '#AE9BBB' },
+  },
+  card_rainbow: {
+    light: { background: '#FBFAF7', border: '#C9C2B3', text: '#16181D', textSecondary: '#5B5F66' },
+    dark: { background: '#16171A', border: '#3A3B40', text: '#F1EFE9', textSecondary: '#A2A6AD' },
+  },
+  card_shadow: {
+    light: { background: '#1A1C22', border: '#2E323C', text: '#F2F1ED', textSecondary: '#ABAEB6' },
+    dark: { background: '#0A0B0D', border: '#23252B', text: '#F2F1ED', textSecondary: '#9EA1A9' },
+  },
+  card_pastel: {
+    light: { background: '#EFF5EF', border: '#BFD6C4', text: '#1F3A2A', textSecondary: '#54705E' },
+    dark: { background: '#101711', border: '#2C4533', text: '#DDEDE0', textSecondary: '#94AE9B' },
+  },
+  card_flame: {
+    light: { background: '#FBF0EB', border: '#DDB19C', text: '#4A2517', textSecondary: '#82543F' },
+    dark: { background: '#1B1210', border: '#533227', text: '#F3DFD6', textSecondary: '#B98D7A' },
+  },
+  card_ice: {
+    light: { background: '#EFF4F8', border: '#B9CEDC', text: '#17313F', textSecondary: '#4C6A7A' },
+    dark: { background: '#0E1418', border: '#2C3F4A', text: '#DCEAF2', textSecondary: '#93ACBA' },
+  },
+};
+
+export const RADIUS = {
+  card: 14,
+  control: 10,
+  chip: 8,
+  pill: 999,
+} as const;
+
+export const SPACING = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+} as const;
+
+export const FONT = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+} as const;
+
+export const getColors = (isDark: boolean, bgId?: string, cardId?: string, _gameMode?: string) => {
+  const tint = BACKGROUND_TINTS[bgId || 'bg_default'] ?? BACKGROUND_TINTS.bg_default;
+  const backgroundColors = isDark ? tint.dark : tint.light;
+  const skin = (cardId && CARD_SKINS[cardId]) || DEFAULT_CARD;
+  const card = isDark ? skin.dark : skin.light;
+
+  const surface = isDark ? '#17181B' : '#FFFFFF';
+  const surfaceMuted = isDark ? '#1D1F23' : '#EFEDE6';
+  const border = isDark ? 'rgba(255,255,255,0.12)' : '#E1DCD1';
+  const borderStrong = isDark ? 'rgba(255,255,255,0.22)' : '#CFC8B8';
+
+  const ink = isDark ? '#F1EFE9' : '#16181D';
+  const inkSecondary = isDark ? '#A2A6AD' : '#5B5F66';
+  const inkMuted = isDark ? '#71757C' : '#8A8E95';
+
+  const accent = isDark ? '#8FB4D9' : '#1F4E79';
+  const accentSoft = isDark ? '#1B2733' : '#E7EEF4';
+  const accentContrast = isDark ? '#0F1012' : '#FFFFFF';
+
+  const correct = isDark ? '#7FBF9E' : '#2F7A57';
+  const correctBg = isDark ? '#16251D' : '#E7F1EB';
+  const incorrect = isDark ? '#E09A8E' : '#B04A3A';
+  const incorrectBg = isDark ? '#2A1917' : '#F8E9E6';
+  const warning = isDark ? '#D8B36A' : '#A97A24';
+  const warningBg = isDark ? '#241D10' : '#F6EFDF';
 
   return {
+    // New, preferred tokens
+    isDark,
+    background: backgroundColors[0],
+    backgroundTint: backgroundColors[1],
+    surface,
+    surfaceMuted,
+    border,
+    borderStrong,
+    ink,
+    inkSecondary,
+    inkMuted,
+    accent,
+    accentSoft,
+    accentContrast,
+    correct,
+    correctBg,
+    incorrect,
+    incorrectBg,
+    warning,
+    warningBg,
+
+    // Backwards-compatible tokens used across the app
     gradient: {
-      layer1: {
-        colors: layer1Colors,
-        start: { x: 0, y: 0 },
-        end: { x: 0, y: 1 },
-      },
-      layer2: {
-        colors: layer2Colors,
-        start: { x: 0, y: 0 },
-        end: { x: 1, y: 1 },
-      },
+      layer1: { colors: backgroundColors, start: { x: 0, y: 0 }, end: { x: 0, y: 1 } },
+      layer2: { colors: [backgroundColors[1], backgroundColors[0]], start: { x: 0, y: 0 }, end: { x: 1, y: 1 } },
     },
     glass: {
-      background: glassBackground,
-      border: glassBorder,
-      highlight: glassHighlight,
+      background: surface,
+      border,
+      highlight: surfaceMuted,
     },
-    correct: '#34D399',
-    correctBg: 'rgba(52, 211, 153, 0.15)',
-    incorrect: '#F87171',
-    incorrectBg: 'rgba(248, 113, 113, 0.15)',
-    textPrimary,
-    textSecondary,
-    textMuted,
-    timerActive: '#34D399',
-    timerWarning: '#FBBF24',
-    timerDanger: '#F87171',
-    accent,
-    accentLight,
-    cardTextPrimary,
-    cardTextSecondary,
+    textPrimary: ink,
+    textSecondary: inkSecondary,
+    textMuted: inkMuted,
+    cardTextPrimary: card.text,
+    cardTextSecondary: card.textSecondary,
+    cardBackground: card.background,
+    cardBorder: card.border,
+    timerActive: correct,
+    timerWarning: warning,
+    timerDanger: incorrect,
+    accentLight: accentSoft,
   };
 };
 
-// Default exported statically for non-hook places (like some older UI components, if any)
+/** Static light palette for places without a hook. */
 export const Colors = getColors(false);
-
-import { useSettingsStore } from '../store/settingsStore';
 
 export function useAppTheme(gameMode?: string) {
   const systemTheme = useColorScheme();
   const themePreference = useSettingsStore((state) => state.themePreference);
   const equippedBackground = useSettingsStore((state) => state.equippedBackground);
   const equippedCard = useSettingsStore((state) => state.equippedCard);
-  
+
   let isDarkMode = systemTheme === 'dark';
   if (themePreference === 'dark') {
     isDarkMode = true;
   } else if (themePreference === 'light') {
     isDarkMode = false;
   }
-  
+
   return getColors(isDarkMode, equippedBackground, equippedCard, gameMode);
 }

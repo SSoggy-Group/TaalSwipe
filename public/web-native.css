@@ -1,0 +1,166 @@
+/* TaalSwipe web layer
+ * Native-feeling behaviour for the browser: touch targets, focus rings,
+ * scrollbars and a quiet hover treatment that matches the paper UI.
+ */
+
+:root {
+  color-scheme: light dark;
+  --ts-ink: #16181d;
+  --ts-paper: #f6f4ef;
+  --ts-accent: #1f4e79;
+  --ts-scrollbar: rgba(22, 24, 29, 0.22);
+  --ts-hover: rgba(31, 78, 121, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ts-ink: #f1efe9;
+    --ts-paper: #0f1012;
+    --ts-accent: #8fb4d9;
+    --ts-scrollbar: rgba(241, 239, 233, 0.2);
+    --ts-hover: rgba(143, 180, 217, 0.22);
+  }
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: var(--ts-paper);
+}
+
+body {
+  margin: 0;
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background-color: var(--ts-hover);
+  color: var(--ts-ink);
+}
+
+/* Game surfaces should not feel like a document. */
+[data-testid='swipe-card'],
+[data-testid='action-button'],
+[data-testid='mode-card'],
+[data-testid='bouncy-button'],
+[data-testid='powerup-button'] {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+[data-testid='action-button'],
+[data-testid='mode-card'],
+[data-testid='bouncy-button'],
+[data-testid='powerup-button'] {
+  cursor: pointer;
+}
+
+[data-testid='powerup-button']:disabled,
+[data-testid='bouncy-button'][aria-disabled='true'] {
+  cursor: default;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--ts-accent);
+  outline-offset: 2px;
+}
+
+/* Quiet hover cue: a hairline tint rather than lift, scale or glow. */
+@media (pointer: fine) {
+  [data-testid='mode-card']:hover,
+  [data-testid='bouncy-button']:hover,
+  [data-testid='action-button']:hover,
+  [data-testid='powerup-button']:hover:not(:disabled) {
+    box-shadow: inset 0 0 0 1px var(--ts-hover);
+  }
+}
+
+@media (pointer: coarse) {
+  [data-testid='action-button'] {
+    min-height: 56px;
+  }
+
+  [data-testid='mode-card'] {
+    min-height: 96px;
+  }
+
+  [data-testid='powerup-button'] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Reduced motion: keep the interface still. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .fade-in-down,
+  .slide-in-down {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Thin, unobtrusive scrollbars. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--ts-scrollbar);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--ts-ink);
+}
+
+/* Prevent iOS input zoom without changing the design scale. */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  [data-testid='mode-card'],
+  [data-testid='bouncy-button'],
+  [data-testid='action-button'],
+  [data-testid='powerup-button'] {
+    border-width: 2px !important;
+  }
+}
+
+@media print {
+  .game-ui,
+  .action-row,
+  .powerup-row,
+  .timer-bar,
+  .header {
+    display: none !important;
+  }
+}

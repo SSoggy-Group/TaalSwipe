@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Platform, StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
+import React, { useState, useCallback, useRef } from 'react';
+import { Pressable, StyleSheet, Text, View, TouchableOpacity, useWindowDimensions } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,11 +21,12 @@ import { spellingData, SpellingItem } from '../data/spellingData';
 import { dtData } from '../data/dtData';
 import { vanDaleData, VanDaleItem } from '../data/vanDaleData';
 import { brandData, BrandItem } from '../data/brandData';
-import { Colors, useAppTheme } from '../theme/colors';
+import { useAppTheme, RADIUS } from '../theme/colors';
 import { statsStore, AppStats } from '../store/statsStore';
 import { useSettingsStore } from '../store/settingsStore';
 import { soundManager } from '../audio/SoundManager';
-import { ConfettiBurst } from '../platform/ConfettiBurst';
+import { useKeyboardNavigation, useWakeLock } from '../hooks/usePlatform';
+import { getResultTotal } from '../utils/gameTotals';
 
 type RootStackParamList = {
   Home: undefined;
@@ -61,11 +62,14 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const s = item as StraattaalItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt straattaal of AI-verzonnen?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt of verzonnen?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{s.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(s.word)} style={styles.speakButton}>
-              <Ionicons name="volume-high" size={24} color={Colors.accent} />
+            <TouchableOpacity onPress={() => speakWord(s.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
+              <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
           <Text style={[styles.definitionText, { color: theme.cardTextSecondary }]}>"{s.definition}"</Text>
@@ -76,11 +80,14 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const d = item as DunglishItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt Nederlands spreekwoord?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt spreekwoord?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.proverbText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>"{d.text}"</Text>
-            <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={styles.speakButton}>
-              <Ionicons name="volume-high" size={24} color={Colors.accent} />
+            <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
+              <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
         </View>
@@ -90,11 +97,14 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const sp = item as SpellingItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed of fout gespeld?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed gespeld?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.spellingText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{sp.text}</Text>
-            <TouchableOpacity onPress={() => speakWord(sp.text)} style={styles.speakButton}>
-              <Ionicons name="volume-high" size={24} color={Colors.accent} />
+            <TouchableOpacity onPress={() => speakWord(sp.text)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
+              <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
         </View>
@@ -107,11 +117,11 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Kies het juiste woord</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Juiste vorm?</Text>
           <View style={[styles.wordRow, { paddingHorizontal: 16 }]}>
             <Text style={[styles.spellingText, { fontSize: 24, textAlign: 'center', lineHeight: 34, color: theme.cardTextPrimary }]}>
               {parts[0]}
-              <Text style={{ color: Colors.accent, fontFamily: 'Inter_800ExtraBold' }}>
+              <Text style={{ color: theme.accent, fontFamily: 'Inter_700Bold' }}>
                 {displayedAnswer}
               </Text>
               {parts[1]}
@@ -125,11 +135,14 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const vd = item as VanDaleItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Staat dit in de Van Dale?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>In de Van Dale?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{vd.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(vd.word)} style={styles.speakButton}>
-              <Ionicons name="volume-high" size={24} color={Colors.accent} />
+            <TouchableOpacity onPress={() => speakWord(vd.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
+              <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
         </View>
@@ -139,11 +152,14 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const b = item as BrandItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merknaam of soortnaam?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merk of soort?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{b.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(b.word)} style={styles.speakButton}>
-              <Ionicons name="volume-high" size={24} color={Colors.accent} />
+            <TouchableOpacity onPress={() => speakWord(b.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
+              <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
         </View>
@@ -210,41 +226,49 @@ function getItemDetails(item: any, mode: string): { wordText: string; explanatio
 
 function getStraattaalFeedback(s: StraattaalItem) {
   return {
-    title: s.isReal ? 'ECHT! ❌' : 'NEP! ❌',
-    message: `"${s.word}" is ${s.isReal ? 'echt bestaande straattaal' : 'AI-verzonnen nep-slang'}!\n\nBetekenis: ${s.definition}`,
+    title: s.isReal ? 'Echt' : 'Verzonnen',
+    message: s.isReal
+      ? `"${s.word}" bestaat. ${s.definition}`
+      : `"${s.word}" bestaat niet.`,
   };
 }
 
 function getDunglishFeedback(d: DunglishItem) {
   return {
-    title: d.isRealProverb ? 'ECHT! ❌' : 'NEP! ❌',
-    message: `"${d.text}" is ${d.isRealProverb ? 'een echt spreekwoord' : 'een verzonnen spreekwoord'}!\n\nBetekenis: ${d.explanation}`,
+    title: d.isRealProverb ? 'Echt' : 'Verzonnen',
+    message: d.isRealProverb
+      ? `Letterlijk vertaald: ${d.explanation}`
+      : `Niet echt. ${d.explanation}`,
   };
 }
 
 function getSpellingFeedback(sp: SpellingItem) {
   return {
-    title: sp.isCorrect ? 'GOED GESPELD! ❌' : 'FOUT GESPELD! ❌',
-    message: sp.isCorrect ? `"${sp.text}" is juist gespeld!` : `"${sp.text}" is onjuist gespeld!\n\nDe juiste spelling is: ${sp.correction}`,
+    title: sp.isCorrect ? 'Goed' : 'Juiste spelling',
+    message: sp.isCorrect
+      ? `"${sp.text}" is goed gespeld.`
+      : `"${sp.text}" moet zijn: ${sp.correction}`,
   };
 }
 
 function getVanDaleFeedback(vd: VanDaleItem) {
   return {
-    title: vd.inVanDale ? 'ECHT VAN DALE! ❌' : 'VERZONNEN! ❌',
-    message: `"${vd.word}" staat ${vd.inVanDale ? 'wel degelijk' : 'niet'} in de Van Dale!\n\nBetekenis: ${vd.definition}`,
+    title: vd.inVanDale ? 'Staat erin' : 'Staat er niet in',
+    message: vd.inVanDale
+      ? `"${vd.word}" staat in de Van Dale. ${vd.definition}`
+      : `"${vd.word}" staat niet in de Van Dale.`,
   };
 }
 
 function getBrandFeedback(b: BrandItem) {
   return {
-    title: b.isBrand ? 'MERKNAAM! ❌' : 'SOORTNAAM! ❌',
-    message: `"${b.word}" is een ${b.isBrand ? 'beschermde merknaam' : 'soortnaam'}!\n\nUitleg: ${b.explanation}`,
+    title: b.isBrand ? 'Merknaam' : 'Soortnaam',
+    message: `"${b.word}" is een ${b.isBrand ? 'merknaam' : 'soortnaam'}. ${b.explanation}`,
   };
 }
 
 function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; message: string } {
-  if (!item) return { title: 'FOUT! ❌', message: '' };
+  if (!item) return { title: 'Fout', message: '' };
   switch (mode) {
     case 'straattaal':
       return getStraattaalFeedback(item);
@@ -254,23 +278,23 @@ function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; m
       return getSpellingFeedback(item);
     case 'dt':
       return {
-        title: 'FOUT! ❌',
-        message: `Dit is onjuist!\n\nUitleg: ${item.explanation}`,
+        title: 'Foute vorm',
+        message: item.explanation,
       };
     case 'vandale':
       return getVanDaleFeedback(item);
     case 'brand':
       return getBrandFeedback(item);
     default:
-      return { title: 'FOUT! ❌', message: '' };
+      return { title: 'Fout', message: '' };
   }
 }
 
 const modeLabels: Record<string, string> = {
   straattaal: 'Straattaal of AI?',
   dunglish: 'Steenkolenengels',
-  spelling: 'Speed-Spelling',
-  dt: 'D/T Grammatica',
+  spelling: 'Speed-spelling',
+  dt: 'D/t-grammatica',
   vandale: 'Dikke Van Dale',
   brand: 'Merknaam of Soortnaam',
 };
@@ -297,6 +321,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const timerRef = React.useRef<TimerBarRef>(null);
   const stopwatchRef = React.useRef<StopwatchRef>(null);
 
+  const sessionXpMultiplier = React.useRef(1);
+
   const [data, setData] = useState<any[]>([]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -305,9 +331,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const [timerKey, setTimerKey] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
-  const [isPanicking, setIsPanicking] = useState(false);
+  const [, setIsPanicking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [shootConfetti, setShootConfetti] = useState(false);
   const [history, setHistory] = useState<{ word: string; correct: boolean; explanation: string }[]>([]);
 
   const [lives, setLives] = useState(hardcoreMode ? 3 : 0);
@@ -318,12 +343,19 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
   const isSpelling = mode === 'spelling';
 
+  // Web-native hooks - must be after state declarations
+  const { request: requestWakeLock } = useWakeLock(!gameOver && !isPaused && !showTutorial);
+
 
   React.useEffect(() => {
     async function initGame() {
       await statsStore.updateStreak(); // Track daily streak
       const currentStats = await statsStore.getStats();
       if (currentStats) {
+        sessionXpMultiplier.current = currentStats.doubleXpBonuses > 0 ? 2 : 1;
+        if (currentStats.doubleXpBonuses > 0) currentStats.doubleXpBonuses -= 1;
+        currentStats.sessionsPlayed = (currentStats.sessionsPlayed ?? 0) + 1;
+        await statsStore.saveStats(currentStats);
         setStats(currentStats);
         // Ensure tutorial is shown first time
         if (!(currentStats.tutorialSeen as any)[mode]) {
@@ -363,11 +395,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       }
     }
     initGame();
-    // Track sessions played
-    statsStore.getStats().then(s => {
-      s.sessionsPlayed = (s.sessionsPlayed ?? 0) + 1;
-      statsStore.saveStats(s);
-    });
   }, [mode, speedrunMode]);
 
   const updateStats = async (currentCombo: number, earnedXp: number = 0, wasCorrect?: boolean) => {
@@ -377,7 +404,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     if (wasCorrect === false) currentStats.totalWrong   = (currentStats.totalWrong   ?? 0) + 1;
     
     const multiplier = currentStats.xpMultiplier || 1;
-    const finalXp = Math.round(earnedXp * multiplier);
+    const finalXp = Math.round(earnedXp * multiplier * sessionXpMultiplier.current);
     
     currentStats.xp += hardcoreMode ? finalXp * 2 : finalXp; // Double XP for hardcore
     if (currentCombo > currentStats.highestCombo) {
@@ -404,13 +431,14 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     };
 
     if (gameOver) {
-      navigateToResult(score, currentIndex);
+      // currentIndex has not advanced yet, but the terminal wrong answer counts.
+      navigateToResult(score, getResultTotal(currentIndex, true));
       return;
     }
 
     if (!wasCorrect && isSpelling && !survivalMode && !speedrunMode) {
       setGameOver(true);
-      navigateToResult(score, currentIndex);
+      navigateToResult(score, getResultTotal(currentIndex, true));
       return;
     }
 
@@ -439,14 +467,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     setCombo((c) => {
       const newCombo = c + 1;
       updateStats(newCombo, 10 + (newCombo * 2), true); // Earn XP!
-      
-      // Trigger confetti every 5 combo
-      if (newCombo > 0 && newCombo % 5 === 0) {
-        setShootConfetti(true);
-        setTimeout(() => setShootConfetti(false), 3000);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      
       return newCombo;
     });
     advanceGame(true);
@@ -497,10 +517,18 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     }
   }, [stats, advanceGame, survivalMode, mode, showFeedback, hardcoreMode, updateStats]);
 
+  const lastAnswerAtRef = useRef(0);
+  const lastContinueAtRef = useRef(0);
+
   const handleAnswer = useCallback((swipedRight: boolean) => {
-    if (gameOver) return;
+    // Block answers while feedback, a pause, or the tutorial is open, and
+    // collapse rapid duplicate inputs (key repeat, double taps) into one.
+    if (gameOver || isPaused || showTutorial || feedbackInfo) return;
+    if (Date.now() - lastAnswerAtRef.current < 180) return;
+
     const item = data[currentIndex];
     if (!item) return;
+    lastAnswerAtRef.current = Date.now();
 
     const correct = checkIsCorrect(item, mode, swipedRight);
     const { wordText, explanationText } = getItemDetails(item, mode);
@@ -516,7 +544,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     } else {
       handleIncorrectAnswer(item);
     }
-  }, [currentIndex, data, gameOver, mode, handleCorrectAnswer, handleIncorrectAnswer]);
+  }, [currentIndex, data, gameOver, isPaused, showTutorial, feedbackInfo, mode, handleCorrectAnswer, handleIncorrectAnswer]);
 
   const handleSwipeRight = useCallback(() => handleAnswer(true), [handleAnswer]);
   const handleSwipeLeft = useCallback(() => handleAnswer(false), [handleAnswer]);
@@ -559,18 +587,18 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   };
 
   const handleTimeUp = useCallback(() => {
-    if (gameOver || isPaused) return;
+    if (gameOver || isPaused || feedbackInfo) return;
     setGameOver(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
     navigation.replace('Result', {
       score,
-      total: currentIndex,
+      total: getResultTotal(currentIndex, Boolean(feedbackInfo)),
       mode: modeLabels[mode],
       rawMode: mode,
       history,
     });
-  }, [currentIndex, gameOver, isPaused, mode, navigation, score, history, modeLabels]);
+  }, [currentIndex, gameOver, isPaused, feedbackInfo, mode, navigation, score, history, modeLabels]);
 
   const handleClose = useCallback(() => {
     if (gameOver) return;
@@ -583,12 +611,12 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
     navigation.replace('Result', {
       score,
-      total: currentIndex,
+      total: getResultTotal(currentIndex, Boolean(feedbackInfo)),
       mode: modeLabels[mode],
       rawMode: mode,
       history,
     });
-  }, [currentIndex, mode, navigation, score, history, modeLabels]);
+  }, [currentIndex, feedbackInfo, mode, navigation, score, history, modeLabels]);
 
   const handleDismissTutorial = async () => {
     setShowTutorial(false);
@@ -605,36 +633,36 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       setStats(newStats);
     }
   };
+  
+  const handleContinue = useCallback(() => {
+    if (!feedbackInfo) return;
+    if (Date.now() - lastContinueAtRef.current < 250) return;
+    lastContinueAtRef.current = Date.now();
+    setFeedbackInfo(null);
+    advanceGame(false);
+  }, [feedbackInfo, advanceGame]);
+
+  // Custom keyboard handlers for game (must be after handler definitions)
+  const keyboardHandlers = React.useMemo(() => ({
+    ArrowLeft: (event: KeyboardEvent) => { if (!event.repeat) handleSwipeLeft(); },
+    ArrowRight: (event: KeyboardEvent) => { if (!event.repeat) handleSwipeRight(); },
+    Escape: (event: KeyboardEvent) => { if (!event.repeat) handleClose(); },
+    Enter: (event: KeyboardEvent) => { if (!event.repeat) handleContinue(); },
+    ' ': (event: KeyboardEvent) => { if (!event.repeat) handleContinue(); },
+  }), [handleSwipeLeft, handleSwipeRight, handleClose, handleContinue]);
+  
+  useKeyboardNavigation(
+    !isPaused && !showTutorial && (!gameOver || Boolean(feedbackInfo)),
+    keyboardHandlers,
+  );
 
   const currentItem = data[currentIndex];
   const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
 
+  // Context menu for Tauri desktop app (right-click to copy/search words)
   React.useEffect(() => {
-    if (Platform.OS !== 'web' || globalThis.window === undefined) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.repeat || showTutorial || isPaused || gameOver || feedbackInfo) return;
-
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        handleSwipeLeft();
-      }
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        handleSwipeRight();
-      }
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        handleClose();
-      }
-      if (event.key === 'Enter' || event.key === ' ') {
-        // If feedback is showing, space/enter goes to next
-        if (feedbackInfo) {
-          event.preventDefault();
-          setFeedbackInfo(null);
-        }
-      }
-    };
+    if (typeof window === 'undefined' || !window.addEventListener) return;
+    if (!(globalThis as any).__TAURI_INTERNALS__) return;
 
     const handleContextMenu = async (event: MouseEvent) => {
       if (gameOver || isPaused || !currentItem) return;
@@ -643,69 +671,55 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       const { wordText, explanationText } = getItemDetails(currentItem, mode);
       if (!wordText) return;
 
-      if ((globalThis as any).__TAURI_INTERNALS__) {
-        try {
-          const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
-          
-          const copyItem = await MenuItem.new({
-            text: `Kopieer: "${wordText}"`,
-            action: () => {
-              Clipboard.setStringAsync(wordText);
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-          });
-          
-          const searchItem = await MenuItem.new({
-            text: 'Zoek op Google',
-            action: () => {
-              const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
-              globalThis.window.open(url, '_blank');
-            }
-          });
-          
-          const menu = await Menu.new({ items: [copyItem, searchItem] });
-          await menu.popup();
-        } catch (err) {
-          console.warn('Failed to show Tauri context menu', err);
-        }
+      try {
+        const { Menu, MenuItem } = await import('@tauri-apps/api/menu');
+        
+        const copyItem = await MenuItem.new({
+          text: `Kopieer: "${wordText}"`,
+          action: () => {
+            Clipboard.setStringAsync(wordText);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          }
+        });
+        
+        const searchItem = await MenuItem.new({
+          text: 'Zoek op Google',
+          action: () => {
+            const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
+            window.open(url, '_blank');
+          }
+        });
+        
+        const menu = await Menu.new({ items: [copyItem, searchItem] });
+        await menu.popup();
+      } catch (err) {
+        console.warn('Failed to show Tauri context menu', err);
       }
     };
 
-    if (typeof window !== 'undefined' && (window as any).addEventListener) {
-      // @ts-ignore
-      window.addEventListener('keydown', handleKeyDown);
-      // @ts-ignore
-      window.addEventListener('contextmenu', handleContextMenu);
-    }
-    return () => {
-      if (typeof window !== 'undefined' && (window as any).removeEventListener) {
-        // @ts-ignore
-        window.removeEventListener('keydown', handleKeyDown);
-        // @ts-ignore
-        window.removeEventListener('contextmenu', handleContextMenu);
-      }
-    };
-  }, [feedbackInfo, gameOver, handleClose, handleSwipeLeft, handleSwipeRight, isPaused, showTutorial, currentItem, mode]);
+    window.addEventListener('contextmenu', handleContextMenu);
+    return () => window.removeEventListener('contextmenu', handleContextMenu);
+  }, [gameOver, isPaused, currentItem, mode]);
 
-  let leftLabel = 'FOUT ✗';
-  let rightLabel = 'GOED ✓';
-  
+  let leftLabel = 'Fout';
+  let rightLabel = 'Goed';
+
   if (mode === 'brand') {
-    leftLabel = 'SOORT ✗';
-    rightLabel = 'MERK ✓';
+    leftLabel = 'Soortnaam';
+    rightLabel = 'Merknaam';
   } else if (mode === 'straattaal') {
-    leftLabel = 'VERZONNEN ✗';
-    rightLabel = 'ECHT ✓';
+    leftLabel = 'Verzonnen';
+    rightLabel = 'Echt';
   } else if (mode === 'vandale') {
-    leftLabel = 'ONZIN ✗';
-    rightLabel = 'VAN DALE ✓';
+    leftLabel = 'Onzin';
+    rightLabel = 'Van Dale';
   } else if (mode === 'dunglish') {
-    leftLabel = 'NEP ✗';
-    rightLabel = 'ECHT ✓';
+    leftLabel = 'Nep';
+    rightLabel = 'Echt';
   }
 
   const renderTimerOrStopwatch = () => {
-    const isRunning = !isPaused && !gameOver && !showTutorial;
+    const isRunning = !isPaused && !gameOver && !showTutorial && !feedbackInfo;
     if (speedrunMode) {
       return <Stopwatch ref={stopwatchRef} running={isRunning} />;
     }
@@ -725,6 +739,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
           ref={timerRef}
           duration={survivalMode ? 15000 : spellingDuration}
           running={isRunning}
+          paused={Boolean(feedbackInfo)}
           onTimeUp={handleTimeUp}
           onPanicChange={setIsPanicking}
           resetKey={survivalMode ? undefined : timerKey}
@@ -735,25 +750,29 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   };
 
   return (
-    <GradientBackground combo={combo} isPanicking={isPanicking}>
-      {showTutorial && <TutorialOverlay mode={mode} onDismiss={handleDismissTutorial} />}
+    <GradientBackground>
       <SafeAreaView style={[styles.safeArea, isDesktop && styles.desktopGameShell]} edges={['top']}>
         {hardcoreMode && (
-          <Animated.View entering={FadeInDown} style={styles.heartsContainer}>
+          <View style={styles.heartsContainer}>
             {HEART_KEYS.map((key, i) => (
-              <Ionicons 
-                key={key} 
-                name={i < lives ? "heart" : "heart-outline"} 
-                size={32} 
-                color={i < lives ? "#FF4B4B" : "rgba(255,255,255,0.3)"} 
+              <Ionicons
+                key={key}
+                name={i < lives ? 'heart' : 'heart-outline'}
+                size={20}
+                color={i < lives ? theme.incorrect : theme.inkMuted}
               />
             ))}
-          </Animated.View>
+          </View>
         )}
 
         <View style={[styles.headerContainer, isDesktop && styles.desktopHeaderContainer]}>
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <Ionicons name="close" size={28} color="rgba(255,255,255,0.7)" />
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Pauzeren"
+          >
+            <Ionicons name="close" size={22} color={theme.inkSecondary} />
           </TouchableOpacity>
           <View style={styles.scoreWrapper}>
             <ScoreBar
@@ -769,21 +788,38 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         {renderTimerOrStopwatch()}
 
         {isDesktop && (
-          <View style={styles.desktopHotkeyStrip}>
-            <Text style={styles.hotkeyText}><Text style={styles.hotkeyCap}>←</Text> {leftLabel}</Text>
-            <Text style={styles.hotkeyDivider}>•</Text>
-            <Text style={styles.hotkeyText}><Text style={styles.hotkeyCap}>→</Text> {rightLabel}</Text>
-            <Text style={styles.hotkeyDivider}>•</Text>
-            <Text style={styles.hotkeyText}><Text style={styles.hotkeyCap}>Esc</Text> pauze</Text>
+          <View
+            style={[
+              styles.desktopHotkeyStrip,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <Text style={[styles.hotkeyText, { color: theme.inkSecondary }]}>
+              <Text style={[styles.hotkeyCap, { color: theme.ink }]}>←</Text> {leftLabel}
+            </Text>
+            <Text style={[styles.hotkeyDivider, { color: theme.border }]}>·</Text>
+            <Text style={[styles.hotkeyText, { color: theme.inkSecondary }]}>
+              <Text style={[styles.hotkeyCap, { color: theme.ink }]}>→</Text> {rightLabel}
+            </Text>
+            <Text style={[styles.hotkeyDivider, { color: theme.border }]}>·</Text>
+            <Text style={[styles.hotkeyText, { color: theme.inkSecondary }]}>
+              <Text style={[styles.hotkeyCap, { color: theme.ink }]}>Esc</Text> pauze
+            </Text>
           </View>
         )}
 
         <View style={[styles.cardStack, isDesktop && styles.desktopCardStack]}>
           {/* Next card preview (behind) */}
           {nextItem && (
-            <View style={[styles.previewCard, { transform: [{ scale: 0.92 }, { translateY: 16 }], width: '85%' }]}>
+            <View
+              style={[styles.previewCard, { transform: [{ scale: 0.94 }, { translateY: 12 }], width: '88%' }]}
+              pointerEvents="none"
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              aria-hidden
+            >
               <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
-                <View style={{ padding: 32, alignItems: 'center', justifyContent: 'center', minHeight: 280 }}>
+                <View style={styles.previewContent}>
                   <CardContent
                     mode={mode}
                     item={nextItem}
@@ -801,7 +837,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
               key={currentIndex}
               onSwipeRight={handleSwipeRight}
               onSwipeLeft={handleSwipeLeft}
-              active={!gameOver}
+              active={!gameOver && !isPaused && !showTutorial && !feedbackInfo}
               leftLabel={leftLabel}
               rightLabel={rightLabel}
               combo={combo}
@@ -819,114 +855,156 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         {/* Power-up HUD */}
         {!gameOver && currentItem && !showTutorial && !feedbackInfo && stats && (
           <View style={styles.powerupRow}>
-            {/* Shield Indicator */}
-            <View style={[styles.powerupBadge, { opacity: stats.shields > 0 ? 1 : 0.5 }]}>
-              <Text style={styles.powerupIcon}>🛡️</Text>
-              <Text style={styles.powerupCount}>{stats.shields}</Text>
+            <View
+              style={[
+                styles.powerupBadge,
+                {
+                  backgroundColor: theme.surface,
+                  borderColor: theme.border,
+                  opacity: stats.shields > 0 ? 1 : 0.45,
+                },
+              ]}
+            >
+              <Ionicons name="shield-checkmark-outline" size={15} color={theme.inkSecondary} />
+              <Text style={[styles.powerupCount, { color: theme.inkSecondary }]}>{stats.shields}</Text>
             </View>
 
-            {/* Time Slow Button */}
             {isSpelling && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={handleUseTimeSlow}
                 disabled={stats.timeSlows <= 0}
                 style={[
-                  styles.powerupButton, 
-                  { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                  stats.timeSlows <= 0 && { opacity: 0.4 }
+                  styles.powerupButton,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                  stats.timeSlows <= 0 && styles.powerupDisabled,
                 ]}
+                testID="powerup-button"
+                accessible
+                accessibilityRole="button"
+                accessibilityLabel="Tijd vertragen"
               >
-                <Text style={styles.powerupIcon}>⏱️</Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>{stats.timeSlows}</Text>
+                <Ionicons name="timer-outline" size={18} color={theme.inkSecondary} />
+                <View
+                  style={[
+                    styles.countBadge,
+                    { backgroundColor: theme.surfaceMuted, borderColor: theme.surface },
+                  ]}
+                >
+                  <Text style={[styles.countText, { color: theme.ink }]}>{stats.timeSlows}</Text>
                 </View>
               </TouchableOpacity>
             )}
 
-            {/* Hint Button */}
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleUseHint}
               disabled={stats.hints <= 0 || activeHint !== null}
               style={[
-                styles.powerupButton, 
-                { backgroundColor: theme.glass.highlight, borderColor: theme.glass.border },
-                (stats.hints <= 0 || activeHint !== null) && { opacity: 0.4 }
+                styles.powerupButton,
+                { backgroundColor: theme.surface, borderColor: theme.border },
+                (stats.hints <= 0 || activeHint !== null) && styles.powerupDisabled,
               ]}
+              testID="powerup-button"
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel="Hint gebruiken"
             >
-              <Text style={styles.powerupIcon}>🔍</Text>
-              <View style={styles.countBadge}>
-                <Text style={styles.countText}>{stats.hints}</Text>
+              <Ionicons name="search-outline" size={18} color={theme.inkSecondary} />
+              <View
+                style={[
+                  styles.countBadge,
+                  { backgroundColor: theme.surfaceMuted, borderColor: theme.surface },
+                ]}
+              >
+                <Text style={[styles.countText, { color: theme.ink }]}>{stats.hints}</Text>
               </View>
             </TouchableOpacity>
           </View>
         )}
 
-        {/* Bubbly Action Buttons */}
+        {/* Swipe actions */}
         {!gameOver && currentItem && !showTutorial && !feedbackInfo && (
-          <Animated.View 
-            entering={FadeInDown.delay(200).duration(400)}
-            style={[styles.actionRow, isDesktop && styles.desktopActionRow]}
-          >
-            <>
-              <BouncyButton
-                style={[
-                  styles.actionButton,
-                  activeHint === 'left' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
-                ]}
-                color="#FF4B4B"
-                borderColor="#D33333"
-                bottomBorderColor="#9A1D1D"
-                onPress={handleSwipeLeft}
+          <View style={[styles.actionRow, isDesktop && styles.desktopActionRow]}>
+            <Pressable
+              onPress={handleSwipeLeft}
+              style={({ pressed }) => [
+                styles.actionButton,
+                {
+                  backgroundColor: pressed ? theme.incorrectBg : theme.surface,
+                  borderColor: activeHint === 'left' ? theme.incorrect : theme.border,
+                  borderWidth: activeHint === 'left' ? 2 : 1,
+                },
+              ]}
+              testID="action-button"
+              accessibilityRole="button"
+              accessibilityLabel={`${leftLabel}, swipe naar links`}
+            >
+              <Ionicons name="arrow-back" size={18} color={theme.incorrect} />
+              <Text style={[styles.actionButtonText, { color: theme.incorrect }]} numberOfLines={1}>
+                {leftLabel}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleSwipeRight}
+              style={({ pressed }) => [
+                styles.actionButton,
+                {
+                  backgroundColor: pressed ? theme.correct : theme.correct,
+                  borderColor: activeHint === 'right' ? theme.ink : theme.correct,
+                  borderWidth: activeHint === 'right' ? 2 : 1,
+                  opacity: pressed ? 0.88 : 1,
+                },
+              ]}
+              testID="action-button"
+              accessibilityRole="button"
+              accessibilityLabel={`${rightLabel}, swipe naar rechts`}
+            >
+              <Text
+                style={[styles.actionButtonText, { color: theme.isDark ? '#0F1012' : '#FFFFFF' }]}
+                numberOfLines={1}
               >
-                <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit>{leftLabel}</Text>
-                {activeHint === 'left' && <View style={styles.hintDot} />}
-              </BouncyButton>
-              
-              <BouncyButton
-                style={[
-                  styles.actionButton,
-                  activeHint === 'right' ? { borderColor: '#FFFFFF', borderWidth: 4 } : undefined
-                ]}
-                color="#58CC02"
-                borderColor="#46A302"
-                bottomBorderColor="#2D6A01"
-                onPress={handleSwipeRight}
-              >
-                <Text style={styles.actionButtonText} numberOfLines={1} adjustsFontSizeToFit>{rightLabel}</Text>
-                {activeHint === 'right' && <View style={styles.hintDot} />}
-              </BouncyButton>
-            </>
-          </Animated.View>
+                {rightLabel}
+              </Text>
+              <Ionicons
+                name="arrow-forward"
+                size={18}
+                color={theme.isDark ? '#0F1012' : '#FFFFFF'}
+              />
+            </Pressable>
+          </View>
         )}
       </SafeAreaView>
 
-      {showTutorial && (
-        <TutorialOverlay
-          onDismiss={handleDismissTutorial}
-          mode={mode}
-        />
-      )}
+      {showTutorial && <TutorialOverlay mode={mode} onDismiss={handleDismissTutorial} />}
 
       {feedbackInfo && (
-        <Animated.View 
-          entering={SlideInDown.duration(300)} 
-          exiting={SlideOutDown.duration(250)}
-          style={[styles.feedbackPanel, isDesktop && styles.desktopFeedbackPanel]}
+        <Animated.View
+          entering={SlideInDown.springify().damping(24).stiffness(260)}
+          exiting={SlideOutDown.duration(180)}
+          style={[
+            styles.feedbackPanel,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+            isDesktop && styles.desktopFeedbackPanel,
+          ]}
         >
-          <View style={styles.feedbackContent}>
-            <Text style={styles.feedbackTitle}>{feedbackInfo.title}</Text>
-            <Text style={styles.feedbackSubtitle}>{feedbackInfo.subtitle}</Text>
+          <View style={styles.feedbackHeader}>
+            <View style={[styles.feedbackIcon, { backgroundColor: theme.incorrectBg }]}>
+              <Ionicons name="close" size={16} color={theme.incorrect} />
+            </View>
+            <View style={styles.feedbackHeading}>
+              <Text style={[styles.feedbackKicker, { color: theme.incorrect }]}>Fout</Text>
+              <Text style={[styles.feedbackTitle, { color: theme.ink }]}>{feedbackInfo.title}</Text>
+            </View>
           </View>
+
+          <Text style={[styles.feedbackSubtitle, { color: theme.inkSecondary }]}>
+            {feedbackInfo.subtitle}
+          </Text>
+
           <BouncyButton
-            title={gameOver || isSpelling ? "Bekijk Resultaten" : "Doorgaan"}
-            color="#FFFFFF"
-            borderColor="#E2E8F0"
-            bottomBorderColor="#CBD5E1"
-            textStyle={styles.continueButtonText}
-            onPress={() => {
-              setFeedbackInfo(null);
-              advanceGame(false);
-            }}
+            title={gameOver ? 'Bekijk resultaten' : 'Doorgaan'}
+            onPress={handleContinue}
+            style={styles.continueButton}
           />
         </Animated.View>
       )}
@@ -937,45 +1015,33 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         onQuit={handleQuit}
         score={score}
       />
-      {shootConfetti && (
-        <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-          <ConfettiBurst 
-            count={60} 
-            origin={{x: -10, y: 0}} 
-            fallSpeed={2500} 
-            explosionSpeed={350} 
-            fadeOut={true} 
-          />
-          <ConfettiBurst 
-            count={60} 
-            origin={{x: 400, y: 0}} 
-            fallSpeed={2500} 
-            explosionSpeed={350} 
-            fadeOut={true} 
-          />
-        </View>
-      )}
 
       {showShieldAlert && (
-        <Animated.View 
-          entering={FadeInDown.duration(300)} 
-          exiting={FadeOut.duration(300)} 
+        <Animated.View
+          entering={FadeInDown.duration(180)}
+          exiting={FadeOut.duration(140)}
           style={styles.toastContainer}
         >
-          <View style={[styles.toast, { backgroundColor: '#3B82F6' }]}>
-            <Text style={styles.toastText}>🛡️ Schild gebruikt! Fout voorkomen.</Text>
+          <View style={[styles.toast, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="shield-checkmark-outline" size={15} color={theme.inkSecondary} />
+            <Text style={[styles.toastText, { color: theme.ink }]}>
+              Schild gebruikt, fout voorkomen
+            </Text>
           </View>
         </Animated.View>
       )}
 
       {showTimeSlowAlert && (
-        <Animated.View 
-          entering={FadeInDown.duration(300)} 
-          exiting={FadeOut.duration(300)} 
+        <Animated.View
+          entering={FadeInDown.duration(180)}
+          exiting={FadeOut.duration(140)}
           style={styles.toastContainer}
         >
-          <View style={[styles.toast, { backgroundColor: '#10B981' }]}>
-            <Text style={styles.toastText}>⏱️ Tijd gereset! (+1.5s)</Text>
+          <View style={[styles.toast, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Ionicons name="timer-outline" size={15} color={theme.inkSecondary} />
+            <Text style={[styles.toastText, { color: theme.ink }]}>
+              Tijd gereset, 1,5 seconde extra
+            </Text>
           </View>
         </Animated.View>
       )}
@@ -989,29 +1055,30 @@ const styles = StyleSheet.create({
   },
   desktopGameShell: {
     width: '100%',
-    maxWidth: 600,
+    maxWidth: 620,
     alignSelf: 'center',
     paddingHorizontal: 24,
   },
   heartsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
+    gap: 6,
     paddingTop: 8,
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
+    paddingTop: 4,
   },
   desktopHeaderContainer: {
-    paddingTop: 18,
+    paddingTop: 12,
     paddingHorizontal: 0,
   },
   closeButton: {
     padding: 8,
-    marginRight: -10, // Pull score bar slightly left
+    marginRight: -6,
     zIndex: 10,
   },
   scoreWrapper: {
@@ -1023,276 +1090,258 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   desktopCardStack: {
-    minHeight: 430,
-    maxHeight: 560,
+    minHeight: 420,
+    maxHeight: 540,
   },
   desktopHotkeyStrip: {
     alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginTop: 14,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
+    gap: 10,
+    marginTop: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
   },
   hotkeyText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.8)',
-    textTransform: 'uppercase',
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
   },
   hotkeyCap: {
-    fontFamily: 'Inter_900Black',
-    color: '#FFFFFF',
+    fontFamily: 'Inter_600SemiBold',
   },
   hotkeyDivider: {
-    color: 'rgba(255,255,255,0.36)',
-    fontFamily: 'Inter_800ExtraBold',
+    fontFamily: 'Inter_400Regular',
+    fontSize: 12,
   },
   previewCard: {
     position: 'absolute',
     width: '100%',
     maxWidth: 420,
     alignItems: 'center',
-    opacity: 0.6,
+    opacity: 0.45,
   },
-  cardPlaceholder: {
-    width: '100%',
-    maxWidth: 420,
-    minHeight: 300,
-    borderRadius: 24,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 2,
-    borderBottomWidth: 8,
-    borderColor: '#E2E8F0',
-    borderBottomColor: '#CBD5E1',
-    padding: 32,
+  previewContent: {
+    padding: 28,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 280,
   },
   cardContent: {
     alignItems: 'center',
-    gap: 16,
+    gap: 12,
   },
   instructionText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 14,
-    color: '#64748B', // Muted slate
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: 8,
+    fontFamily: 'Inter_500Medium',
+    fontSize: 13,
+    textAlign: 'center',
+    letterSpacing: 0.1,
+    marginBottom: 4,
   },
   wordRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 10,
   },
   speakButton: {
     padding: 8,
-    backgroundColor: 'rgba(167, 139, 250, 0.15)',
-    borderRadius: 20,
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: RADIUS.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   wordText: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 36,
-    color: '#1E293B', // Dark slate
+    fontFamily: 'Inter_700Bold',
+    fontSize: 34,
+    letterSpacing: -1,
     textAlign: 'center',
   },
   definitionText: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 18,
-    color: '#475569', // Secondary slate
+    fontFamily: 'Inter_400Regular',
+    fontSize: 16,
     textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 26,
+    lineHeight: 24,
   },
   proverbText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 24,
-    color: '#1E293B', // Dark slate
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 22,
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: 30,
   },
   spellingText: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 34,
-    color: '#1E293B', // Dark slate
+    fontFamily: 'Inter_700Bold',
+    fontSize: 32,
+    letterSpacing: -0.8,
     textAlign: 'center',
-    lineHeight: 42,
+    lineHeight: 40,
   },
   actionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingBottom: 40,
+    paddingBottom: 28,
+    paddingHorizontal: 20,
     width: '100%',
-    gap: 32,
+    gap: 10,
   },
   desktopActionRow: {
     justifyContent: 'center',
-    paddingBottom: 28,
+    paddingBottom: 20,
+    maxWidth: 460,
+    alignSelf: 'center',
   },
   actionButton: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 2,
-    borderBottomWidth: 8,
+    flex: 1,
+    minHeight: 52,
+    borderRadius: RADIUS.control,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
-    paddingVertical: 0,
-    paddingHorizontal: 0,
+    gap: 8,
+    paddingHorizontal: 14,
   },
   actionButtonText: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 20,
-    color: '#FFFFFF',
-    textTransform: 'uppercase',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 15,
   },
   feedbackPanel: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FF4B4B',
     padding: 24,
-    paddingBottom: 40, // Account for safe area
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 20,
+    paddingBottom: 36,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderTopWidth: 1,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 12,
     zIndex: 100,
   },
   desktopFeedbackPanel: {
     left: '50%',
     right: undefined,
-    width: 680,
-    transform: [{ translateX: -340 }],
+    width: 520,
+    transform: [{ translateX: -260 }],
     bottom: 24,
-    borderRadius: 24,
+    borderRadius: 16,
+    borderWidth: 1,
     paddingBottom: 24,
   },
-  feedbackContent: {
-    marginBottom: 24,
+  feedbackHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginBottom: 10,
+  },
+  feedbackIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: RADIUS.control,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  feedbackHeading: {
+    flex: 1,
+  },
+  feedbackKicker: {
+    fontFamily: 'Inter_500Medium',
+    fontSize: 12,
+    letterSpacing: 0.1,
+    marginBottom: 2,
   },
   feedbackTitle: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    color: '#FFFFFF',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  feedbackSubtitle: {
     fontFamily: 'Inter_600SemiBold',
     fontSize: 18,
-    color: '#FFFFFF',
-    lineHeight: 26,
-    opacity: 0.95,
+    letterSpacing: -0.2,
   },
-  continueButtonText: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 18,
-    color: '#FF4B4B',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  feedbackSubtitle: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 14,
+    lineHeight: 21,
+    marginBottom: 18,
+  },
+  continueButton: {
+    width: '100%',
   },
   powerupRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
-    marginBottom: 20,
+    gap: 10,
+    marginBottom: 14,
     alignItems: 'center',
   },
   powerupBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.35)',
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    minHeight: 40,
+    borderRadius: RADIUS.pill,
+    borderWidth: 1,
     gap: 6,
   },
   powerupCount: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
   },
   powerupButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 2,
-    borderBottomWidth: 4,
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.pill,
+    borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
   },
-  powerupIcon: {
-    fontSize: 20,
+  powerupDisabled: {
+    opacity: 0.4,
   },
   countBadge: {
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#EC4899',
-    width: 18,
-    height: 18,
-    borderRadius: 9,
+    minWidth: 17,
+    height: 17,
+    borderRadius: RADIUS.pill,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: '#FFFFFF',
+    borderWidth: 1,
+    paddingHorizontal: 3,
   },
   countText: {
-    fontFamily: 'Inter_800ExtraBold',
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 10,
-    color: '#FFFFFF',
   },
   toastContainer: {
     position: 'absolute',
-    top: 100,
+    top: 88,
     left: 20,
     right: 20,
     alignItems: 'center',
     zIndex: 999,
   },
   toast: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: RADIUS.control,
+    borderWidth: 1,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
   },
   toastText: {
-    fontFamily: 'Inter_700Bold',
-    fontSize: 15,
-    color: '#FFFFFF',
-  },
-  hintDot: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#34D399',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+    fontFamily: 'Inter_500Medium',
+    fontSize: 13,
   },
 });

@@ -75,13 +75,28 @@ export function Titlebar() {
       
       {!isMac && (
         <View style={styles.windowControls}>
-          <TouchableOpacity onPress={() => tauriWindow?.minimize()} style={styles.controlButton}>
+          <TouchableOpacity
+            onPress={() => tauriWindow?.minimize()}
+            style={styles.controlButton}
+            accessibilityRole="button"
+            accessibilityLabel="Minimaliseren"
+          >
             <Ionicons name="remove" size={16} color="rgba(255,255,255,0.7)" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => tauriWindow?.toggleMaximize()} style={styles.controlButton}>
+          <TouchableOpacity
+            onPress={() => tauriWindow?.toggleMaximize()}
+            style={styles.controlButton}
+            accessibilityRole="button"
+            accessibilityLabel={maximized ? 'Verkleinen' : 'Maximaliseren'}
+          >
             <Ionicons name={maximized ? "copy-outline" : "stop-outline"} size={14} color="rgba(255,255,255,0.7)" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => tauriWindow?.close()} style={[styles.controlButton, styles.closeButton]}>
+          <TouchableOpacity
+            onPress={() => tauriWindow?.close()}
+            style={[styles.controlButton, styles.closeButton]}
+            accessibilityRole="button"
+            accessibilityLabel="Sluiten"
+          >
             <Ionicons name="close" size={16} color="rgba(255,255,255,0.7)" />
           </TouchableOpacity>
         </View>

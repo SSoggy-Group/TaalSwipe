@@ -9,7 +9,7 @@ import Animated, {
   runOnJS,
   cancelAnimation,
 } from 'react-native-reanimated';
-import { Colors } from '../theme/colors';
+import { useAppTheme, RADIUS } from '../theme/colors';
 
 export interface TimerBarRef {
   addTime: (ms: number) => void;
@@ -19,6 +19,7 @@ export interface TimerBarRef {
 interface TimerBarProps {
   readonly duration: number; // ms (max duration)
   readonly running: boolean;
+  readonly paused?: boolean; // freeze without resetting the visible bar
   readonly onTimeUp: () => void;
   readonly onPanicChange?: (isPanicking: boolean) => void;
   readonly resetKey?: number; // change to reset timer completely
@@ -26,7 +27,8 @@ interface TimerBarProps {
 
 export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
   (props, ref) => {
-    const { duration, running, onTimeUp, onPanicChange, resetKey } = props;
+    const { duration, running, paused = false, onTimeUp, onPanicChange, resetKey } = props;
+    const theme = useAppTheme();
     const progress = useSharedValue(1);
     const hasPanicked = useSharedValue(false);
 
@@ -59,13 +61,15 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
       if (running) {
         progress.value = 1;
         startTimer(1);
+      } else if (paused) {
+        cancelAnimation(progress);
       } else {
         cancelAnimation(progress);
         progress.value = 1;
         hasPanicked.value = false;
         if (onPanicChange) onPanicChange(false);
       }
-    }, [resetKey, running, duration]);
+    }, [resetKey, running, paused, duration]);
 
     useAnimatedReaction(
       () => progress.value,
@@ -86,11 +90,11 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
       const width = `${progress.value * 100}%` as any;
       let color: string;
       if (progress.value > 0.5) {
-        color = Colors.timerActive;
+        color = theme.timerActive;
       } else if (progress.value > 0.25) {
-        color = Colors.timerWarning;
+        color = theme.timerWarning;
       } else {
-        color = Colors.timerDanger;
+        color = theme.timerDanger;
       }
 
       return {
@@ -100,7 +104,7 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
     });
 
     return (
-      <View style={styles.track}>
+      <View style={[styles.track, { backgroundColor: theme.surfaceMuted }]}>
         <Animated.View style={[styles.bar, barStyle]} />
       </View>
     );
@@ -109,15 +113,14 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
 
 const styles = StyleSheet.create({
   track: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    height: 4,
+    borderRadius: RADIUS.pill,
     marginHorizontal: 20,
     marginTop: 12,
     overflow: 'hidden',
   },
   bar: {
     height: '100%',
-    borderRadius: 3,
+    borderRadius: RADIUS.pill,
   },
 });

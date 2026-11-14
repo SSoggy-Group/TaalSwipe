@@ -1,166 +1,215 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import Animated, { FadeIn, FadeOut, ZoomIn, SlideInDown } from 'react-native-reanimated';
-import { useAppTheme } from '../theme/colors';
+import { StyleSheet, Text, View, Pressable, Modal, Platform } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { useAppTheme, RADIUS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { BouncyButton } from './BouncyButton';
 
 interface Props {
   readonly mode: string;
   readonly onDismiss: () => void;
 }
 
-export function TutorialOverlay({ mode, onDismiss }: Props) {
-  const theme = useAppTheme();
+interface TutorialCopy {
+  left: string;
+  right: string;
+  title: string;
+  body: string;
+}
 
-  let leftText = 'FOUT';
-  let rightText = 'GOED';
-  let explanation = 'Swipe rechts als het klopt,\nswipe links als het fout is!';
-
+function getCopy(mode: string): TutorialCopy {
   switch (mode) {
     case 'straattaal':
-      leftText = 'NEP';
-      rightText = 'ECHT';
-      explanation = 'Is dit woord échte straattaal, of heeft een AI dit verzonnen om je voor de gek te houden?';
-      break;
+      return {
+        left: 'Verzonnen',
+        right: 'Echt',
+        title: 'Straattaal of AI?',
+        body: 'Rechts: echt. Links: verzonnen.',
+      };
     case 'dunglish':
-      leftText = 'NEP';
-      rightText = 'ECHT';
-      explanation = 'Is dit een echt Engels spreekwoord, of is het letterlijk vertaald "Steenkolenengels" (Dunglish)?';
-      break;
+      return {
+        left: 'Nep',
+        right: 'Echt',
+        title: 'Steenkolenengels',
+        body: 'Rechts: echt spreekwoord, letterlijk vertaald. Links: verzonnen.',
+      };
     case 'spelling':
-      explanation = 'Beoordeel zo snel mogelijk of het woord of de zin 100% correct gespeld is.';
-      break;
+      return {
+        left: 'Fout',
+        right: 'Goed',
+        title: 'Goed of fout gespeld?',
+        body: 'Rechts: goed gespeld. Links: fout.',
+      };
     case 'dt':
-      explanation = 'Klopt de werkwoordspelling? Let vooral goed op de d, t, en dt!';
-      break;
+      return {
+        left: 'Fout',
+        right: 'Goed',
+        title: 'D, t of dt?',
+        body: 'Rechts: juiste vorm. Links: foute vorm.',
+      };
     case 'vandale':
-      leftText = 'ONZIN';
-      rightText = 'VAN DALE';
-      explanation = 'Staat dit bizarre woord écht in de Dikke Van Dale, of is het complete onzin?';
-      break;
+      return {
+        left: 'Onzin',
+        right: 'Van Dale',
+        title: 'Staat het in de Van Dale?',
+        body: 'Rechts: staat in de Van Dale. Links: verzonnen.',
+      };
     case 'brand':
-      leftText = 'SOORT';
-      rightText = 'MERK';
-      explanation = 'Is dit woord officieel een beschermd merk, of een algemene soortnaam?';
-      break;
+      return {
+        left: 'Soortnaam',
+        right: 'Merknaam',
+        title: 'Merk of soort?',
+        body: 'Rechts: merknaam. Links: soortnaam.',
+      };
+    default:
+      return {
+        left: 'Onjuist',
+        right: 'Juist',
+        title: 'Zo speel je',
+        body: 'Rechts: goed. Links: fout.',
+      };
   }
+}
+
+export function TutorialOverlay({ mode, onDismiss }: Props) {
+  const theme = useAppTheme();
+  const copy = getCopy(mode);
+
+  React.useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    // The shared modal focus trap lands on its leading focus bracket. Move
+    // focus to the tutorial's primary action so Enter starts the round.
+    const timer = setTimeout(() => {
+      const button = document.querySelector<HTMLElement>('[role="dialog"] [role="button"]');
+      button?.focus();
+    }, 60);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <Pressable style={styles.container} onPress={onDismiss}>
-      <Animated.View 
-        entering={FadeIn.duration(400)} 
-        exiting={FadeOut.duration(300)} 
-        style={styles.innerContainer}
-      >
-        <View style={styles.overlayBackground} />
-        
-        {/* Helper Arrows and Labels */}
-        <Animated.View entering={SlideInDown.delay(300)} style={styles.helperRow}>
-          <View style={styles.helperColumn}>
-            <Ionicons name="arrow-back-circle" size={48} color="#FF4B4B" />
-            <Text style={styles.helperLabelRed}>{leftText}</Text>
-          </View>
-          <View style={styles.helperColumn}>
-            <Ionicons name="arrow-forward-circle" size={48} color="#34D399" />
-            <Text style={styles.helperLabelGreen}>{rightText}</Text>
-          </View>
-        </Animated.View>
-
-        {/* Mascot / Explanation Card */}
-        <Animated.View 
-          entering={ZoomIn.delay(600).springify()} 
-          style={[styles.explanationCard, { backgroundColor: theme.glass.background, borderColor: theme.glass.border }]}
+    <Modal
+      transparent
+      visible
+      animationType="none"
+      onRequestClose={onDismiss}
+      statusBarTranslucent
+      accessibilityLabel={copy.title}
+    >
+      <View style={styles.container}>
+        <Animated.View
+          entering={FadeIn.duration(160)}
+          style={styles.innerContainer}
+          pointerEvents="box-none"
         >
-          <Text style={styles.mascotEmoji}>🦉</Text>
-          <Text style={[styles.title, { color: theme.cardTextPrimary }]}>Hoe het werkt</Text>
-          <Text style={[styles.explanation, { color: theme.cardTextSecondary }]}>{explanation}</Text>
-          
-          <View style={styles.dismissButton}>
-            <Text style={styles.dismissText}>Tik om te beginnen</Text>
-          </View>
-        </Animated.View>
+          <Animated.View
+            style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
+          >
+            <View style={styles.helperRow}>
+              <View style={styles.helperColumn}>
+                <View style={[styles.helperIcon, { backgroundColor: theme.incorrectBg }]}>
+                  <Ionicons name="arrow-back" size={20} color={theme.incorrect} />
+                </View>
+                <Text style={[styles.helperLabel, { color: theme.incorrect }]}>{copy.left}</Text>
+              </View>
 
-      </Animated.View>
-    </Pressable>
+              <View style={[styles.helperDivider, { backgroundColor: theme.border }]} />
+
+              <View style={styles.helperColumn}>
+                <View style={[styles.helperIcon, { backgroundColor: theme.correctBg }]}>
+                  <Ionicons name="arrow-forward" size={20} color={theme.correct} />
+                </View>
+                <Text style={[styles.helperLabel, { color: theme.correct }]}>{copy.right}</Text>
+              </View>
+            </View>
+
+            <Text style={[styles.title, { color: theme.ink }]}>{copy.title}</Text>
+            <Text style={[styles.body, { color: theme.inkSecondary }]}>{copy.body}</Text>
+
+            <BouncyButton title="Start" onPress={onDismiss} style={styles.button} autoFocus />
+          </Animated.View>
+        </Animated.View>
+        <Pressable
+          accessible={false}
+          focusable={false}
+          tabIndex={-1}
+          style={styles.backdrop}
+          onPress={onDismiss}
+        />
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    position: 'relative',
+  },
+  backdrop: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 999,
+    backgroundColor: 'rgba(16, 18, 22, 0.55)',
+    zIndex: 0,
   },
   innerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 24,
+    zIndex: 1,
   },
-  overlayBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  card: {
+    padding: 24,
+    borderRadius: RADIUS.card + 2,
+    borderWidth: 1,
+    width: '100%',
+    maxWidth: 380,
   },
   helperRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    paddingHorizontal: 40,
-    marginBottom: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24,
+    marginBottom: 24,
   },
   helperColumn: {
     alignItems: 'center',
     gap: 8,
+    flex: 1,
   },
-  helperLabelRed: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    color: '#FF4B4B',
-  },
-  helperLabelGreen: {
-    fontFamily: 'Inter_900Black',
-    fontSize: 24,
-    color: '#34D399',
-  },
-  explanationCard: {
-    padding: 32,
-    borderRadius: 24,
-    borderWidth: 1,
+  helperIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: RADIUS.control,
     alignItems: 'center',
-    width: '85%',
+    justifyContent: 'center',
   },
-  mascotEmoji: {
-    fontSize: 64,
-    marginBottom: 16,
-    marginTop: -64, // Pop out of the card
+  helperLabel: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 13,
+  },
+  helperDivider: {
+    width: 1,
+    height: 40,
   },
   title: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 24,
-    marginBottom: 12,
-  },
-  explanation: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 16,
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 20,
+    letterSpacing: -0.2,
+    marginBottom: 8,
     textAlign: 'center',
-    lineHeight: 24,
+  },
+  body: {
+    fontFamily: 'Inter_400Regular',
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 22,
     marginBottom: 24,
   },
-  dismissButton: {
-    backgroundColor: '#38BDF8',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 100,
-  },
-  dismissText: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 16,
+  button: {
+    width: '100%',
   },
 });

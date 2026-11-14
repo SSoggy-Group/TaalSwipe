@@ -1,0 +1,33 @@
+{
+  "name": "TaalSwipe",
+  "short_name": "TaalSwipe",
+  "description": "Swipe through Dutch language challenges and improve spelling, grammar, slang and brand knowledge.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F6F4EF",
+  "theme_color": "#1F4E79",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["education", "games"],
+  "lang": "nl",
+  "dir": "ltr"
+}
