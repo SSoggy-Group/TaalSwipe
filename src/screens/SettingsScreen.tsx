@@ -135,7 +135,9 @@ export function SettingsScreen({ navigation }: Props) {
                           },
                         ]}
                         accessibilityRole="button"
-                        accessibilityLabel={pref}
+                        accessibilityLabel={
+                          pref === 'system' ? 'Systeemthema' : pref === 'light' ? 'Licht thema' : 'Donker thema'
+                        }
                       >
                         <Ionicons
                           name={icon}
@@ -224,6 +226,8 @@ export function SettingsScreen({ navigation }: Props) {
             <TouchableOpacity
               onPress={handleResetTutorials}
               style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}
+              accessibilityRole="button"
+              accessibilityLabel="Tutorials herstellen"
             >
               <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
                 <Ionicons name="refresh-outline" size={17} color={theme.inkSecondary} />

@@ -210,16 +210,24 @@ export function ShopScreen({ navigation }: Props) {
       if (isUnlocked) {
         return { buttonTitle: 'Gebruiken', buttonVariant: 'secondary' as const, badge: 'Ontgrendeld', disabled: false, equipped: false };
       }
-      return { buttonTitle: `${item.price} XP`, buttonVariant: 'primary' as const, badge: '', disabled: false, equipped: false };
+      const canAfford = stats.xp >= item.price;
+      return {
+        buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
+        buttonVariant: 'primary' as const,
+        badge: '',
+        disabled: !canAfford,
+        equipped: false,
+      };
     }
 
     if (item.type === 'powerup') {
       const statsKey = item.statsKey as 'shields' | 'timeSlows' | 'hints' | 'doubleXpBonuses';
+      const canAfford = stats.xp >= item.price;
       return {
-        buttonTitle: `${item.price} XP`,
+        buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
         buttonVariant: 'primary' as const,
         badge: `In bezit: ${stats[statsKey] || 0}`,
-        disabled: false,
+        disabled: !canAfford,
         equipped: false,
       };
     }
@@ -228,7 +236,14 @@ export function ShopScreen({ navigation }: Props) {
     if (stats.xpMultiplier >= targetMultiplier) {
       return { buttonTitle: 'Gekocht', buttonVariant: 'secondary' as const, badge: 'Actief', disabled: true, equipped: false };
     }
-    return { buttonTitle: `${item.price} XP`, buttonVariant: 'primary' as const, badge: '', disabled: false, equipped: false };
+    const canAfford = stats.xp >= item.price;
+    return {
+      buttonTitle: canAfford ? `${item.price} XP` : `Nog ${item.price - stats.xp} XP`,
+      buttonVariant: 'primary' as const,
+      badge: '',
+      disabled: !canAfford,
+      equipped: false,
+    };
   };
 
   return (
@@ -240,7 +255,7 @@ export function ShopScreen({ navigation }: Props) {
             rightNode={
               <View style={[styles.xpBadge, { backgroundColor: theme.surfaceMuted }]}>
                 <Ionicons name="diamond-outline" size={13} color={theme.inkSecondary} />
-                <Text style={[styles.xpText, { color: theme.ink }]}>{stats?.xp ?? 0}</Text>
+                <Text style={[styles.xpText, { color: theme.ink }]}>{stats?.xp ?? 0} XP</Text>
               </View>
             }
           />
@@ -256,6 +271,8 @@ export function ShopScreen({ navigation }: Props) {
                 <TouchableOpacity
                   key={tab.key}
                   onPress={() => setActiveTab(tab.key)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isActive }}
                   style={[
                     styles.tabButton,
                     isActive && { backgroundColor: theme.surface, borderColor: theme.border },
@@ -315,6 +332,7 @@ export function ShopScreen({ navigation }: Props) {
                     disabled={state.disabled}
                     onPress={() => handleAction(item)}
                     style={styles.itemButton}
+                    accessibilityLabel={`${item.name}: ${state.buttonTitle}`}
                   />
                 </View>
               );

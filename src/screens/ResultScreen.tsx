@@ -69,7 +69,9 @@ export function ResultScreen({ route, navigation }: Props) {
   }, [score, total, rawMode]);
 
   const percentage = total > 0 ? (score / total) * 100 : 0;
-  const copy = getResultCopy(percentage);
+  const copy = total === 0
+    ? { title: 'Ronde gestopt', body: 'Je hebt nog geen antwoorden gegeven. Start een nieuwe ronde wanneer je wilt.' }
+    : getResultCopy(percentage);
 
   const handleShare = async () => {
     try {
@@ -192,11 +194,13 @@ export function ResultScreen({ route, navigation }: Props) {
                 title="Nog een keer"
                 onPress={() => navigation.navigate('Game', { mode: rawMode || 'spelling' } as any)}
               />
-              <BouncyButton
-                title="Deel score"
-                variant="secondary"
-                onPress={handleShare}
-              />
+              {total > 0 ? (
+                <BouncyButton
+                  title="Deel score"
+                  variant="secondary"
+                  onPress={handleShare}
+                />
+              ) : null}
               <BouncyButton
                 title="Naar menu"
                 variant="quiet"

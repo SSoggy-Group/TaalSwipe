@@ -4,7 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePWAInstall } from '../hooks/usePlatform';
 import { useAppTheme, RADIUS } from '../theme/colors';
 
-export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
+interface Props {
+  readonly isHome: boolean;
+}
+
+export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }: Props) {
   const { canInstall, install, preparePrompt } = usePWAInstall();
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -14,7 +18,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
   const slideAnim = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
-    if (!canInstall || dismissed) return;
+    if (!isHome || !canInstall || dismissed) return;
     if (typeof window === 'undefined') return;
     if (sessionStorage.getItem('taalswipe-pwa-install-dismissed')) return;
 
@@ -38,7 +42,11 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [canInstall, dismissed]);
+  }, [canInstall, dismissed, isHome]);
+
+  useEffect(() => {
+    if (!isHome) setShowPrompt(false);
+  }, [isHome]);
 
   const dismiss = () => {
     Animated.parallel([
@@ -61,7 +69,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
     dismiss();
   };
 
-  if (!showPrompt) return null;
+  if (!showPrompt || !isHome) return null;
 
   return (
     <Animated.View

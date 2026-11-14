@@ -183,7 +183,12 @@ export function StatsScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <TouchableOpacity onPress={handleResetPress} style={styles.resetButton}>
+      <TouchableOpacity
+        onPress={handleResetPress}
+        style={styles.resetButton}
+        accessibilityRole="button"
+        accessibilityLabel="Voortgang wissen"
+      >
         <Ionicons name="trash-outline" size={15} color={theme.incorrect} />
         <Text style={[styles.resetText, { color: theme.incorrect }]}>Voortgang wissen</Text>
       </TouchableOpacity>
@@ -325,6 +330,8 @@ export function StatsScreen({ navigation, route }: Props) {
                 <TouchableOpacity
                   key={tab.key}
                   onPress={() => setActiveTab(tab.key)}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isActive }}
                   style={[
                     styles.tabButton,
                     isActive && {

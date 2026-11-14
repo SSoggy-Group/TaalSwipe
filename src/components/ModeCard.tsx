@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   compactCard: {
-    minHeight: 108,
+    minHeight: 96,
     alignItems: 'flex-start',
-    paddingVertical: 16,
+    paddingVertical: 14,
   },
   iconTile: {
     width: 40,

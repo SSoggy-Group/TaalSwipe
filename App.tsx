@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StatusBar, View, useColorScheme } from 'react-native';
+import { StatusBar, View, Image, ActivityIndicator, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
 import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
@@ -14,6 +14,7 @@ import { useAppTheme } from './src/theme/colors';
 function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fontError, setFontError] = useState<Error | null>(null);
+  const [routeName, setRouteName] = useState('Home');
   const systemScheme = useColorScheme();
   const theme = useAppTheme();
   const loadingBackground = systemScheme === 'dark' ? '#0F1012' : '#F6F4EF';
@@ -62,7 +63,24 @@ function App() {
   }, []);
 
   if (!fontsLoaded && !fontError) {
-    return <View style={{ flex: 1, backgroundColor: loadingBackground }} />;
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: loadingBackground,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 18,
+        }}
+      >
+        <Image
+          source={require('./assets/logo.png')}
+          style={{ width: 88, height: 88, borderRadius: 22 }}
+          accessibilityIgnoresInvertColors
+        />
+        <ActivityIndicator color={theme.accent} />
+      </View>
+    );
   }
 
   return (
@@ -72,8 +90,8 @@ function App() {
         translucent
         backgroundColor="transparent"
       />
-      <AppNavigator />
-      <PWAInstallPrompt />
+      <AppNavigator onRouteChange={setRouteName} />
+      <PWAInstallPrompt isHome={routeName === 'Home'} />
     </GestureHandlerRootView>
   );
 }

@@ -64,7 +64,10 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
           <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt straattaal of AI-verzonnen?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{s.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(s.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}>
+            <TouchableOpacity onPress={() => speakWord(s.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
               <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
@@ -79,7 +82,10 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
           <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt Nederlands spreekwoord?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.proverbText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>"{d.text}"</Text>
-            <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}>
+            <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
               <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
@@ -93,7 +99,10 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
           <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed of fout gespeld?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.spellingText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{sp.text}</Text>
-            <TouchableOpacity onPress={() => speakWord(sp.text)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}>
+            <TouchableOpacity onPress={() => speakWord(sp.text)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
               <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
@@ -128,7 +137,10 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
           <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Staat dit in de Van Dale?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{vd.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(vd.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}>
+            <TouchableOpacity onPress={() => speakWord(vd.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
               <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
@@ -142,7 +154,10 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
           <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merknaam of soortnaam?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{b.word}</Text>
-            <TouchableOpacity onPress={() => speakWord(b.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}>
+            <TouchableOpacity onPress={() => speakWord(b.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
+              accessibilityRole="button"
+              accessibilityLabel="Woord uitspreken"
+            >
               <Ionicons name="volume-high" size={18} color={theme.accent} />
             </TouchableOpacity>
           </View>
@@ -785,7 +800,13 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         <View style={[styles.cardStack, isDesktop && styles.desktopCardStack]}>
           {/* Next card preview (behind) */}
           {nextItem && (
-            <View style={[styles.previewCard, { transform: [{ scale: 0.94 }, { translateY: 12 }], width: '88%' }]}>
+            <View
+              style={[styles.previewCard, { transform: [{ scale: 0.94 }, { translateY: 12 }], width: '88%' }]}
+              pointerEvents="none"
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              aria-hidden
+            >
               <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
                 <View style={styles.previewContent}>
                   <CardContent
@@ -1118,7 +1139,11 @@ const styles = StyleSheet.create({
   },
   speakButton: {
     padding: 8,
+    minWidth: 44,
+    minHeight: 44,
     borderRadius: RADIUS.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   wordText: {
     fontFamily: 'Inter_700Bold',

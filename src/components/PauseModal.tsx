@@ -21,6 +21,7 @@ export function PauseModal({ visible, onResume, onQuit, score }: Props) {
       animationType="fade"
       onRequestClose={onResume}
       statusBarTranslucent
+      accessibilityLabel="Spel gepauzeerd"
     >
       <Pressable accessible={false} style={styles.container} onPress={onResume}>
         <View

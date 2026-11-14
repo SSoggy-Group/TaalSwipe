@@ -32,7 +32,14 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
   const renderButtons = buttons || defaultButtons;
 
   return (
-    <Modal transparent visible={visible} animationType="fade" onRequestClose={handleClose} statusBarTranslucent>
+    <Modal
+      transparent
+      visible={visible}
+      animationType="fade"
+      onRequestClose={handleClose}
+      statusBarTranslucent
+      accessibilityLabel={title}
+    >
       <Pressable accessible={false} style={styles.overlay} onPress={handleClose}>
         <View
           style={[styles.alertContainer, { backgroundColor: theme.surface, borderColor: theme.border }]}

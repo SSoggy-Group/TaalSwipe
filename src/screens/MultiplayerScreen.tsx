@@ -412,7 +412,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                 Speel samen op één scherm
               </Text>
               <Text style={[styles.setupSubtitle, { color: theme.inkSecondary }]}>
-                Kies de categorieën. Wie het eerst vijftien punten haalt, wint.
+                Kies minimaal één categorie. Wie het eerst vijftien punten haalt, wint.
               </Text>
             </View>
 
@@ -423,6 +423,9 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                   <TouchableOpacity
                     key={m.key}
                     onPress={() => toggleMode(m.key)}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: isEnabled }}
+                    accessibilityLabel={m.name}
                     style={[
                       styles.setupItem,
                       { backgroundColor: theme.surface, borderColor: theme.border },
@@ -458,6 +461,9 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setShowDefinitions(!showDefinitions);
               }}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: showDefinitions }}
+              accessibilityLabel="Definities tonen"
               style={[styles.setupItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
               focusable={false}
             >
@@ -515,6 +521,8 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               style={[styles.quitButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
               focusable={false}
               onPress={() => setGameStarted(false)}
+              accessibilityRole="button"
+              accessibilityLabel="Wedstrijd stoppen"
             >
               <Ionicons name="close" size={14} color={theme.inkSecondary} />
               <Text style={[styles.quitText, { color: theme.inkSecondary }]}>Stop</Text>

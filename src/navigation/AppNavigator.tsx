@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { GameScreen } from '../screens/GameScreen';
@@ -20,6 +20,7 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
 
 const linking: LinkingOptions<RootStackParamList> = {
   prefixes: [], // E.g. ['https://taalswipe.nl', 'taalswipe://']
@@ -36,9 +37,24 @@ const linking: LinkingOptions<RootStackParamList> = {
   },
 };
 
-export function AppNavigator() {
+interface AppNavigatorProps {
+  onRouteChange?: (routeName: string) => void;
+}
+
+export function AppNavigator({ onRouteChange }: AppNavigatorProps) {
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer
+      ref={navigationRef}
+      linking={linking}
+      onReady={() => {
+        const route = navigationRef.getCurrentRoute();
+        if (route?.name) onRouteChange?.(route.name);
+      }}
+      onStateChange={(state) => {
+        const route = state?.routes[state.index];
+        if (route?.name) onRouteChange?.(route.name);
+      }}
+    >
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

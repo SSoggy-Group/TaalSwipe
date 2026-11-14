@@ -20,6 +20,7 @@ interface Props {
   readonly bottomBorderColor?: string;
   readonly disabled?: boolean;
   readonly variant?: Variant;
+  readonly accessibilityLabel?: string;
 }
 
 const AnimatedPressable = createAnimatedComponent(Pressable);
@@ -43,6 +44,7 @@ export const BouncyButton = React.memo(function BouncyButton({
   color,
   disabled = false,
   variant = 'primary',
+  accessibilityLabel,
 }: Props) {
   const theme = useAppTheme();
   const scale = useSharedValue(1);
@@ -72,7 +74,7 @@ export const BouncyButton = React.memo(function BouncyButton({
   if (isFilled) {
     backgroundColor = disabled ? theme.surfaceMuted : fill;
     borderColor = backgroundColor;
-    labelColor = disabled ? theme.inkMuted : readableOn(fill);
+    labelColor = disabled ? theme.inkSecondary : readableOn(fill);
   } else if (variant === 'secondary') {
     borderColor = theme.borderStrong;
     labelColor = theme.ink;
@@ -88,14 +90,14 @@ export const BouncyButton = React.memo(function BouncyButton({
       disabled={disabled}
       style={[
         styles.button,
-        { backgroundColor, borderColor, opacity: disabled ? 0.6 : 1 },
+        { backgroundColor, borderColor, opacity: disabled ? 0.72 : 1 },
         style,
         animatedStyle,
       ]}
       accessible
       focusable={false}
       accessibilityRole="button"
-      accessibilityLabel={title || 'Knop'}
+      accessibilityLabel={accessibilityLabel || title || 'Knop'}
       testID="bouncy-button"
     >
       {title ? (

@@ -35,30 +35,69 @@ export function usePlatform() {
   return { isWeb, isDesktop, prefersReducedMotion };
 }
 
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+};
+
+// Capture beforeinstallprompt as soon as the module loads. The browser can
+// fire it before React mounts, and a listener added in an effect misses it.
+let deferredInstallPrompt: InstallPromptEvent | null = null;
+const installPromptListeners = new Set<() => void>();
+let installPromptListenerReady = false;
+
+function notifyInstallPromptListeners() {
+  installPromptListeners.forEach((listener) => listener());
+}
+
+function ensureInstallPromptListener() {
+  if (installPromptListenerReady) return;
+  if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') return;
+
+  installPromptListenerReady = true;
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    // Keep the browser's own install UI out of the way while we show ours.
+    event.preventDefault();
+    deferredInstallPrompt = event as InstallPromptEvent;
+    notifyInstallPromptListeners();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    notifyInstallPromptListeners();
+  });
+}
+
+ensureInstallPromptListener();
+
 export function usePWAInstall() {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [canInstall, setCanInstall] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<InstallPromptEvent | null>(deferredInstallPrompt);
+  const [canInstall, setCanInstall] = useState(!!deferredInstallPrompt);
   const [promptReady, setPromptReady] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    ensureInstallPromptListener();
 
-    const handler = (e: Event) => {
-      // Keep the browser's own install UI out of the way while we show ours.
-      e.preventDefault();
-      setDeferredPrompt(e as any);
-      setCanInstall(true);
+    const update = () => {
+      setDeferredPrompt(deferredInstallPrompt);
+      setCanInstall(!!deferredInstallPrompt);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    installPromptListeners.add(update);
+    update();
 
-    // Also check if already installed
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    if (isStandalone || (window.navigator as any).standalone === true) {
-      setCanInstall(false);
+    // Also check if already installed.
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      if (isStandalone || (window.navigator as any).standalone === true) {
+        setCanInstall(false);
+      }
     }
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => {
+      installPromptListeners.delete(update);
+    };
   }, []);
 
   const preparePrompt = () => {
@@ -68,11 +107,12 @@ export function usePWAInstall() {
   };
 
   const install = async () => {
-    const promptEvent = deferredPrompt;
+    const promptEvent = deferredPrompt || deferredInstallPrompt;
     if (!promptEvent) return false;
 
     // A BeforeInstallPromptEvent can only be used once. Clear it before
     // awaiting so a second click can never reuse it.
+    deferredInstallPrompt = null;
     setDeferredPrompt(null);
     setCanInstall(false);
     setPromptReady(false);
