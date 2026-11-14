@@ -10,9 +10,17 @@ env:
   SENTRY_DISABLE_AUTO_UPLOAD: 'true'
   NODE_ENV: 'production'
 
+permissions:
+  contents: write
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,15 +43,31 @@ jobs:
       - name: Expo Prebuild (Generate Android folder)
         run: npx expo prebuild -p android --clean
 
+      - name: Prepare release keystore
+        if: env.ANDROID_KEYSTORE_BASE64 != ''
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/release.keystore
+          echo "ANDROID_KEYSTORE_PATH=release.keystore" >> "$GITHUB_ENV"
+
       - name: Build APK (Release)
         working-directory: android
         run: ./gradlew assembleRelease
+
+      - name: Name APKs per architecture
+        working-directory: android/app/build/outputs/apk/release
+        run: |
+          for abi in arm64-v8a armeabi-v7a universal; do
+            if [ -f "app-$abi-release.apk" ]; then
+              mv "app-$abi-release.apk" "TaalSwipe-$abi.apk"
+            fi
+          done
+          ls -lh *.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TaalSwipe-Release-APK
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
           retention-days: 7
 
   build-tauri:
@@ -125,6 +149,13 @@ jobs:
           name: Release ${{ steps.get_version.outputs.version }}
           draft: false
           prerelease: false
+          body: |
+            **Android**
+            - `TaalSwipe-arm64-v8a.apk` — voor vrijwel elke moderne telefoon (aanbevolen).
+            - `TaalSwipe-armeabi-v7a.apk` — alleen voor oude 32-bit toestellen.
+            - `TaalSwipe-universal.apk` — werkt op beide, maar is groter.
+
+            Meldt Android een handtekeningconflict? Verwijder dan eenmalig de oudere installatie voordat je deze APK installeert.
           files: |
             artifacts/**/*.apk
             artifacts/**/*.dmg

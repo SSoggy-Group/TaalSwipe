@@ -78,6 +78,12 @@ npm run desktop:dev
 ```
 This builds and launches the Tauri window.
 
+### Release signing
+
+Android release APKs are signed with a private keystore that CI reads from GitHub Actions secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, and `ANDROID_KEY_PASSWORD`.
+
+Without those secrets (for example on a fork) the build falls back to the debug keystore. Keep a backup of the release keystore: if it is lost, installed apps can no longer receive updates under the same identity.
+
 ### Bypassing macOS "Damaged App" Warning
 If you downloaded the pre-built Mac `.dmg` from the internet, macOS Gatekeeper might block it and say the app is "damaged" because it's an unsigned student project. 
 To bypass this without using the terminal, you have two options:

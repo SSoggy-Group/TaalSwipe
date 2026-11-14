@@ -686,7 +686,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
           text: 'Zoek op Google',
           action: () => {
             const url = `https://www.google.com/search?q=${encodeURIComponent(wordText)}`;
-            window.open(url, '_blank');
+            window.open(url, '_blank', 'noopener,noreferrer');
           }
         });
         
