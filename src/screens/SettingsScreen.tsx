@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Switch, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Switch, ScrollView, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAppTheme, RADIUS } from '../theme/colors';
@@ -69,6 +69,13 @@ export function SettingsScreen({ navigation }: Props) {
 
   const [alertVisible, setAlertVisible] = React.useState(false);
   const [alertConfig, setAlertConfig] = React.useState({ title: '', message: '' });
+
+  const handleOpenV1 = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Linking.openURL('https://v1.taalswipe.ssoggy.me').catch(() => {
+      // The browser or desktop shell may not allow opening external URLs.
+    });
+  };
 
   const handleToggleSound = () => {
     toggleSound();
@@ -244,7 +251,7 @@ export function SettingsScreen({ navigation }: Props) {
             <View style={[styles.group, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <TouchableOpacity
               onPress={handleResetTutorials}
-              style={styles.settingRow}
+              style={[styles.settingRow, { borderBottomWidth: 1, borderBottomColor: theme.border }]}
               accessibilityRole="button"
               accessibilityLabel="Uitleg herstellen"
             >
@@ -258,6 +265,24 @@ export function SettingsScreen({ navigation }: Props) {
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={17} color={theme.inkMuted} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleOpenV1}
+              style={styles.settingRow}
+              accessibilityRole="button"
+              accessibilityLabel="Oude versie openen"
+            >
+              <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
+                <Ionicons name="time-outline" size={17} color={theme.inkSecondary} />
+              </View>
+              <View style={styles.settingInfo}>
+                <Text style={[styles.settingTitle, { color: theme.ink }]}>Oude versie</Text>
+                <Text style={[styles.settingDescription, { color: theme.inkSecondary }]}>
+                  Open TaalSwipe v1.
+                </Text>
+              </View>
+              <Ionicons name="open-outline" size={16} color={theme.inkMuted} />
             </TouchableOpacity>
             </View>
 
