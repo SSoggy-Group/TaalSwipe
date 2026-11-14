@@ -56,10 +56,18 @@ export const BouncyButton = React.memo(function BouncyButton({
 
   React.useEffect(() => {
     if (!autoFocus || Platform.OS !== 'web') return;
-    const node = buttonRef.current;
-    if (node && typeof node.focus === 'function') {
-      node.focus();
-    }
+
+    // Defer until after the modal's focus trap has recorded the opener.
+    // Focusing during the child effect would make the trap remember this
+    // button instead, so closing the modal could not restore focus.
+    const timer = setTimeout(() => {
+      const node = buttonRef.current;
+      if (node && typeof node.focus === 'function') {
+        node.focus();
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [autoFocus]);
 
   const handlePressIn = () => {

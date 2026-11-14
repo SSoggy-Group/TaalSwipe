@@ -56,13 +56,23 @@ self.addEventListener('install', (event) => {
         }
       }
 
-      await Promise.all(
-        Array.from(assets).map((asset) =>
+      // The shell and the JavaScript bundles are required for an offline
+      // launch. Everything else (icons, fonts, sounds) is optional.
+      const essentialAssets = new Set(
+        Array.from(assets).filter((asset) => asset === INDEX_URL || asset.endsWith('.js'))
+      );
+      const optionalAssets = Array.from(assets).filter(
+        (asset) => !essentialAssets.has(asset)
+      );
+
+      await Promise.all([
+        ...Array.from(essentialAssets).map((asset) => cache.add(asset)),
+        ...optionalAssets.map((asset) =>
           cache.add(asset).catch(() => {
             // Ignore a missing optional asset and keep installing.
           })
-        )
-      );
+        ),
+      ]);
     })
   );
   self.skipWaiting();
