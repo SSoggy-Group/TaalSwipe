@@ -38,49 +38,49 @@ const MODES: readonly ModeEntry[] = [
     key: 'multiplayer',
     icon: 'people-outline',
     title: 'Multiplayer',
-    description: 'Speel met z\'n tweeën op één scherm en kijk wie het eerst vijftien punten haalt.',
+    description: 'Met z\'n tweeën op één scherm. Eerste bij 15 punten wint.',
     meta: '2 spelers',
   },
   {
     key: 'straattaal',
     icon: 'chatbubbles-outline',
     title: 'Straattaal of AI?',
-    description: 'Herken echte straattaal tussen woorden die een AI verzon.',
+    description: 'Echte straattaal of AI-onzin?',
     meta: 'Woorden',
   },
   {
     key: 'dunglish',
     icon: 'globe-outline',
     title: 'Steenkolenengels',
-    description: 'Echt Engels spreekwoord of een letterlijke Nederlandse vertaling?',
+    description: 'Echt spreekwoord of kromme vertaling?',
     meta: 'Spreekwoorden',
   },
   {
     key: 'spelling',
     icon: 'text-outline',
     title: 'Speed-spelling',
-    description: 'Beoordeel de spelling voordat de tijd om is.',
+    description: 'Goed gespeld of niet? De klok loopt.',
     meta: 'Tegen de klok',
   },
   {
     key: 'dt',
     icon: 'create-outline',
     title: 'D/t-grammatica',
-    description: 'D, t of dt? Oefen werkwoordsvormen in complete zinnen.',
+    description: 'D, t of dt? Kies de juiste vorm.',
     meta: 'Grammatica',
   },
   {
     key: 'vandale',
     icon: 'book-outline',
     title: 'Dikke Van Dale',
-    description: 'Staat dit woord echt in het woordenboek of is het verzonnen?',
+    description: 'Echt woord of verzonnen?',
     meta: 'Woordenboek',
   },
   {
     key: 'brand',
     icon: 'pricetag-outline',
     title: 'Merk of soort?',
-    description: 'Is dit een beschermde merknaam of inmiddels een gewoon woord?',
+    description: 'Merknaam of gewoon woord?',
     meta: 'Merken',
   },
 ];
@@ -202,12 +202,11 @@ export function HomeScreen({ navigation }: Props) {
               style={[styles.hero, isDesktop && styles.heroDesktop]}
             >
               <View style={styles.heroCopy}>
-                <Text style={[styles.kicker, { color: theme.inkMuted }]}>Nederlands oefenen</Text>
                 <Text style={[styles.title, isDesktop && styles.titleDesktop, { color: theme.ink }]}>
-                  Swipe je door de taal.
+                  Test je Nederlands.
                 </Text>
                 <Text style={[styles.subtitle, { color: theme.inkSecondary }]}>
-                  Korte rondes over spelling, straattaal, merken en grammatica. Rechts als het klopt, links als het niet klopt.
+                  Korte rondes over spelling, straattaal en grammatica.
                 </Text>
 
                 {stats ? (
@@ -232,26 +231,26 @@ export function HomeScreen({ navigation }: Props) {
 
               {isDesktop ? (
                 <View style={[styles.heroAside, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                  <Text style={[styles.asideTitle, { color: theme.ink }]}>Zo werkt een ronde</Text>
+                  <Text style={[styles.asideTitle, { color: theme.ink }]}>Sneltoetsen</Text>
 
                   <View style={styles.asideRow}>
                     <View style={[styles.asideKey, { backgroundColor: theme.incorrectBg }]}>
                       <Ionicons name="arrow-back" size={14} color={theme.incorrect} />
                     </View>
-                    <Text style={[styles.asideText, { color: theme.inkSecondary }]}>Links: onjuist</Text>
+                    <Text style={[styles.asideText, { color: theme.inkSecondary }]}>Fout</Text>
                   </View>
 
                   <View style={styles.asideRow}>
                     <View style={[styles.asideKey, { backgroundColor: theme.correctBg }]}>
                       <Ionicons name="arrow-forward" size={14} color={theme.correct} />
                     </View>
-                    <Text style={[styles.asideText, { color: theme.inkSecondary }]}>Rechts: juist</Text>
+                    <Text style={[styles.asideText, { color: theme.inkSecondary }]}>Goed</Text>
                   </View>
 
                   <View style={[styles.asideDivider, { backgroundColor: theme.border }]} />
 
                   <Text style={[styles.asideHint, { color: theme.inkMuted }]}>
-                    Elke modus gebruikt eigen labels, zoals "echt" en "verzonnen".
+                    Esc om te pauzeren.
                   </Text>
                 </View>
               ) : null}
@@ -266,23 +265,23 @@ export function HomeScreen({ navigation }: Props) {
                 <View style={[styles.metricDivider, { backgroundColor: theme.border }]} />
                 <View style={styles.metric}>
                   <Text style={[styles.metricValue, { color: theme.ink }]}>{accuracy}%</Text>
-                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Nauwkeurigheid</Text>
+                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Percentage goed</Text>
                 </View>
                 <View style={[styles.metricDivider, { backgroundColor: theme.border }]} />
                 <View style={styles.metric}>
                   <Text style={[styles.metricValue, { color: theme.ink }]}>{stats.highestCombo}</Text>
-                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Beste reeks</Text>
+                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Beste combo</Text>
                 </View>
                 <View style={[styles.metricDivider, { backgroundColor: theme.border }]} />
                 <View style={styles.metric}>
                   <Text style={[styles.metricValue, { color: theme.ink }]}>{stats.sessionsPlayed ?? 0}</Text>
-                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Sessies</Text>
+                  <Text style={[styles.metricLabel, { color: theme.inkMuted }]}>Rondes</Text>
                 </View>
               </View>
             ) : null}
 
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: theme.ink }]}>Kies een modus</Text>
+              <Text style={[styles.sectionTitle, { color: theme.ink }]}>Speelmodi</Text>
               <Text style={[styles.sectionHint, { color: theme.inkMuted }]}>{MODES.length} modi</Text>
             </View>
 
@@ -320,11 +319,7 @@ export function HomeScreen({ navigation }: Props) {
               ))}
             </View>
 
-            {isDesktop ? (
-              <Text style={[styles.footer, { color: theme.inkMuted }]}>
-                Sneltoetsen: ← onjuist · → juist · Esc pauze
-              </Text>
-            ) : null}
+
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -443,12 +438,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
   },
-  kicker: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 12,
-    letterSpacing: 0.1,
-    marginBottom: 10,
-  },
   title: {
     fontFamily: 'Inter_700Bold',
     fontSize: 36,
@@ -545,11 +534,5 @@ const styles = StyleSheet.create({
   },
   modeGridLead: {
     width: '100%',
-  },
-  footer: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 32,
   },
 });

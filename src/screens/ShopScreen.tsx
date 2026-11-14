@@ -31,7 +31,7 @@ interface ShopItem {
 
 const SHOP_ITEMS: ShopItem[] = [
   // ACHTERGRONDEN
-  { id: 'bg_ocean', name: 'Oceaan', type: 'background', price: 0, icon: 'water-outline', description: 'Koele blauwgrijze tint voor je scherm.' },
+  { id: 'bg_ocean', name: 'Oceaan', type: 'background', price: 0, icon: 'water-outline', description: 'Koele blauwgrijze tint.' },
   { id: 'bg_neon', name: 'Neon', type: 'background', price: 500, icon: 'moon-outline', description: 'Paarse avondtint.' },
   { id: 'bg_sunset', name: 'Zonsondergang', type: 'background', price: 1000, icon: 'partly-sunny-outline', description: 'Warme, rozige tint.' },
   { id: 'bg_forest', name: 'Bos', type: 'background', price: 1200, icon: 'leaf-outline', description: 'Groene, rustige tint.' },
@@ -59,15 +59,15 @@ const SHOP_ITEMS: ShopItem[] = [
   { id: 'card_ice', name: 'IJs', type: 'card', price: 2800, icon: 'snow-outline', description: 'Koele blauwe rand.' },
 
   // POWER-UPS
-  { id: 'powerup_shield', name: 'Schild', type: 'powerup', statsKey: 'shields', price: 250, icon: 'shield-checkmark-outline', description: 'Voorkomt één fout en houdt je reeks intact.' },
-  { id: 'powerup_timer', name: 'Tijdvertraging', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: 'timer-outline', description: 'Reset de timer in speed-spelling.' },
-  { id: 'powerup_hint', name: 'Hint', type: 'powerup', statsKey: 'hints', price: 400, icon: 'search-outline', description: 'Licht de juiste swipe-richting op.' },
-  { id: 'powerup_double', name: 'Dubbele XP', type: 'powerup', statsKey: 'doubleXpBonuses', price: 600, icon: 'star-outline', description: 'Verdubbelt de XP van je volgende sessie.' },
+  { id: 'powerup_shield', name: 'Schild', type: 'powerup', statsKey: 'shields', price: 250, icon: 'shield-checkmark-outline', description: 'Vangt één fout op.' },
+  { id: 'powerup_timer', name: 'Tijdvertraging', type: 'powerup', statsKey: 'timeSlows', price: 300, icon: 'timer-outline', description: 'Zet de timer terug.' },
+  { id: 'powerup_hint', name: 'Hint', type: 'powerup', statsKey: 'hints', price: 400, icon: 'search-outline', description: 'Laat de juiste richting zien.' },
+  { id: 'powerup_double', name: 'Dubbele XP', type: 'powerup', statsKey: 'doubleXpBonuses', price: 600, icon: 'star-outline', description: 'Dubbele XP in je volgende ronde.' },
 
   // UPGRADES
-  { id: 'upgrade_xp_15', name: 'XP-booster 1,5×', type: 'upgrade', multiplier: 1.5, price: 1500, icon: 'speedometer-outline', description: 'Permanent 50% extra XP.' },
-  { id: 'upgrade_xp_20', name: 'XP-booster 2×', type: 'upgrade', multiplier: 2, price: 3000, icon: 'rocket-outline', description: 'Permanent 100% extra XP.' },
-  { id: 'upgrade_xp_30', name: 'XP-booster 3×', type: 'upgrade', multiplier: 3, price: 6000, icon: 'trophy-outline', description: 'Permanent 200% extra XP.' },
+  { id: 'upgrade_xp_15', name: 'XP-booster 1,5×', type: 'upgrade', multiplier: 1.5, price: 1500, icon: 'speedometer-outline', description: 'Altijd 50% extra XP.' },
+  { id: 'upgrade_xp_20', name: 'XP-booster 2×', type: 'upgrade', multiplier: 2, price: 3000, icon: 'rocket-outline', description: 'Altijd 100% extra XP.' },
+  { id: 'upgrade_xp_30', name: 'XP-booster 3×', type: 'upgrade', multiplier: 3, price: 6000, icon: 'trophy-outline', description: 'Altijd 200% extra XP.' },
 ];
 
 export function ShopScreen({ navigation }: Props) {
@@ -109,7 +109,7 @@ export function ShopScreen({ navigation }: Props) {
       }
 
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort.` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }
@@ -136,7 +136,7 @@ export function ShopScreen({ navigation }: Props) {
 
     if (item.type === 'powerup') {
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort.` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }
@@ -161,13 +161,13 @@ export function ShopScreen({ navigation }: Props) {
       const targetMultiplier = item.multiplier || 1;
 
       if (stats.xpMultiplier >= targetMultiplier) {
-        setAlertConfig({ title: 'Al in bezit', message: `Je hebt al een ${stats.xpMultiplier}× of hogere XP-upgrade actief.` });
+        setAlertConfig({ title: 'Al actief', message: 'Je hebt al een sterkere XP-booster.' });
         setAlertVisible(true);
         return;
       }
 
       if (stats.xp < item.price) {
-        setAlertConfig({ title: 'Te weinig XP', message: `Je komt nog ${item.price - stats.xp} XP tekort.` });
+        setAlertConfig({ title: 'Niet genoeg XP', message: `Nog ${item.price - stats.xp} XP nodig.` });
         setAlertVisible(true);
         return;
       }

@@ -4,52 +4,47 @@
 
 # TaalSwipe
 
-TaalSwipe is a Tinder-like swipe game to test your knowledge of Dutch spelling, slang, and weird language facts. You get a flashcard with a word or sentence, and you have to swipe left or right before the panic timer runs out. 
-
-It's super fast, a little stressful, and surprisingly addictive once you get the hang of it. I wanted to make something that actually feels like a modern mobile app rather than just another boring multiple-choice quiz.
+TaalSwipe is a swipe game for Dutch spelling, slang, grammar, and word knowledge. You get a card with a word or sentence and swipe left or right before the timer runs out.
 
 [![Build and Release App](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml) 
 [![Deploy to GitHub Pages](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml)
+
 ## How to play
-- **Swipe Right (Yes/True):** The word is spelled correctly, the sentence makes sense, or the statement is true.
-- **Swipe Left (No/False):** The spelling is completely botched, it's fake slang, or it's just factually wrong.
-- **Don't freeze up:** You have a ticking progress bar at the top of the screen. If you take too long to think, the bar turns red and you fail the round.
-- **Build your combo:** The more cards you get right in a row, the higher your score multiplier goes and the more coins you rack up. If you get one wrong, your combo resets to zero.
+- **Right:** correct, real, or existing.
+- **Left:** incorrect, fake, or made up.
+- **Beat the timer:** the bar at the top runs down. If it empties, the round ends.
+- **Build a combo:** correct answers in a row earn more XP. One mistake resets it.
 
-## What's actually in it?
-I added a bunch of different categories so you're not just doing boring dictation practice. Here are the main game modes you can play:
+## Modes
+- **Straattaal of AI?** — Real slang or AI nonsense?
+- **Steenkolenengels** — A real proverb or a literal translation?
+- **Speed-spelling** — Correctly spelled or not? The clock is running.
+- **D/t-grammatica** — Pick the right verb form.
+- **Dikke Van Dale** — In the dictionary or made up?
+- **Merk of soort?** — Brand name or generic word?
+- **Multiplayer** — Two players, one screen. First to 15 points wins.
 
-- **D/T Spelling:** The classic Dutch struggle. Is it *geüpdatet* or *geüpdate*? Is it *word* or *wordt*? This mode will expose you.
-- **Dunglish:** Literal translations that sound hilarious in English (like "It rains pipe stems" or "Make that the cat wise"). You have to guess if it's a real Dutch proverb translated literally, or if I just made it up.
-- **Street Slang (Straattaal):** Do you actually know what *waggie* or *fissa* means, or are you just guessing? Prove you're not a boomer.
-- **Brands vs Nouns:** Is *pindakaas* a brand name, or is *Chocomel* actually just a generic noun? Some of these will really surprise you.
-- **Dictionary Check:** I dug through the Van Dale dictionary to find the weirdest real words (like *snackslaaf*) and mixed them in with completely made-up nonsense.
-
-## The Shop & Stats
-You earn coins just by playing the game (and you get bonus coins for keeping a long streak). You can drop those coins in the in-game Shop to unlock cool cosmetics:
-- **Backgrounds:** Swap out the standard dark mode for cool animated backgrounds like "Cyber Neon" or "Sunset".
-- **Card Styles:** Change how your flashcards look. You can unlock a pixel-art card, a gold foil one, and more.
-
-There's also a stats page tracking your total swipes, your highest combo, and your total XP so you can flex your accuracy. 
+## Shop and stats
+You earn XP by playing. Spend it on themes, card styles, power-ups, and XP boosters. The stats page tracks rounds, combos, correct answers, and records.
 
 ---
 
-## Nerd Stuff (How to run it)
+## How to run it
 
-If you're looking at the code for grading (or you just want to run it locally), here's the tech stack. This project is built using React Native, Expo, Zustand for state management, and Tauri for the desktop app version. It's meant to run everywhere: web, iOS, Android, and native Mac/Windows.
+TaalSwipe uses React Native, Expo, Zustand, and Tauri. It runs on web, iOS, Android, macOS, and Windows.
 
-I also used `react-native-reanimated` and `react-native-gesture-handler` to build the Tinder-style swiping physics from scratch.
+Swipe physics use `react-native-reanimated` and `react-native-gesture-handler`.
 
-### Project Layout
-- `src/screens/` - All the main pages (Home, Game, Shop, Result, Stats, etc.)
-- `src/components/` - The reusable UI parts like the swipable `SwipeCard`, the `ScoreBar`, and custom buttons.
-- `src/store/` - Zustand stores holding your coins, stats, and equipped shop items.
-- `src/data/` - The actual question databases for each category. It's very easy to add more!
-- `src-tauri/` - The Rust backend stuff for the desktop build.
-- `assets/` - All the app icons, splash screens, and the logo.
+### Project layout
+- `src/screens/` — Home, Game, Shop, Result, Stats, and the rest.
+- `src/components/` — shared UI such as `SwipeCard`, `ScoreBar`, and buttons.
+- `src/store/` — Zustand stores for XP, stats, and shop items.
+- `src/data/` — question data for each mode.
+- `src-tauri/` — desktop shell.
+- `assets/` — app icons, splash screens, and the logo.
 
-### Adding your own questions
-Want to add more words to test your friends? Just open up one of the files in `src/data/` (like `spellingData.ts`) and drop a new object in the array. 
+### Adding questions
+Add an entry to one of the arrays in `src/data/`, such as `spellingData.ts`:
 
 For example:
 ```typescript
@@ -61,28 +56,27 @@ For example:
 }
 ```
 
-### Running the dev server
+### Development
 
-**For mobile (Expo):**
-First, make sure you have Node installed, then run:
+**Mobile (Expo):**
 ```bash
 npm install
 npx expo start
 ```
-Then just scan the QR code in your terminal with the Expo Go app on your phone, or hit `i` to open the iOS simulator if you have Xcode installed.
+Scan the QR code with Expo Go, or press `i` for the iOS simulator.
 
-**For web:**
+**Web:**
 ```bash
 npm run web
 ```
-This will spin up a local web server so you can play the game right in your browser.
+Starts the local web server.
 
-**For desktop (Mac/Windows):**
-You'll need Rust installed for this to work (get it from rustup.rs). Once installed:
+**Desktop (macOS/Windows):**
+Install Rust from [rustup.rs](https://rustup.rs), then:
 ```bash
 npm run desktop:dev
 ```
-This builds and launches a native desktop window using Tauri.
+This builds and launches the Tauri window.
 
 ### Bypassing macOS "Damaged App" Warning
 If you downloaded the pre-built Mac `.dmg` from the internet, macOS Gatekeeper might block it and say the app is "damaged" because it's an unsigned student project. 

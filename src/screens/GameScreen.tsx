@@ -61,7 +61,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const s = item as StraattaalItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt straattaal of AI-verzonnen?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt of verzonnen?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{s.word}</Text>
             <TouchableOpacity onPress={() => speakWord(s.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
@@ -79,7 +79,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const d = item as DunglishItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt Nederlands spreekwoord?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Echt spreekwoord?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.proverbText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>"{d.text}"</Text>
             <TouchableOpacity onPress={() => speakWord(d.text, 'en-US')} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
@@ -96,7 +96,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const sp = item as SpellingItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed of fout gespeld?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Goed gespeld?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.spellingText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{sp.text}</Text>
             <TouchableOpacity onPress={() => speakWord(sp.text)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
@@ -116,7 +116,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Kies het juiste woord</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Juiste vorm?</Text>
           <View style={[styles.wordRow, { paddingHorizontal: 16 }]}>
             <Text style={[styles.spellingText, { fontSize: 24, textAlign: 'center', lineHeight: 34, color: theme.cardTextPrimary }]}>
               {parts[0]}
@@ -134,7 +134,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const vd = item as VanDaleItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Staat dit in de Van Dale?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>In de Van Dale?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary, flexShrink: 1, textAlign: 'center' }]}>{vd.word}</Text>
             <TouchableOpacity onPress={() => speakWord(vd.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
@@ -151,7 +151,7 @@ const CardContent = React.memo(function CardContent({ mode, item, theme, speakWo
       const b = item as BrandItem;
       return (
         <View style={styles.cardContent}>
-          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merknaam of soortnaam?</Text>
+          <Text style={[styles.instructionText, { color: theme.cardTextSecondary }]}>Merk of soort?</Text>
           <View style={styles.wordRow}>
             <Text style={[styles.wordText, { color: theme.cardTextPrimary }]}>{b.word}</Text>
             <TouchableOpacity onPress={() => speakWord(b.word)} style={[styles.speakButton, { backgroundColor: theme.accentSoft }]}
@@ -225,43 +225,49 @@ function getItemDetails(item: any, mode: string): { wordText: string; explanatio
 
 function getStraattaalFeedback(s: StraattaalItem) {
   return {
-    title: s.isReal ? 'Echt straattaal' : 'Verzonnen door AI',
-    message: `"${s.word}" is ${s.isReal ? 'een bestaand straattaalwoord' : 'geen bestaand straattaalwoord'}.\n\nBetekenis: ${s.definition}`,
+    title: s.isReal ? 'Echt' : 'Verzonnen',
+    message: s.isReal
+      ? `"${s.word}" bestaat. ${s.definition}`
+      : `"${s.word}" bestaat niet.`,
   };
 }
 
 function getDunglishFeedback(d: DunglishItem) {
   return {
-    title: d.isRealProverb ? 'Echt spreekwoord' : 'Verzonnen spreekwoord',
-    message: `"${d.text}" is ${d.isRealProverb ? 'een bestaand Engels spreekwoord' : 'geen bestaand Engels spreekwoord'}.\n\nBetekenis: ${d.explanation}`,
+    title: d.isRealProverb ? 'Echt' : 'Verzonnen',
+    message: d.isRealProverb
+      ? `Letterlijk vertaald: ${d.explanation}`
+      : `Niet echt. ${d.explanation}`,
   };
 }
 
 function getSpellingFeedback(sp: SpellingItem) {
   return {
-    title: sp.isCorrect ? 'Juist gespeld' : 'Fout gespeld',
+    title: sp.isCorrect ? 'Goed' : 'Fout',
     message: sp.isCorrect
-      ? `"${sp.text}" is juist gespeld.`
-      : `"${sp.text}" is onjuist gespeld.\n\nDe juiste spelling is: ${sp.correction}`,
+      ? `"${sp.text}" is goed gespeld.`
+      : `"${sp.text}" moet zijn: ${sp.correction}`,
   };
 }
 
 function getVanDaleFeedback(vd: VanDaleItem) {
   return {
-    title: vd.inVanDale ? 'Staat in de Van Dale' : 'Staat niet in de Van Dale',
-    message: `"${vd.word}" staat ${vd.inVanDale ? 'wel' : 'niet'} in de Dikke Van Dale.\n\nBetekenis: ${vd.definition}`,
+    title: vd.inVanDale ? 'Staat erin' : 'Staat er niet in',
+    message: vd.inVanDale
+      ? `"${vd.word}" staat in de Van Dale. ${vd.definition}`
+      : `"${vd.word}" staat niet in de Van Dale.`,
   };
 }
 
 function getBrandFeedback(b: BrandItem) {
   return {
-    title: b.isBrand ? 'Beschermde merknaam' : 'Algemene soortnaam',
-    message: `"${b.word}" is een ${b.isBrand ? 'beschermde merknaam' : 'algemene soortnaam'}.\n\n${b.explanation}`,
+    title: b.isBrand ? 'Merknaam' : 'Soortnaam',
+    message: `"${b.word}" is een ${b.isBrand ? 'merknaam' : 'soortnaam'}. ${b.explanation}`,
   };
 }
 
 function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; message: string } {
-  if (!item) return { title: 'Onjuist', message: '' };
+  if (!item) return { title: 'Fout', message: '' };
   switch (mode) {
     case 'straattaal':
       return getStraattaalFeedback(item);
@@ -271,7 +277,7 @@ function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; m
       return getSpellingFeedback(item);
     case 'dt':
       return {
-        title: 'Onjuiste werkwoordsvorm',
+        title: 'Foute vorm',
         message: item.explanation,
       };
     case 'vandale':
@@ -279,15 +285,15 @@ function getFeedbackTitleAndMessage(item: any, mode: string): { title: string; m
     case 'brand':
       return getBrandFeedback(item);
     default:
-      return { title: 'Onjuist', message: '' };
+      return { title: 'Fout', message: '' };
   }
 }
 
 const modeLabels: Record<string, string> = {
   straattaal: 'Straattaal of AI?',
   dunglish: 'Steenkolenengels',
-  spelling: 'Speed-Spelling',
-  dt: 'D/T Grammatica',
+  spelling: 'Speed-spelling',
+  dt: 'D/t-grammatica',
   vandale: 'Dikke Van Dale',
   brand: 'Merknaam of Soortnaam',
 };
@@ -694,8 +700,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     return () => window.removeEventListener('contextmenu', handleContextMenu);
   }, [gameOver, isPaused, currentItem, mode]);
 
-  let leftLabel = 'Onjuist';
-  let rightLabel = 'Juist';
+  let leftLabel = 'Fout';
+  let rightLabel = 'Goed';
 
   if (mode === 'brand') {
     leftLabel = 'Soortnaam';
@@ -987,7 +993,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
               <Ionicons name="close" size={16} color={theme.incorrect} />
             </View>
             <View style={styles.feedbackHeading}>
-              <Text style={[styles.feedbackKicker, { color: theme.incorrect }]}>Onjuist</Text>
+              <Text style={[styles.feedbackKicker, { color: theme.incorrect }]}>Fout</Text>
               <Text style={[styles.feedbackTitle, { color: theme.ink }]}>{feedbackInfo.title}</Text>
             </View>
           </View>

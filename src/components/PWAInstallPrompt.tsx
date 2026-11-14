@@ -95,10 +95,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt({ isHome }:
         </View>
 
         <View style={styles.textWrapper}>
-          <Text style={[styles.title, { color: theme.ink }]}>Installeer TaalSwipe</Text>
-          <Text style={[styles.subtitle, { color: theme.inkSecondary }]}>
-            Snel starten vanaf je beginscherm, ook offline.
-          </Text>
+          <Text style={[styles.title, { color: theme.ink }]}>Op je beginscherm?</Text>
         </View>
 
         <View style={styles.actions}>
@@ -164,12 +161,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
-    marginBottom: 1,
-  },
-  subtitle: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 12,
-    lineHeight: 17,
   },
   actions: {
     flexDirection: 'row',

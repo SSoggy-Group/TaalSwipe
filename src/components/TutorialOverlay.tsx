@@ -23,50 +23,50 @@ function getCopy(mode: string): TutorialCopy {
       return {
         left: 'Verzonnen',
         right: 'Echt',
-        title: 'Echte straattaal of AI?',
-        body: 'Swipe rechts als het woord echt bestaat. Swipe links als een AI het verzonnen heeft.',
+        title: 'Straattaal of AI?',
+        body: 'Rechts: echt. Links: verzonnen.',
       };
     case 'dunglish':
       return {
         left: 'Nep',
         right: 'Echt',
         title: 'Steenkolenengels',
-        body: 'Swipe rechts als dit een echt Nederlands spreekwoord is dat letterlijk naar het Engels is vertaald. Links als het verzonnen is.',
+        body: 'Rechts: echt spreekwoord, letterlijk vertaald. Links: verzonnen.',
       };
     case 'spelling':
       return {
         left: 'Fout',
         right: 'Goed',
         title: 'Goed of fout gespeld?',
-        body: 'Swipe rechts als de spelling klopt. Links als er een fout in het woord zit.',
+        body: 'Rechts: goed gespeld. Links: fout.',
       };
     case 'dt':
       return {
         left: 'Fout',
         right: 'Goed',
         title: 'D, t of dt?',
-        body: 'Lees de zin en swipe rechts als de werkwoordsvorm klopt. Links als hij fout is.',
+        body: 'Rechts: juiste vorm. Links: foute vorm.',
       };
     case 'vandale':
       return {
         left: 'Onzin',
         right: 'Van Dale',
         title: 'Staat het in de Van Dale?',
-        body: 'Swipe rechts als dit woord echt in de Dikke Van Dale staat. Links als het verzonnen is.',
+        body: 'Rechts: staat in de Van Dale. Links: verzonnen.',
       };
     case 'brand':
       return {
         left: 'Soortnaam',
         right: 'Merknaam',
         title: 'Merk of soort?',
-        body: 'Swipe rechts als dit een beschermde merknaam is. Links als het een algemene soortnaam is.',
+        body: 'Rechts: merknaam. Links: soortnaam.',
       };
     default:
       return {
         left: 'Onjuist',
         right: 'Juist',
-        title: 'Zo werkt het',
-        body: 'Swipe rechts als het klopt en links als het niet klopt.',
+        title: 'Zo speel je',
+        body: 'Rechts: goed. Links: fout.',
       };
   }
 }
@@ -126,7 +126,7 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
             <Text style={[styles.title, { color: theme.ink }]}>{copy.title}</Text>
             <Text style={[styles.body, { color: theme.inkSecondary }]}>{copy.body}</Text>
 
-            <BouncyButton title="Beginnen" onPress={onDismiss} style={styles.button} autoFocus />
+            <BouncyButton title="Start" onPress={onDismiss} style={styles.button} autoFocus />
           </Animated.View>
         </Animated.View>
         <Pressable

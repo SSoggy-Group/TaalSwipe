@@ -323,7 +323,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               {didWin ? `Speler ${player} wint` : `Speler ${player} verliest`}
             </Text>
             <Text style={[styles.statusBody, { color: theme.inkSecondary }]}>
-              {didWin ? 'Als eerste bij de vijftien punten.' : 'Goed gespeeld, maar net te laat.'}
+              {didWin ? 'Eerste bij 15 punten.' : 'Net niet genoeg.'}
             </Text>
           </Animated.View>
         );
@@ -339,7 +339,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
           >
             <View style={[styles.penaltyHeaderRow]}>
               <Ionicons name="close-circle-outline" size={16} color={theme.incorrect} />
-              <Text style={[styles.penaltyHeader, { color: theme.incorrect }]}>Onjuist</Text>
+              <Text style={[styles.penaltyHeader, { color: theme.incorrect }]}>Fout</Text>
             </View>
             <Text style={[styles.penaltyWord, { color: theme.ink }]}>{currentItem.text}</Text>
             <Text style={[styles.penaltyExplanation, { color: theme.inkSecondary }]}>
@@ -412,7 +412,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
                 Speel samen op één scherm
               </Text>
               <Text style={[styles.setupSubtitle, { color: theme.inkSecondary }]}>
-                Kies minimaal één categorie. Wie het eerst vijftien punten haalt, wint.
+                Kies categorieën. Eerste bij 15 punten wint.
               </Text>
             </View>
 
@@ -487,7 +487,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
             </TouchableOpacity>
             </View>
 
-            <BouncyButton title="Start wedstrijd" onPress={handleStartGame} style={styles.startButton} />
+            <BouncyButton title="Start" onPress={handleStartGame} style={styles.startButton} />
 
             <BouncyButton
               title="Annuleren"
@@ -528,7 +528,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
             </TouchableOpacity>
           ) : (
             <BouncyButton
-              title="Terug naar setup"
+              title="Nieuwe wedstrijd"
               variant="secondary"
               onPress={() => setGameStarted(false)}
               style={isLandscape ? styles.winnerButton : undefined}

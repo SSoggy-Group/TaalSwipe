@@ -42,16 +42,16 @@ const ACHIEVEMENTS: Achievement[] = [
   { id: 'level_15', name: 'Taalkampioen', description: 'Bereik niveau 15 (1.400 XP)', icon: 'medal-outline', target: 1400, currentValue: (s) => s.xp },
   { id: 'level_25', name: 'Taallegende', description: 'Bereik niveau 25 (2.400 XP)', icon: 'diamond-outline', target: 2400, currentValue: (s) => s.xp },
   { id: 'level_50', name: 'Taalkoning', description: 'Bereik niveau 50 (4.900 XP)', icon: 'star-outline', target: 4900, currentValue: (s) => s.xp },
-  { id: 'streak_3', name: 'Streakstarter', description: 'Speel 3 dagen op rij', icon: 'calendar-outline', target: 3, currentValue: (s) => s.bestStreak },
+  { id: 'streak_3', name: 'Drie dagen', description: 'Speel 3 dagen op rij', icon: 'calendar-outline', target: 3, currentValue: (s) => s.bestStreak },
   { id: 'streak_7', name: 'Weekstrijder', description: 'Speel 7 dagen op rij', icon: 'flame-outline', target: 7, currentValue: (s) => s.bestStreak },
   { id: 'streak_14', name: 'Taalsporter', description: 'Speel 14 dagen op rij', icon: 'barbell-outline', target: 14, currentValue: (s) => s.bestStreak },
-  { id: 'streak_30', name: 'Streaklegende', description: 'Speel 30 dagen op rij', icon: 'moon-outline', target: 30, currentValue: (s) => s.bestStreak },
+  { id: 'streak_30', name: 'Reekslegende', description: 'Speel 30 dagen op rij', icon: 'moon-outline', target: 30, currentValue: (s) => s.bestStreak },
   { id: 'collector', name: 'Verzamelaar', description: 'Ontgrendel 3 items in de shop', icon: 'bag-outline', target: 3, currentValue: (s) => s.unlockedItems?.length ?? 0 },
   { id: 'big_spender', name: 'Grote spender', description: 'Ontgrendel 8 items in de shop', icon: 'card-outline', target: 8, currentValue: (s) => s.unlockedItems?.length ?? 0 },
-  { id: 'sessions_10', name: 'Vaste speler', description: 'Speel 10 sessies', icon: 'game-controller-outline', target: 10, currentValue: (s) => s.sessionsPlayed ?? 0 },
-  { id: 'sessions_50', name: 'Doorzetter', description: 'Speel 50 sessies', icon: 'game-controller-outline', target: 50, currentValue: (s) => s.sessionsPlayed ?? 0 },
-  { id: 'correct_100', name: 'Nauwkeurige kenner', description: 'Geef 100 keer een juist antwoord', icon: 'checkmark-circle-outline', target: 100, currentValue: (s) => s.totalCorrect ?? 0 },
-  { id: 'correct_500', name: 'Taalperfectionist', description: 'Geef 500 keer een juist antwoord', icon: 'locate-outline', target: 500, currentValue: (s) => s.totalCorrect ?? 0 },
+  { id: 'sessions_10', name: 'Vaste speler', description: 'Speel 10 rondes', icon: 'game-controller-outline', target: 10, currentValue: (s) => s.sessionsPlayed ?? 0 },
+  { id: 'sessions_50', name: 'Doorzetter', description: 'Speel 50 rondes', icon: 'game-controller-outline', target: 50, currentValue: (s) => s.sessionsPlayed ?? 0 },
+  { id: 'correct_100', name: 'Scherpschutter', description: '100 goede antwoorden', icon: 'checkmark-circle-outline', target: 100, currentValue: (s) => s.totalCorrect ?? 0 },
+  { id: 'correct_500', name: 'Feilloos', description: '500 goede antwoorden', icon: 'locate-outline', target: 500, currentValue: (s) => s.totalCorrect ?? 0 },
 ];
 
 const LEADERBOARD_MODES: readonly { id: keyof AppStats['highScores']; icon: IconName; title: string }[] = [
@@ -92,7 +92,7 @@ export function StatsScreen({ navigation, route }: Props) {
   const handleResetPress = () => {
     setAlertConfig({
       title: 'Voortgang wissen',
-      message: 'Weet je zeker dat je al je statistieken, XP en aankopen wilt wissen? Dit kan niet ongedaan worden gemaakt.',
+      message: 'Dit wist je stats, XP en aankopen. Niet terug te draaien.',
       buttons: [
         { text: 'Annuleren', style: 'cancel', onPress: () => {} },
         {
@@ -111,7 +111,7 @@ export function StatsScreen({ navigation, route }: Props) {
   const renderStatsTab = () => (
     <View style={styles.tabContent}>
       <View style={[styles.profileCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-        <Text style={[styles.kicker, { color: theme.inkMuted }]}>Speler</Text>
+        <Text style={[styles.kicker, { color: theme.inkMuted }]}>Jij</Text>
         <View style={styles.profileTopRow}>
           <Text style={[styles.playerTitle, { color: theme.ink }]}>{getPlayerTitle(stats.xp)}</Text>
           <Text style={[styles.playerLevel, { color: theme.inkSecondary }]}>Niveau {currentLevel}</Text>
@@ -137,17 +137,17 @@ export function StatsScreen({ navigation, route }: Props) {
         </View>
       </View>
 
-      <Text style={[styles.sectionTitle, { color: theme.ink }]}>Overzicht</Text>
+      <Text style={[styles.sectionTitle, { color: theme.ink }]}>Cijfers</Text>
       <View style={[styles.statsPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
         {[
           { icon: 'swap-horizontal-outline' as IconName, value: stats.totalSwipes, label: 'Swipes' },
-          { icon: 'flame-outline' as IconName, value: stats.highestCombo, label: 'Beste reeks' },
-          { icon: 'calendar-outline' as IconName, value: stats.currentStreak, label: 'Huidige streak' },
-          { icon: 'trending-up-outline' as IconName, value: stats.bestStreak, label: 'Beste streak' },
+          { icon: 'flame-outline' as IconName, value: stats.highestCombo, label: 'Beste combo' },
+          { icon: 'calendar-outline' as IconName, value: stats.currentStreak, label: 'Dagen op rij' },
+          { icon: 'trending-up-outline' as IconName, value: stats.bestStreak, label: 'Langste reeks' },
           { icon: 'checkmark-circle-outline' as IconName, value: stats.totalCorrect ?? 0, label: 'Goed' },
           { icon: 'close-circle-outline' as IconName, value: stats.totalWrong ?? 0, label: 'Fout' },
-          { icon: 'locate-outline' as IconName, value: `${accuracy}%`, label: 'Nauwkeurigheid' },
-          { icon: 'game-controller-outline' as IconName, value: stats.sessionsPlayed ?? 0, label: 'Sessies' },
+          { icon: 'locate-outline' as IconName, value: `${accuracy}%`, label: 'Percentage goed' },
+          { icon: 'game-controller-outline' as IconName, value: stats.sessionsPlayed ?? 0, label: 'Rondes' },
         ].map((metric, index, metrics) => (
           <View
             key={metric.label}
@@ -205,7 +205,7 @@ export function StatsScreen({ navigation, route }: Props) {
     return (
       <View style={styles.tabContent}>
         <Text style={[styles.achievementSummary, { color: theme.inkSecondary }]}>
-          {completedCount} van {ACHIEVEMENTS.length} behaald
+          {completedCount} van {ACHIEVEMENTS.length} gehaald
         </Text>
 
         <View style={[styles.groupPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -285,7 +285,7 @@ export function StatsScreen({ navigation, route }: Props) {
   const renderLeaderboardTab = () => (
     <View style={styles.tabContent}>
       <Text style={[styles.leaderboardSub, { color: theme.inkSecondary }]}>
-        Je beste score per modus.
+        Je hoogste score per modus.
       </Text>
 
       <View style={[styles.groupPanel, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -314,7 +314,7 @@ export function StatsScreen({ navigation, route }: Props) {
       </View>
 
       <Text style={[styles.leaderboardFooter, { color: theme.inkMuted }]}>
-        Verbeter een record om extra XP te verdienen.
+        Records leveren extra XP op.
       </Text>
     </View>
   );

@@ -98,8 +98,8 @@ export function SettingsScreen({ navigation }: Props) {
     await statsStore.saveStats(currentStats);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     setAlertConfig({
-      title: 'Tutorials hersteld',
-      message: 'Je ziet de uitleg bij elke spelmodus weer één keer.',
+      title: 'Uitleg weer aan',
+      message: 'Je krijgt bij elke modus opnieuw de uitleg.',
     });
     setAlertVisible(true);
   };
@@ -123,7 +123,7 @@ export function SettingsScreen({ navigation }: Props) {
               last
               icon="contrast-outline"
               title="Thema"
-              description="Volg je systeem of kies handmatig."
+              description="Systeem, licht of donker."
               control={
                 <View style={[styles.themeToggle, { backgroundColor: theme.surfaceMuted }]}>
                   {([
@@ -170,7 +170,7 @@ export function SettingsScreen({ navigation }: Props) {
               last
               icon="volume-medium-outline"
               title="Geluidseffecten"
-              description="Feedback bij antwoorden en swipes."
+              description="Korte geluidjes bij je antwoorden."
               control={
                 <Switch
                   value={isSoundEnabled}
@@ -189,7 +189,7 @@ export function SettingsScreen({ navigation }: Props) {
             <SettingRow
               icon="heart-outline"
               title="Hardcore"
-              description="Drie levens, dubbele XP."
+              description="Drie levens. Dubbele XP."
               control={
                 <Switch
                   value={hardcoreMode}
@@ -204,7 +204,7 @@ export function SettingsScreen({ navigation }: Props) {
             <SettingRow
               icon="timer-outline"
               title="Survival"
-              description="Race tegen de klok."
+              description="De klok loopt door. Fouten kosten tijd."
               control={
                 <Switch
                   value={survivalMode}
@@ -223,7 +223,7 @@ export function SettingsScreen({ navigation }: Props) {
               last
               icon="flash-outline"
               title="Speedrun"
-              description="Vijftig woorden, tijd loopt mee."
+              description="50 woorden op tijd."
               control={
                 <Switch
                   value={speedrunMode}
@@ -246,15 +246,15 @@ export function SettingsScreen({ navigation }: Props) {
               onPress={handleResetTutorials}
               style={styles.settingRow}
               accessibilityRole="button"
-              accessibilityLabel="Tutorials herstellen"
+              accessibilityLabel="Uitleg herstellen"
             >
               <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
                 <Ionicons name="refresh-outline" size={17} color={theme.inkSecondary} />
               </View>
               <View style={styles.settingInfo}>
-                <Text style={[styles.settingTitle, { color: theme.ink }]}>Tutorials herstellen</Text>
+                <Text style={[styles.settingTitle, { color: theme.ink }]}>Uitleg herstellen</Text>
                 <Text style={[styles.settingDescription, { color: theme.inkSecondary }]}>
-                  Toon de uitleg opnieuw bij elke modus.
+                  Zie de uitleg weer bij elke modus.
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={17} color={theme.inkMuted} />

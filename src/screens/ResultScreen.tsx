@@ -28,15 +28,15 @@ type Props = Readonly<NativeStackScreenProps<RootStackParamList, 'Result'>>;
 
 function getResultCopy(percentage: number): { title: string; body: string } {
   if (percentage >= 90) {
-    return { title: 'Sterk gespeeld', body: 'Je hebt deze ronde goed onder controle.' };
+    return { title: 'Sterk gespeeld', body: 'Bijna foutloos.' };
   }
   if (percentage >= 70) {
-    return { title: 'Mooie ronde', body: 'Je zit dicht bij een foutloze score.' };
+    return { title: 'Mooie ronde', body: 'Net niet foutloos.' };
   }
   if (percentage >= 50) {
-    return { title: 'Op de goede weg', body: 'Een paar antwoorden gingen mis. Probeer het nog eens.' };
+    return { title: 'Op de goede weg', body: 'Een paar fouten te veel.' };
   }
-  return { title: 'Blijf oefenen', body: 'Bekijk de toelichting hieronder en probeer een nieuwe ronde.' };
+  return { title: 'Blijf oefenen', body: 'Bekijk hieronder wat er misging.' };
 }
 
 export function ResultScreen({ route, navigation }: Props) {
@@ -70,7 +70,7 @@ export function ResultScreen({ route, navigation }: Props) {
 
   const percentage = total > 0 ? (score / total) * 100 : 0;
   const copy = total === 0
-    ? { title: 'Ronde gestopt', body: 'Je hebt nog geen antwoorden gegeven. Start een nieuwe ronde wanneer je wilt.' }
+    ? { title: 'Ronde gestopt', body: 'Je hebt nog niets beantwoord.' }
     : getResultCopy(percentage);
 
   const handleShare = async () => {
@@ -139,7 +139,7 @@ export function ResultScreen({ route, navigation }: Props) {
                 ]}
               >
                 <View style={styles.scoreCardTop}>
-                  <Text style={[styles.kicker, { color: theme.inkMuted }]}>Resultaat</Text>
+                  <Text style={[styles.kicker, { color: theme.inkMuted }]}>Score</Text>
                   {isNewHighScore ? (
                     <View style={[styles.recordPill, { backgroundColor: theme.accentSoft }]}>
                       <Ionicons name="trophy-outline" size={12} color={theme.accent} />
@@ -161,7 +161,7 @@ export function ResultScreen({ route, navigation }: Props) {
                     <Text style={[styles.statValue, { color: theme.ink }]}>
                       {Math.round(percentage)}%
                     </Text>
-                    <Text style={[styles.statLabel, { color: theme.inkMuted }]}>Nauwkeurig</Text>
+                    <Text style={[styles.statLabel, { color: theme.inkMuted }]}>Goed</Text>
                   </View>
                   <View style={[styles.divider, { backgroundColor: theme.border }]} />
                   <View style={styles.statBox}>
