@@ -19,12 +19,14 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
       const assets = new Set(STATIC_ASSETS);
+      let manifestLoaded = false;
 
       try {
         const response = await fetch(PRECACHE_MANIFEST_URL, { cache: 'no-store' });
         if (response.ok) {
           const manifest = await response.json();
           if (Array.isArray(manifest)) {
+            manifestLoaded = true;
             for (const asset of manifest) {
               if (typeof asset === 'string') {
                 assets.add(new URL(asset, self.location.href).href);
@@ -34,6 +36,24 @@ self.addEventListener('install', (event) => {
         }
       } catch {
         // Fall back to the core shell if the manifest is unavailable.
+      }
+
+      // If the build did not produce a manifest, at least read the exported
+      // HTML and precache the hashed entry bundle it references.
+      if (!manifestLoaded) {
+        try {
+          const response = await fetch(INDEX_URL, { cache: 'no-store' });
+          if (response.ok) {
+            const copy = response.clone();
+            const html = await response.text();
+            await cache.put(INDEX_URL, copy);
+            for (const match of html.matchAll(/(?:src|href)="([^"]+\.(?:js|css|ttf|otf|woff2?))"/g)) {
+              assets.add(new URL(match[1], self.location.href).href);
+            }
+          }
+        } catch {
+          // The core shell is still attempted below.
+        }
       }
 
       await Promise.all(
