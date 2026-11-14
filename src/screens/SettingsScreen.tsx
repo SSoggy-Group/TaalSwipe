@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Switch, ScrollView, Linking } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Switch, ScrollView, Linking, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAppTheme, RADIUS } from '../theme/colors';
@@ -72,7 +72,15 @@ export function SettingsScreen({ navigation }: Props) {
 
   const handleOpenV1 = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Linking.openURL('https://v1.taalswipe.ssoggy.me').catch(() => {
+    const url = 'https://v1.taalswipe.ssoggy.me';
+
+    // On the web, open without giving the new page a handle back to the app.
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    Linking.openURL(url).catch(() => {
       // The browser or desktop shell may not allow opening external URLs.
     });
   };

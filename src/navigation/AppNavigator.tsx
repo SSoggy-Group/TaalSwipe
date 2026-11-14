@@ -60,6 +60,9 @@ export function AppNavigator({ onRouteChange }: AppNavigatorProps) {
           headerShown: false,
           animation: 'slide_from_right',
           contentStyle: { backgroundColor: 'transparent' },
+          // Inactive screens stay mounted but stop re-rendering, animations
+          // and timers, which keeps navigation and battery use lighter.
+          freezeOnBlur: true,
         }}
       >
         <Stack.Screen name="Home" component={HomeScreen} options={{ animation: 'fade' }} />
