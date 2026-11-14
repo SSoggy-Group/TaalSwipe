@@ -409,13 +409,14 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
     };
 
     if (gameOver) {
-      navigateToResult(score, currentIndex);
+      // currentIndex has not advanced yet, but the terminal wrong answer counts.
+      navigateToResult(score, currentIndex + 1);
       return;
     }
 
     if (!wasCorrect && isSpelling && !survivalMode && !speedrunMode) {
       setGameOver(true);
-      navigateToResult(score, currentIndex);
+      navigateToResult(score, currentIndex + 1);
       return;
     }
 

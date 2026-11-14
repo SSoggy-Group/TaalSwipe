@@ -1,5 +1,5 @@
 const { execFileSync } = require('node:child_process');
-const { readFileSync, readdirSync, writeFileSync, copyFileSync, existsSync, statSync, mkdirSync } = require('node:fs');
+const { readFileSync, readdirSync, writeFileSync, copyFileSync, cpSync, existsSync, statSync } = require('node:fs');
 const { join } = require('node:path');
 
 const root = join(__dirname, '..');
@@ -12,7 +12,8 @@ execFileSync(process.execPath, [expoCli, 'export', '--platform', 'web'], {
   stdio: 'inherit',
 });
 
-// Copy PWA files from public to dist (flat - only copy files, not directories)
+// Copy PWA files from public to dist. Directories are copied recursively so
+// nested assets keep their structure and an empty destination is created.
 if (existsSync(publicDir)) {
   for (const file of readdirSync(publicDir)) {
     const src = join(publicDir, file);
@@ -21,10 +22,7 @@ if (existsSync(publicDir)) {
     if (stat.isFile()) {
       copyFileSync(src, dest);
     } else if (stat.isDirectory()) {
-      // For directories, copy contents flat to dist
-      for (const subFile of readdirSync(src)) {
-        copyFileSync(join(src, subFile), join(dest, subFile));
-      }
+      cpSync(src, dest, { recursive: true });
     }
   }
 }

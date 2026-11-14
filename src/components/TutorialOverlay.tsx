@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Modal } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { useAppTheme, RADIUS } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,7 +31,7 @@ function getCopy(mode: string): TutorialCopy {
         left: 'Nep',
         right: 'Echt',
         title: 'Steenkolenengels',
-        body: 'Swipe rechts als dit een echt Engels spreekwoord is. Links als het letterlijk uit het Nederlands vertaald is.',
+        body: 'Swipe rechts als dit een echt Nederlands spreekwoord is dat letterlijk naar het Engels is vertaald. Links als het verzonnen is.',
       };
     case 'spelling':
       return {
@@ -76,50 +76,54 @@ export function TutorialOverlay({ mode, onDismiss }: Props) {
   const copy = getCopy(mode);
 
   return (
-    <Pressable style={styles.container} onPress={onDismiss}>
-      <View style={styles.backdrop} />
-      <Animated.View entering={FadeIn.duration(200)} style={styles.innerContainer}>
-        <Animated.View
-          entering={ZoomIn.duration(220)}
-          style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
-          onStartShouldSetResponder={() => true}
-        >
-          <View style={styles.helperRow}>
-            <View style={styles.helperColumn}>
-              <View style={[styles.helperIcon, { backgroundColor: theme.incorrectBg }]}>
-                <Ionicons name="arrow-back" size={20} color={theme.incorrect} />
+    <Modal
+      transparent
+      visible
+      animationType="none"
+      onRequestClose={onDismiss}
+      statusBarTranslucent
+      accessibilityLabel={copy.title}
+    >
+      <Pressable accessible={false} style={styles.container} onPress={onDismiss}>
+        <View style={styles.backdrop} />
+        <Animated.View entering={FadeIn.duration(200)} style={styles.innerContainer}>
+          <Animated.View
+            entering={ZoomIn.duration(220)}
+            style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}
+            onStartShouldSetResponder={() => true}
+          >
+            <View style={styles.helperRow}>
+              <View style={styles.helperColumn}>
+                <View style={[styles.helperIcon, { backgroundColor: theme.incorrectBg }]}>
+                  <Ionicons name="arrow-back" size={20} color={theme.incorrect} />
+                </View>
+                <Text style={[styles.helperLabel, { color: theme.incorrect }]}>{copy.left}</Text>
               </View>
-              <Text style={[styles.helperLabel, { color: theme.incorrect }]}>{copy.left}</Text>
+
+              <View style={[styles.helperDivider, { backgroundColor: theme.border }]} />
+
+              <View style={styles.helperColumn}>
+                <View style={[styles.helperIcon, { backgroundColor: theme.correctBg }]}>
+                  <Ionicons name="arrow-forward" size={20} color={theme.correct} />
+                </View>
+                <Text style={[styles.helperLabel, { color: theme.correct }]}>{copy.right}</Text>
+              </View>
             </View>
 
-            <View style={[styles.helperDivider, { backgroundColor: theme.border }]} />
+            <Text style={[styles.title, { color: theme.ink }]}>{copy.title}</Text>
+            <Text style={[styles.body, { color: theme.inkSecondary }]}>{copy.body}</Text>
 
-            <View style={styles.helperColumn}>
-              <View style={[styles.helperIcon, { backgroundColor: theme.correctBg }]}>
-                <Ionicons name="arrow-forward" size={20} color={theme.correct} />
-              </View>
-              <Text style={[styles.helperLabel, { color: theme.correct }]}>{copy.right}</Text>
-            </View>
-          </View>
-
-          <Text style={[styles.title, { color: theme.ink }]}>{copy.title}</Text>
-          <Text style={[styles.body, { color: theme.inkSecondary }]}>{copy.body}</Text>
-
-          <BouncyButton title="Beginnen" onPress={onDismiss} style={styles.button} />
+            <BouncyButton title="Beginnen" onPress={onDismiss} style={styles.button} />
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
-    </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 999,
+    flex: 1,
   },
   backdrop: {
     position: 'absolute',

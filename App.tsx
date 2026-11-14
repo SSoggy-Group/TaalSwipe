@@ -32,9 +32,10 @@ function App() {
   useEffect(() => {
     soundManager.init();
 
-    // Register Service Worker for PWA
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register(new URL('/sw.js', location.origin)).catch(() => {
+    // Register the service worker only in production builds, and use a
+    // relative URL so sub-path hosting and the Tauri webview keep working.
+    if (!__DEV__ && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {
         // Silently fail if SW registration fails
       });
     }

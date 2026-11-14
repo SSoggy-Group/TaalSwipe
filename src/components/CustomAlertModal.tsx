@@ -51,28 +51,14 @@ export function CustomAlertModal({ visible, title, message, buttons, onClose }: 
               return (
                 <BouncyButton
                   key={btn.text}
+                  title={btn.text}
                   variant={variant}
                   onPress={() => {
                     btn.onPress();
                     handleClose();
                   }}
                   style={styles.button}
-                >
-                  <Text
-                    style={[
-                      styles.buttonText,
-                      {
-                        color: variant === 'secondary'
-                          ? theme.ink
-                          : variant === 'danger'
-                            ? '#FFFFFF'
-                            : theme.accentContrast,
-                      },
-                    ]}
-                  >
-                    {btn.text}
-                  </Text>
-                </BouncyButton>
+                />
               );
             })}
           </View>
@@ -117,9 +103,5 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-  },
-  buttonText: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 15,
   },
 });

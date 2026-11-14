@@ -112,7 +112,7 @@ export function StatsScreen({ navigation, route }: Props) {
     <View style={[styles.statCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <Ionicons name={icon} size={16} color={theme.inkMuted} />
       <Text style={[styles.statValue, { color: theme.ink }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.inkMuted }]}>{label}</Text>
+      <Text style={[styles.statLabel, { color: theme.inkSecondary }]}>{label}</Text>
     </View>
   );
 
@@ -167,19 +167,19 @@ export function StatsScreen({ navigation, route }: Props) {
         <View style={styles.powerupItem}>
           <Ionicons name="shield-checkmark-outline" size={18} color={theme.accent} />
           <Text style={[styles.powerupCount, { color: theme.ink }]}>{stats.shields || 0}</Text>
-          <Text style={[styles.powerupLabel, { color: theme.inkMuted }]}>Schilden</Text>
+          <Text style={[styles.powerupLabel, { color: theme.inkSecondary }]}>Schilden</Text>
         </View>
         <View style={[styles.powerupDivider, { backgroundColor: theme.border }]} />
         <View style={styles.powerupItem}>
           <Ionicons name="timer-outline" size={18} color={theme.accent} />
           <Text style={[styles.powerupCount, { color: theme.ink }]}>{stats.timeSlows || 0}</Text>
-          <Text style={[styles.powerupLabel, { color: theme.inkMuted }]}>Tijd</Text>
+          <Text style={[styles.powerupLabel, { color: theme.inkSecondary }]}>Tijd</Text>
         </View>
         <View style={[styles.powerupDivider, { backgroundColor: theme.border }]} />
         <View style={styles.powerupItem}>
           <Ionicons name="search-outline" size={18} color={theme.accent} />
           <Text style={[styles.powerupCount, { color: theme.ink }]}>{stats.hints || 0}</Text>
-          <Text style={[styles.powerupLabel, { color: theme.inkMuted }]}>Hints</Text>
+          <Text style={[styles.powerupLabel, { color: theme.inkSecondary }]}>Hints</Text>
         </View>
       </View>
 
@@ -256,7 +256,7 @@ export function StatsScreen({ navigation, route }: Props) {
                     <Text
                       style={[
                         styles.achievementProgressText,
-                        { color: isCompleted ? theme.correct : theme.inkMuted },
+                        { color: isCompleted ? theme.correct : theme.inkSecondary },
                       ]}
                     >
                       {currentVal} / {achievement.target}

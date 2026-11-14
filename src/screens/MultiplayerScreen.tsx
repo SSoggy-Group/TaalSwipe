@@ -503,7 +503,13 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
         {/* Player 2 Area (Top or Left) */}
         {renderPlayerArea(2)}
 
-        <View style={[styles.divider, isLandscape && styles.verticalDivider]}>
+        <View
+          style={[
+            styles.divider,
+            isLandscape && styles.verticalDivider,
+            isLandscape && winner !== null && styles.verticalDividerWinner,
+          ]}
+        >
           {winner === null ? (
             <TouchableOpacity
               style={[styles.quitButton, { backgroundColor: theme.surface, borderColor: theme.border }]}
@@ -518,6 +524,7 @@ export function MultiplayerScreen({ navigation }: Readonly<Props>) {
               title="Terug naar setup"
               variant="secondary"
               onPress={() => setGameStarted(false)}
+              style={isLandscape ? styles.winnerButton : undefined}
             />
           )}
         </View>
@@ -670,6 +677,13 @@ const styles = StyleSheet.create({
   verticalDivider: {
     width: 44,
     height: '100%',
+  },
+  verticalDividerWinner: {
+    width: 184,
+  },
+  winnerButton: {
+    width: 176,
+    paddingHorizontal: 12,
   },
   quitButton: {
     flexDirection: 'row',

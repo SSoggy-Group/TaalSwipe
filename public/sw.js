@@ -1,20 +1,28 @@
 // Service Worker for TaalSwipe PWA
 // Caches assets for offline play
 
-const CACHE_NAME = 'taalswipe-v3';
+const CACHE_NAME = 'taalswipe-v4';
 const STATIC_ASSETS = [
-  '/index.html',
-  '/manifest.json',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png',
-  '/web-native.css',
-];
+  './index.html',
+  './manifest.json',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './web-native.css',
+].map((asset) => new URL(asset, self.location.href).href);
+const INDEX_URL = STATIC_ASSETS[0];
 
-// Install: cache static assets
+// Install: cache static assets, tolerating individual failures so one missing
+// file under sub-path hosting cannot block the whole worker.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      return Promise.all(
+        STATIC_ASSETS.map((asset) =>
+          cache.add(asset).catch(() => {
+            // Ignore a missing optional asset and keep installing.
+          })
+        )
+      );
     })
   );
   self.skipWaiting();
@@ -66,7 +74,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async () => {
-          const cached = (await caches.match(request)) || (await caches.match('/index.html'));
+          const cached = (await caches.match(request)) || (await caches.match(INDEX_URL));
           return cached || new Response('Offline', { status: 503 });
         })
     );

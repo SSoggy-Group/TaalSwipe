@@ -55,8 +55,10 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
   };
 
   const handleInstall = async () => {
-    const success = await install();
-    if (success) dismiss();
+    // The prompt event is single-use, so hide the banner after either outcome
+    // (accepted, dismissed, or unavailable) instead of leaving a dead button.
+    await install();
+    dismiss();
   };
 
   if (!showPrompt) return null;
@@ -93,6 +95,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
           <Pressable
             style={styles.dismissButton}
             onPress={dismiss}
+            accessibilityRole="button"
             accessibilityLabel="Melding sluiten"
             focusable={false}
           >
@@ -101,6 +104,7 @@ export const PWAInstallPrompt = React.memo(function PWAInstallPrompt() {
           <Pressable
             style={[styles.installButton, { backgroundColor: theme.accent }]}
             onPress={handleInstall}
+            accessibilityRole="button"
             accessibilityLabel="TaalSwipe installeren"
             focusable={false}
           >

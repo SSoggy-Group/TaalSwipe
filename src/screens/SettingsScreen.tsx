@@ -15,6 +15,35 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
+function SettingRow({
+  icon,
+  title,
+  description,
+  control,
+}: {
+  icon: IconName;
+  title: string;
+  description?: string;
+  control: React.ReactNode;
+}) {
+  const theme = useAppTheme();
+
+  return (
+    <View style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+      <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
+        <Ionicons name={icon} size={17} color={theme.inkSecondary} />
+      </View>
+      <View style={styles.settingInfo}>
+        <Text style={[styles.settingTitle, { color: theme.ink }]}>{title}</Text>
+        {description ? (
+          <Text style={[styles.settingDescription, { color: theme.inkSecondary }]}>{description}</Text>
+        ) : null}
+      </View>
+      {control}
+    </View>
+  );
+}
+
 export function SettingsScreen({ navigation }: Props) {
   const {
     isSoundEnabled,
@@ -67,31 +96,6 @@ export function SettingsScreen({ navigation }: Props) {
     });
     setAlertVisible(true);
   };
-
-  const SettingRow = ({
-    icon,
-    title,
-    description,
-    control,
-  }: {
-    icon: IconName;
-    title: string;
-    description?: string;
-    control: React.ReactNode;
-  }) => (
-    <View style={[styles.settingRow, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-      <View style={[styles.iconTile, { backgroundColor: theme.surfaceMuted }]}>
-        <Ionicons name={icon} size={17} color={theme.inkSecondary} />
-      </View>
-      <View style={styles.settingInfo}>
-        <Text style={[styles.settingTitle, { color: theme.ink }]}>{title}</Text>
-        {description ? (
-          <Text style={[styles.settingDescription, { color: theme.inkSecondary }]}>{description}</Text>
-        ) : null}
-      </View>
-      {control}
-    </View>
-  );
 
   const switchColors = {
     false: theme.borderStrong,
@@ -157,6 +161,7 @@ export function SettingsScreen({ navigation }: Props) {
                   onValueChange={handleToggleSound}
                   trackColor={switchColors}
                   thumbColor="#FFFFFF"
+                  accessibilityLabel="Geluidseffecten"
                 />
               }
             />
@@ -173,6 +178,7 @@ export function SettingsScreen({ navigation }: Props) {
                   onValueChange={handleToggleHardcore}
                   trackColor={switchColors}
                   thumbColor="#FFFFFF"
+                  accessibilityLabel="Hardcore"
                 />
               }
             />
@@ -190,6 +196,7 @@ export function SettingsScreen({ navigation }: Props) {
                   }}
                   trackColor={switchColors}
                   thumbColor="#FFFFFF"
+                  accessibilityLabel="Survival"
                 />
               }
             />
@@ -207,6 +214,7 @@ export function SettingsScreen({ navigation }: Props) {
                   }}
                   trackColor={switchColors}
                   thumbColor="#FFFFFF"
+                  accessibilityLabel="Speedrun"
                 />
               }
             />
