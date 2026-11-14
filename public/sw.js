@@ -1,7 +1,7 @@
 // Service Worker for TaalSwipe PWA
 // Caches assets for offline play
 
-const CACHE_NAME = 'taalswipe-v2';
+const CACHE_NAME = 'taalswipe-v3';
 const STATIC_ASSETS = [
   '/index.html',
   '/manifest.json',
@@ -49,6 +49,25 @@ self.addEventListener('fetch', (event) => {
         // For fonts, we can't cache cross-origin, just let it fail gracefully
         return new Response('', { status: 504 });
       })
+    );
+    return;
+  }
+
+  // Navigations must be network-first, otherwise a cached index.html keeps
+  // pointing at an old JS bundle after a deploy.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(async () => {
+          return (await caches.match(request)) || (await caches.match('/index.html'));
+        })
     );
     return;
   }
