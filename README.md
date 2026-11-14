@@ -6,8 +6,8 @@
 
 TaalSwipe is a swipe game for Dutch spelling, slang, grammar, and word knowledge. You get a card with a word or sentence and swipe left or right before the timer runs out.
 
-[![Build and Release App](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/build-apk.yml) 
-[![Deploy to GitHub Pages](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/SSoggy-Group/TaalSwipe/actions/workflows/deploy-pages.yml)
+[![Build and Release App](https://github.com/SSoggyTacoMan/TaalSwipe/actions/workflows/build-apk.yml/badge.svg)](https://github.com/SSoggyTacoMan/TaalSwipe/actions/workflows/build-apk.yml) 
+[![Deploy to GitHub Pages](https://github.com/SSoggyTacoMan/TaalSwipe/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/SSoggyTacoMan/TaalSwipe/actions/workflows/deploy-pages.yml)
 
 ## How to play
 - **Right:** correct, real, or existing.
