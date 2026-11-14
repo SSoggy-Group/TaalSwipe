@@ -38,7 +38,7 @@ class SoundManager {
     }
   }
 
-  private play(key: SoundKey, rate: number = 1, minInterval: number = 0) {
+  private play(key: SoundKey, minInterval: number = 0) {
     if (!useSettingsStore.getState().isSoundEnabled) return;
 
     const now = Date.now();
@@ -52,7 +52,9 @@ class SoundManager {
     this.lastPlayedAt[key] = now;
 
     try {
-      player.setPlaybackRate(rate);
+      // Pause before seeking so a replayed cue never clicks or stretches a
+      // sound that is still ringing out.
+      player.pause();
       player.seekTo(0);
       player.play();
     } catch (e) {
@@ -61,28 +63,28 @@ class SoundManager {
   }
 
   playSwoosh() {
-    this.play('swoosh', 1, 80);
+    this.play('swoosh', 90);
   }
 
-  playCorrect(combo: number = 0) {
-    const rate = Math.min(1 + (combo * 0.05), 1.6);
-    this.play('correct', rate, 100);
+  playCorrect() {
+    // One calm cue per answer; no pitch shift, which made fast answers chirp.
+    this.play('correct', 260);
   }
 
   playIncorrect() {
-    this.play('incorrect', 1, 250);
+    this.play('incorrect', 320);
   }
 
   playGameOver() {
-    this.play('gameover', 1, 300);
+    this.play('gameover', 800);
   }
 
   playWin() {
-    this.play('win');
+    this.play('win', 800);
   }
 
   playPurchase() {
-    this.play('purchase', 1, 150);
+    this.play('purchase', 400);
   }
 
   unload() {

@@ -87,7 +87,6 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
     );
 
     const barStyle = useAnimatedStyle(() => {
-      const width = `${progress.value * 100}%` as any;
       let color: string;
       if (progress.value > 0.5) {
         color = theme.timerActive;
@@ -98,7 +97,8 @@ export const TimerBar = React.memo(React.forwardRef<TimerBarRef, TimerBarProps>(
       }
 
       return {
-        width,
+        // Scale instead of width: no layout recalculation every frame.
+        transform: [{ scaleX: progress.value }],
         backgroundColor: color,
       };
     });
@@ -121,6 +121,8 @@ const styles = StyleSheet.create({
   },
   bar: {
     height: '100%',
+    width: '100%',
     borderRadius: RADIUS.pill,
+    transformOrigin: 'left center',
   },
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, Platform } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -225,11 +225,17 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.card + 2,
     borderWidth: 1,
     overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 2,
+    // A soft shadow is cheap on iOS. On Android the card moves every frame, so
+    // the hairline border carries the edge without per-frame shadow passes.
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 10,
+      },
+      default: {},
+    }),
   },
   sheetCompact: {
     minHeight: 180,

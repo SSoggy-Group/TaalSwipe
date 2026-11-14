@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -194,5 +195,10 @@ export function useAppTheme(gameMode?: string) {
     isDarkMode = false;
   }
 
-  return getColors(isDarkMode, equippedBackground, equippedCard, gameMode);
+  // Keep the theme object stable between renders; otherwise every state update
+  // recreates the palette and forces all memoised children to re-render.
+  return useMemo(
+    () => getColors(isDarkMode, equippedBackground, equippedCard, gameMode),
+    [isDarkMode, equippedBackground, equippedCard, gameMode],
+  );
 }

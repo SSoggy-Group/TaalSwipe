@@ -20,6 +20,7 @@ type RootStackParamList = {
     rawMode?: string;
     history?: { word: string; correct: boolean; explanation: string }[];
     timeMs?: number;
+    quit?: boolean;
   };
 };
 
@@ -39,13 +40,14 @@ function getResultCopy(percentage: number): { title: string; body: string } {
 }
 
 export function ResultScreen({ route, navigation }: Props) {
-  const { score, total, mode, rawMode, history, timeMs } = route.params;
+  const { score, total, mode, rawMode, history, timeMs, quit } = route.params;
   const theme = useAppTheme(rawMode);
 
   const [isNewHighScore, setIsNewHighScore] = useState(false);
 
   useEffect(() => {
     async function checkHighScore() {
+      if (quit) return;
       if (rawMode) {
         const stats = await statsStore.getStats();
         const currentHigh = (stats.highScores as any)[rawMode] || 0;
@@ -59,18 +61,23 @@ export function ResultScreen({ route, navigation }: Props) {
     }
     checkHighScore();
 
+    // Stopping early is not a win or a loss, so it stays quiet.
+    if (quit) return;
+
     const pct = total > 0 ? (score / total) * 100 : 0;
     if (pct >= 80) {
       soundManager.playWin();
     } else {
       soundManager.playGameOver();
     }
-  }, [score, total, rawMode]);
+  }, [score, total, rawMode, quit]);
 
   const percentage = total > 0 ? (score / total) * 100 : 0;
-  const copy = total === 0
-    ? { title: 'Ronde gestopt', body: 'Je hebt nog niets beantwoord.' }
-    : getResultCopy(percentage);
+  const copy = quit
+    ? { title: 'Ronde gestopt', body: 'Je stopte voortijdig. Je antwoorden staan hieronder.' }
+    : total === 0
+      ? { title: 'Ronde gestopt', body: 'Je hebt nog niets beantwoord.' }
+      : getResultCopy(percentage);
 
   const handleShare = async () => {
     try {

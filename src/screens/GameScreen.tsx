@@ -6,9 +6,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Haptics from '../platform/haptics';
 import * as Speech from '../platform/speech';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Animated, { FadeInDown, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeOut, SlideInDown } from 'react-native-reanimated';
 import { GradientBackground } from '../components/GradientBackground';
-import { SwipeCard, CardSkinWrapper } from '../components/SwipeCard';
+import { SwipeCard } from '../components/SwipeCard';
 import { ScoreBar } from '../components/ScoreBar';
 import { TimerBar, TimerBarRef } from '../components/TimerBar';
 import { Stopwatch, StopwatchRef } from '../components/Stopwatch';
@@ -31,7 +31,7 @@ import { getResultTotal } from '../utils/gameTotals';
 type RootStackParamList = {
   Home: undefined;
   Game: { mode: 'straattaal' | 'dunglish' | 'spelling' | 'dt' | 'vandale' | 'brand' };
-  Result: { score: number; total: number; mode: string; rawMode: string; history?: { word: string; correct: boolean; explanation: string }[], timeMs?: number };
+  Result: { score: number; total: number; mode: string; rawMode: string; history?: { word: string; correct: boolean; explanation: string }[], timeMs?: number; quit?: boolean };
 };
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Game'>;
@@ -314,7 +314,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 900;
   const { mode } = route.params;
-  const { hardcoreMode, equippedCard, survivalMode, speedrunMode } = useSettingsStore();
+  const { hardcoreMode, survivalMode, speedrunMode } = useSettingsStore();
 
   const theme = useAppTheme(mode);
   
@@ -462,7 +462,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
   const handleCorrectAnswer = useCallback(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    soundManager.playCorrect(combo);
+    soundManager.playCorrect();
     setScore((s) => s + 1);
     setCombo((c) => {
       const newCombo = c + 1;
@@ -470,7 +470,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       return newCombo;
     });
     advanceGame(true);
-  }, [combo, advanceGame, updateStats]);
+  }, [advanceGame, updateStats]);
 
   const handleIncorrectAnswer = useCallback((item: any) => {
     if (stats && stats.shields > 0) {
@@ -485,7 +485,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       setTimeout(() => setShowShieldAlert(false), 2000);
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      soundManager.playCorrect(0); // safe chime
+      soundManager.playCorrect(); // safe chime
       
       advanceGame(true); // skip penalty, proceed
       return;
@@ -615,6 +615,7 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
       mode: modeLabels[mode],
       rawMode: mode,
       history,
+      quit: true,
     });
   }, [currentIndex, feedbackInfo, mode, navigation, score, history, modeLabels]);
 
@@ -657,7 +658,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
   );
 
   const currentItem = data[currentIndex];
-  const nextItem = currentIndex + 1 < data.length ? data[currentIndex + 1] : null;
 
   // Context menu for Tauri desktop app (right-click to copy/search words)
   React.useEffect(() => {
@@ -809,28 +809,6 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
         )}
 
         <View style={[styles.cardStack, isDesktop && styles.desktopCardStack]}>
-          {/* Next card preview (behind) */}
-          {nextItem && (
-            <View
-              style={[styles.previewCard, { transform: [{ scale: 0.94 }, { translateY: 12 }], width: '88%' }]}
-              pointerEvents="none"
-              accessibilityElementsHidden
-              importantForAccessibility="no-hide-descendants"
-              aria-hidden
-            >
-              <CardSkinWrapper equippedCard={equippedCard} theme={theme}>
-                <View style={styles.previewContent}>
-                  <CardContent
-                    mode={mode}
-                    item={nextItem}
-                    theme={theme}
-                    speakWord={speakWord}
-                  />
-                </View>
-              </CardSkinWrapper>
-            </View>
-          )}
-
           {/* Active card */}
           {currentItem && (
             <SwipeCard
@@ -979,8 +957,8 @@ export function GameScreen({ navigation, route }: Readonly<Props>) {
 
       {feedbackInfo && (
         <Animated.View
-          entering={SlideInDown.springify().damping(24).stiffness(260)}
-          exiting={SlideOutDown.duration(180)}
+          entering={SlideInDown.duration(190)}
+          exiting={FadeOut.duration(140)}
           style={[
             styles.feedbackPanel,
             { backgroundColor: theme.surface, borderColor: theme.border },
@@ -1114,19 +1092,6 @@ const styles = StyleSheet.create({
   hotkeyDivider: {
     fontFamily: 'Inter_400Regular',
     fontSize: 12,
-  },
-  previewCard: {
-    position: 'absolute',
-    width: '100%',
-    maxWidth: 420,
-    alignItems: 'center',
-    opacity: 0.45,
-  },
-  previewContent: {
-    padding: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 280,
   },
   cardContent: {
     alignItems: 'center',
