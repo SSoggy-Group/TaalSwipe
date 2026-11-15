@@ -87,8 +87,6 @@ function App() {
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: theme.background }}>
       <StatusBar
         barStyle={theme.isDark ? 'light-content' : 'dark-content'}
-        translucent
-        backgroundColor="transparent"
       />
       <AppNavigator onRouteChange={setRouteName} />
       <PWAInstallPrompt isHome={routeName === 'Home'} />
