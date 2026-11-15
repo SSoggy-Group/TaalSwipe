@@ -131,3 +131,4 @@ Thumbs.db
 src-tauri/target/
 .vercel
 .env*
+.playwright-mcp/

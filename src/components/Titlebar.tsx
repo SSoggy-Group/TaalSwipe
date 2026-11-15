@@ -2,14 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../theme/colors';
+import { isTauri } from '../lib/tauri';
 
 const DraggableView = View as any;
 const DraggableText = Text as any;
-
-// Simple check if we're running inside Tauri
-const isTauri = () => {
-  return Platform.OS === 'web' && typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
-};
 
 const isMac = typeof navigator !== 'undefined' && /Mac/.test(navigator.userAgent);
 

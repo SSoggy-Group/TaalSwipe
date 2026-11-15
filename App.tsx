@@ -10,6 +10,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { soundManager } from './src/audio/SoundManager';
 import { PWAInstallPrompt } from './src/components/PWAInstallPrompt';
 import { useAppTheme } from './src/theme/colors';
+import { isTauri } from './src/lib/tauri';
 
 function App() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -20,22 +21,47 @@ function App() {
   const loadingBackground = systemScheme === 'dark' ? '#0F1012' : '#F6F4EF';
 
   useEffect(() => {
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) {
+        // Never hard-stick the app on the splash: if fonts have not loaded
+        // after a grace period, render the UI with the system font fallback.
+        console.warn('[fonts] loadAsync timed out; continuing with fallback fonts');
+        setFontsLoaded(true);
+      }
+    }, 8000);
+
     Font.loadAsync({
       Inter_400Regular,
       Inter_500Medium,
       Inter_600SemiBold,
       Inter_700Bold,
     })
-      .then(() => setFontsLoaded(true))
-      .catch((err) => setFontError(err));
+      .then(() => {
+        if (!cancelled) setFontsLoaded(true);
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          console.error('[fonts] loadAsync failed', err);
+          setFontError(err);
+        }
+      })
+      .finally(() => clearTimeout(timeout));
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
   }, []);
 
   useEffect(() => {
     soundManager.init();
 
-    // Register the service worker only in production builds, and use a
-    // relative URL so sub-path hosting and the Tauri webview keep working.
-    if (!__DEV__ && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    // Register the service worker only in production builds (never inside the
+    // Tauri webview, where it can cache a stale bundle across updates), and
+    // use a relative URL so sub-path hosting and the Tauri webview keep
+    // working.
+    if (!__DEV__ && !isTauri() && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(() => {
         // Silently fail if SW registration fails
       });
